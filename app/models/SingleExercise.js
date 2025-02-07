@@ -4,6 +4,8 @@ const singleExerciseSchema = new mongoose.Schema(
 	{
 		name: { type: String },
 		weight: { type: Number },
+		date: { type: Date },
+		userId: { type: String },
 	},
 	{ timestamps: true },
 );
