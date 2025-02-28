@@ -13,9 +13,13 @@
 		"prettier:staged": "prettier --write $(git diff --cached --name-only --diff-filter=d | sed 's|^www/||' | grep -E '\\.(ts|tsx|js|jsx|json)$' | xargs)"
 	},
 	"dependencies": {
+		"@dnd-kit/core": "^6.3.1",
+		"@dnd-kit/sortable": "^10.0.0",
 		"@emotion/react": "^11.14.0",
 		"@emotion/styled": "^11.14.0",
+		"@mui/icons-material": "^6.4.6",
 		"@mui/material": "^6.1.10",
+		"lucide-react": "^0.477.0",
 		"mongodb": "^6.12.0",
 		"mongoose": "^8.3.3",
 		"next": "15.1.0",
