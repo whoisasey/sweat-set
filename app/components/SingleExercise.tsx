@@ -1,6 +1,18 @@
 "use client";
 
-import { Button, Card, IconButton, Typography } from "@mui/material";
+import {
+	Box,
+	Button,
+	Card,
+	FormControl,
+	IconButton,
+	InputLabel,
+	MenuItem,
+	Select,
+	SelectChangeEvent,
+	TextField,
+	Typography,
+} from "@mui/material";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import React, { useState } from "react";
 import {
@@ -11,6 +23,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { exercises } from "@/app/utils/exerciseList";
 // import { DragEndEvent } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 
@@ -23,43 +36,70 @@ interface ExerciseProps {
 	id: string;
 }
 
-const Exercise: React.FC<ExerciseProps> = ({
-	name,
-	sets,
-	reps,
-	onRemove,
-	id,
-}) => {
+const ExerciseForm = ({ name, sets, reps, onRemove, id }: ExerciseProps) => {
 	const { attributes, listeners, setNodeRef, transform, transition } =
 		useSortable({ id });
 	const style = {
 		transform: CSS.Transform.toString(transform),
 		transition,
 	};
+	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
+
+	const handleChange = (event: SelectChangeEvent<string>) => {
+		const value = event.target.value;
+		setSelectedExercise(value);
+		console.log("Selected Exercise:", value); // Logs the selected value
+	};
 
 	return (
-		<Card
-			ref={setNodeRef}
-			style={style}
-			{...attributes}
-			{...listeners}
-			sx={{
-				display: "flex",
-				justifyContent: "space-between",
-				alignItems: "center",
-				p: 2,
-				mb: 1,
-			}}>
-			<div>
-				<Typography variant="h6">{name}</Typography>
+		// <Box
+		// 	ref={setNodeRef}
+		// 	style={style}
+		// 	{...attributes}
+		// 	{...listeners}
+		// 	sx={{
+		// 		display: "flex",
+		// 		justifyContent: "space-between",
+		// 		alignItems: "center",
+		// 		p: 2,
+		// 		mb: 1,
+		// 		border: "1px solid #ccc",
+		// 		borderRadius: "8px",
+		// 	}}>
+		<FormControl>
+			<Box>
+				<InputLabel htmlFor="exercise">Exercise</InputLabel>
+				<Select
+					value={selectedExercise}
+					onChange={(e) => handleChange(e)}
+					id="exercise"
+					name="exercise">
+					{exercises.map((exercise) => (
+						<MenuItem key={exercise.id} value={exercise.id}>
+							{exercise.name}
+						</MenuItem>
+					))}
+				</Select>
 				<Typography variant="body2" color="textSecondary">
-					{sets} sets x {reps} reps
+					{sets} sets x {reps} {selectedExercise !== "Running" ? "reps" : "km"}
 				</Typography>
-			</div>
+				{selectedExercise !== "Running" && (
+					<>
+						<InputLabel>Input Weight</InputLabel>
+						<TextField
+							type="number"
+							placeholder="Weight"
+							name="weight"
+							required
+						/>
+					</>
+				)}
+			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
 			</IconButton>
-		</Card>
+		</FormControl>
+		// </Box>
 	);
 };
 
@@ -84,6 +124,7 @@ const WorkoutDay: React.FC<WorkoutDayProps> = ({
 }) => {
 	return (
 		<Card sx={{ p: 3, mb: 2 }}>
+			{"workout day"}
 			<Typography variant="h5" fontWeight="bold">
 				{day}
 			</Typography>
@@ -95,7 +136,7 @@ const WorkoutDay: React.FC<WorkoutDayProps> = ({
 					items={exercises.map((e) => e.id)}
 					strategy={verticalListSortingStrategy}>
 					{exercises.map((exercise, index) => (
-						<Exercise
+						<ExerciseForm
 							key={exercise.id}
 							id={exercise.id}
 							name={exercise.name}
@@ -125,7 +166,7 @@ type WorkoutsType = {
 const WorkoutPlan = () => {
 	const [workouts, setWorkouts] = useState<WorkoutsType>({
 		Monday: [{ id: "squat", name: "Squat", sets: 3, reps: 6 }],
-		Tuesday: [{ id: "running", name: "Running", sets: 1, reps: 30 }],
+		// Tuesday: [{ id: "running", name: "Running", sets: 1, reps: 30 }],
 	});
 
 	const addExercise = (day: string) => {
@@ -182,6 +223,7 @@ const WorkoutPlan = () => {
 
 	return (
 		<div style={{ maxWidth: "600px", margin: "auto", padding: "20px" }}>
+			{"workout plan"}
 			{Object.keys(workouts).map((day) => (
 				<WorkoutDay
 					key={day}
