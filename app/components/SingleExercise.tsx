@@ -2,9 +2,6 @@
 
 import {
 	Box,
-	Button,
-	Card,
-	FormControl,
 	IconButton,
 	InputLabel,
 	MenuItem,
@@ -13,30 +10,25 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import { DndContext, closestCenter } from "@dnd-kit/core";
 import React, { useState } from "react";
-import {
-	SortableContext,
-	verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 
-import AddIcon from "@mui/icons-material/Add";
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ExerciseSet from "./ExerciseSet";
 import { exercises } from "@/app/utils/exerciseList";
 // import { DragEndEvent } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 
 // Exercise Component
-interface ExerciseProps {
-	name: string;
+export interface ExerciseProps {
+	name?: string;
 	sets: number;
 	reps: number;
 	onRemove: () => void;
 	id: string;
 }
 
-const ExerciseForm = ({ name, sets, reps, onRemove, id }: ExerciseProps) => {
+export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 	const { attributes, listeners, setNodeRef, transform, transition } =
 		useSortable({ id });
 	const style = {
@@ -52,22 +44,23 @@ const ExerciseForm = ({ name, sets, reps, onRemove, id }: ExerciseProps) => {
 	};
 
 	return (
-		// <Box
-		// 	ref={setNodeRef}
-		// 	style={style}
-		// 	{...attributes}
-		// 	{...listeners}
-		// 	sx={{
-		// 		display: "flex",
-		// 		justifyContent: "space-between",
-		// 		alignItems: "center",
-		// 		p: 2,
-		// 		mb: 1,
-		// 		border: "1px solid #ccc",
-		// 		borderRadius: "8px",
-		// 	}}>
-		<FormControl>
-			<Box>
+		<form>
+			<Box
+				ref={setNodeRef}
+				style={style}
+				{...attributes}
+				{...listeners}
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					// justifyContent: "space-between",
+					// alignItems: "center",
+					p: 2,
+					mb: 1,
+					border: "1px solid #ccc",
+					borderRadius: "8px",
+				}}>
+				{"single exercise"}
 				<InputLabel htmlFor="exercise">Exercise</InputLabel>
 				<Select
 					value={selectedExercise}
@@ -98,63 +91,8 @@ const ExerciseForm = ({ name, sets, reps, onRemove, id }: ExerciseProps) => {
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
 			</IconButton>
-		</FormControl>
+		</form>
 		// </Box>
-	);
-};
-
-// Workout Day Component
-interface WorkoutDayProps {
-	day: string;
-	exercises: ExerciseProps[];
-	onAddExercise: () => void;
-	onRemoveExercise: (index: number) => void;
-	// onDragEnd: (event: {
-	// 	active: { id: string };
-	// 	over: { id: string } | null;
-	// }) => void;
-}
-
-const WorkoutDay: React.FC<WorkoutDayProps> = ({
-	day,
-	exercises,
-	onAddExercise,
-	onRemoveExercise,
-	// onDragEnd,
-}) => {
-	return (
-		<Card sx={{ p: 3, mb: 2 }}>
-			{"workout day"}
-			<Typography variant="h5" fontWeight="bold">
-				{day}
-			</Typography>
-			<DndContext
-				collisionDetection={closestCenter}
-				// onDragEnd={onDragEnd}
-			>
-				<SortableContext
-					items={exercises.map((e) => e.id)}
-					strategy={verticalListSortingStrategy}>
-					{exercises.map((exercise, index) => (
-						<ExerciseForm
-							key={exercise.id}
-							id={exercise.id}
-							name={exercise.name}
-							sets={exercise.sets}
-							reps={exercise.reps}
-							onRemove={() => onRemoveExercise(index)}
-						/>
-					))}
-				</SortableContext>
-			</DndContext>
-			<Button
-				variant="outlined"
-				startIcon={<AddIcon />}
-				onClick={onAddExercise}
-				sx={{ mt: 2 }}>
-				Add Exercise
-			</Button>
-		</Card>
 	);
 };
 
@@ -225,7 +163,7 @@ const WorkoutPlan = () => {
 		<div style={{ maxWidth: "600px", margin: "auto", padding: "20px" }}>
 			{"workout plan"}
 			{Object.keys(workouts).map((day) => (
-				<WorkoutDay
+				<ExerciseSet
 					key={day}
 					day={day}
 					exercises={workouts[day].map((exercise, index) => ({
