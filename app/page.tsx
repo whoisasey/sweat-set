@@ -1,8 +1,9 @@
-import ExerciseSet from "./components/ExerciseSet";
+import ExercisePlan from "./components/ExercisePlan";
+
 export default function Home() {
 	return (
 		<>
-			<ExerciseSet />
+			<ExercisePlan />
 		</>
 	);
 }
