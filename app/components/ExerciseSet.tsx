@@ -7,8 +7,6 @@ import {
 
 import AddIcon from "@mui/icons-material/Add";
 import { ExerciseForm } from "@/app/components/SingleExercise";
-import { ExerciseProps } from "@/app/components/SingleExercise";
-import React from "react";
 
 // Workout Day Component
 interface WorkoutDayProps {
@@ -20,6 +18,14 @@ interface WorkoutDayProps {
 	// 	active: { id: string };
 	// 	over: { id: string } | null;
 	// }) => void;
+}
+
+export interface ExerciseProps {
+	name?: string;
+	sets: number;
+	reps: number;
+	onRemove: () => void;
+	id: string;
 }
 
 const ExerciseSet: React.FC<WorkoutDayProps> = ({

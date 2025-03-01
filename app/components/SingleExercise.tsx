@@ -4,9 +4,6 @@ import {
 	Box,
 	IconButton,
 	InputLabel,
-	MenuItem,
-	Select,
-	SelectChangeEvent,
 	TextField,
 	Typography,
 } from "@mui/material";
@@ -27,6 +24,17 @@ export interface ExerciseProps {
 	id: string;
 }
 
+const renderWeightInput = (selectedExercise: string) => {
+	if (selectedExercise !== "Running") {
+		return (
+			<>
+				<InputLabel>Input Weight</InputLabel>
+				<TextField type="number" placeholder="Weight" name="weight" required />
+			</>
+		);
+	}
+};
+
 export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 	const { attributes, listeners, setNodeRef, transform, transition } =
 		useSortable({ id });
@@ -36,7 +44,7 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 	};
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
 
-	const handleChange = (event: SelectChangeEvent<string>) => {
+	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const value = event.target.value;
 		setSelectedExercise(value);
 		console.log("Selected Exercise:", value); // Logs the selected value
@@ -52,8 +60,6 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 				sx={{
 					display: "flex",
 					flexDirection: "column",
-					// justifyContent: "space-between",
-					// alignItems: "center",
 					p: 2,
 					mb: 1,
 					border: "1px solid #ccc",
@@ -61,9 +67,21 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 				}}>
 				{"single exercise"}
 				<InputLabel htmlFor="exercise">Exercise</InputLabel>
-				<Select
+				<select
+					name="exercise"
+					id="exercise"
+					onChange={(e) =>
+						handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+					}>
+					{exercises.map((exercise) => (
+						<option key={exercise.id} value={exercise.id}>
+							{exercise.name}
+						</option>
+					))}
+				</select>
+				{/* <Select
 					value={selectedExercise}
-					onChange={(e) => handleChange(e)}
+					onChange={() => console.log("clicked exercise...")}
 					id="exercise"
 					name="exercise">
 					{exercises.map((exercise) => (
@@ -71,21 +89,10 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 							{exercise.name}
 						</MenuItem>
 					))}
-				</Select>
+				</Select> */}
 				<Typography variant="body2" color="textSecondary">
 					{sets} sets x {reps} {selectedExercise !== "Running" ? "reps" : "km"}
 				</Typography>
-				{selectedExercise !== "Running" && (
-					<>
-						<InputLabel>Input Weight</InputLabel>
-						<TextField
-							type="number"
-							placeholder="Weight"
-							name="weight"
-							required
-						/>
-					</>
-				)}
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
