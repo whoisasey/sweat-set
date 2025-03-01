@@ -24,13 +24,23 @@ export interface ExerciseProps {
 	id: string;
 }
 
-const renderWeightInput = (selectedExercise: string) => {
-	if (selectedExercise !== "Running") {
+const weightInput = (selectedExercise: string) => {
+	if (selectedExercise !== "running") {
 		return (
-			<>
-				<InputLabel>Input Weight</InputLabel>
-				<TextField type="number" placeholder="Weight" name="weight" required />
-			</>
+			<Box>
+				<InputLabel htmlFor="weight">Input Weight</InputLabel>
+				<TextField
+					id="weight"
+					type="number"
+					placeholder="Weight"
+					name="weight"
+					required
+					variant="outlined"
+					fullWidth
+					// value={weight}
+					// onChange={handleChange}
+				/>
+			</Box>
 		);
 	}
 };
@@ -47,7 +57,6 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const value = event.target.value;
 		setSelectedExercise(value);
-		console.log("Selected Exercise:", value); // Logs the selected value
 	};
 
 	return (
@@ -93,6 +102,7 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 				<Typography variant="body2" color="textSecondary">
 					{sets} sets x {reps} {selectedExercise !== "Running" ? "reps" : "km"}
 				</Typography>
+				{weightInput(selectedExercise)}
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />

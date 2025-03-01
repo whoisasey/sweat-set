@@ -20,7 +20,7 @@ interface WorkoutDayProps {
 	// }) => void;
 }
 
-export interface ExerciseProps {
+interface ExerciseProps {
 	name?: string;
 	sets: number;
 	reps: number;
