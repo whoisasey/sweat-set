@@ -23,10 +23,30 @@ export interface ExerciseProps {
 	onRemove: () => void;
 	id: string;
 }
-
-const weightInput = (selectedExercise: string) => {
-	if (selectedExercise !== "running") {
+const weightInput = (selectedExercise: string, sets: number, reps: number) => {
+	if (selectedExercise === "running") {
 		return (
+			<Box>
+				<InputLabel htmlFor="distance">Input KM</InputLabel>
+				<TextField
+					id="distance"
+					type="number"
+					placeholder="Distance"
+					name="distance"
+					required
+					variant="outlined"
+					fullWidth
+				/>
+				{" km"}
+			</Box>
+		);
+	}
+
+	return (
+		<>
+			<Typography variant="body2" color="textSecondary">
+				{sets} sets x {reps} reps
+			</Typography>
 			<Box>
 				<InputLabel htmlFor="weight">Input Weight</InputLabel>
 				<TextField
@@ -37,12 +57,10 @@ const weightInput = (selectedExercise: string) => {
 					required
 					variant="outlined"
 					fullWidth
-					// value={weight}
-					// onChange={handleChange}
 				/>
 			</Box>
-		);
-	}
+		</>
+	);
 };
 
 export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
@@ -99,10 +117,8 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 						</MenuItem>
 					))}
 				</Select> */}
-				<Typography variant="body2" color="textSecondary">
-					{sets} sets x {reps} {selectedExercise !== "Running" ? "reps" : "km"}
-				</Typography>
-				{weightInput(selectedExercise)}
+
+				{weightInput(selectedExercise, sets, reps)}
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
