@@ -25,8 +25,16 @@ export interface ExerciseProps {
 	id: string;
 }
 
-const weightInput = (selectedExercise: string, sets: number, reps: number) => {
-	const renderSets = (sets: number) => (
+const weightInput = (
+	selectedExercise: string,
+	sets: number,
+	reps: number,
+	handleWeightChange: (index: number, value: string) => void,
+) => {
+	const renderSets = (
+		sets: number,
+		handleWeightChange: (index: number, value: string) => void,
+	) => (
 		<>
 			{Array.from({ length: sets }).map((_, index) => (
 				<Box key={index}>
@@ -39,6 +47,7 @@ const weightInput = (selectedExercise: string, sets: number, reps: number) => {
 						required
 						variant="outlined"
 						fullWidth
+						onChange={(e) => handleWeightChange(index, e.target.value)}
 					/>
 				</Box>
 			))}
@@ -68,7 +77,7 @@ const weightInput = (selectedExercise: string, sets: number, reps: number) => {
 			<Typography variant="body2" color="textSecondary">
 				{sets} sets x {reps} reps
 			</Typography>
-			{renderSets(sets)}
+			{renderSets(sets, handleWeightChange)}
 		</>
 	);
 };
@@ -83,15 +92,22 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 	};
 
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
+	const [weights, setWeights] = useState<number[]>(Array(sets).fill(0)); // Initialize state with the number of sets
 
 	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedExercise(event.target.value);
 	};
 
+	// Handles weight input changes
+	const handleWeightChange = (index: number, value: string) => {
+		const newWeights = [...weights];
+		newWeights[index] = Number(value) || 0;
+		setWeights(newWeights);
+	};
+
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		// Collect input values dynamically
 		const formData = new FormData(e.target as HTMLFormElement);
 		const data: Record<string, any> = {};
 
@@ -99,31 +115,18 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 			data[key] = value;
 		});
 
-		// Convert necessary fields to numbers
+		// Add form data
 		data.sets = sets;
 		data.reps = reps;
 		data.exerciseId = selectedExercise;
+		data.weights = weights;
 		data.distance =
 			selectedExercise === "running" ? Number(data.distance) || 0 : 0;
-
-		// Convert weight fields into an array
-		data.weights = Object.keys(data)
-			.filter((key) => key.startsWith("weight-"))
-			.map((key) => Number(data[key]) || 0);
-
-		// Remove individual weight inputs from the main object
-		Object.keys(data).forEach((key) => {
-			if (key.startsWith("weight-")) {
-				delete data[key];
-			}
-		});
-
-		// Add user ID & date (adjust based on actual implementation)
 		data.userId = "123"; // Replace with actual user ID logic
-		data.date = new Date().toISOString(); // Default to current date
+		data.date = new Date().toISOString();
 
 		try {
-			const response = await fetch("/api/singleexercise/add", {
+			const response = await fetch("/api/singleExercise/add", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -172,7 +175,7 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 					))}
 				</select>
 
-				{weightInput(selectedExercise, sets, reps)}
+				{weightInput(selectedExercise, sets, reps, handleWeightChange)}
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
