@@ -29,6 +29,7 @@ const weightInput = (
 	selectedExercise: string,
 	sets: number,
 	reps: number,
+	weights: number[],
 	handleWeightChange: (index: number, value: string) => void,
 ) => {
 	const renderSets = (
@@ -38,16 +39,26 @@ const weightInput = (
 		<>
 			{Array.from({ length: sets }).map((_, index) => (
 				<Box key={index}>
-					<InputLabel htmlFor={`weight-${index}`}>Input Weight</InputLabel>
-					<TextField
+					<label htmlFor={`weight-${index}`}>Input Weight</label>
+					<input
 						id={`weight-${index}`}
 						type="number"
 						placeholder="Weight"
 						name={`weight-${index}`}
 						required
-						variant="outlined"
-						fullWidth
-						onChange={(e) => handleWeightChange(index, e.target.value)}
+						step={5}
+						min={50}
+						onInput={(e) => {
+							const value = (e.target as HTMLInputElement).value;
+
+							handleWeightChange(index, value); // Call handleWeightChange if valid
+						}}
+						style={{
+							width: "100%",
+							padding: "8px",
+							borderRadius: "4px",
+							border: "1px solid #ccc",
+						}}
 					/>
 				</Box>
 			))}
@@ -101,7 +112,8 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 	// Handles weight input changes
 	const handleWeightChange = (index: number, value: string) => {
 		const newWeights = [...weights];
-		newWeights[index] = Number(value) || 0;
+
+		newWeights[index] = Number(value); // Store the valid numeric value as a string
 		setWeights(newWeights);
 	};
 
@@ -175,7 +187,7 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 					))}
 				</select>
 
-				{weightInput(selectedExercise, sets, reps, handleWeightChange)}
+				{weightInput(selectedExercise, sets, reps, weights, handleWeightChange)}
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
