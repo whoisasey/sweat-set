@@ -30,29 +30,32 @@ const weightInput = (
 	sets: number,
 	reps: number,
 	weights: number[],
-	handleWeightChange: (index: number, value: string) => void,
+	handleInputChange: (index: number, value: string, field: string) => void,
 ) => {
-	const renderSets = (
+	// this needs to be loaded after RenderSets, and await the user to select sets
+	const renderWeightInput = (
 		sets: number,
-		handleWeightChange: (index: number, value: string) => void,
+		handleInputChange: (index: number, value: string, field: string) => void,
 	) => (
 		<>
 			{Array.from({ length: sets }).map((_, index) => (
-				<Box key={index}>
+				<div key={index}>
 					<label htmlFor={`weight-${index}`}>Input Weight</label>
 					<input
 						id={`weight-${index}`}
 						type="number"
+						min={50}
+						step={5}
 						placeholder="Weight"
 						name={`weight-${index}`}
-						required
-						step={5}
-						min={50}
-						onInput={(e) => {
-							const value = (e.target as HTMLInputElement).value;
-
-							handleWeightChange(index, value); // Call handleWeightChange if valid
-						}}
+						value={weights[index]}
+						onInput={(e) =>
+							handleInputChange(
+								index,
+								(e.target as HTMLInputElement).value,
+								`weight-${index}`,
+							)
+						}
 						style={{
 							width: "100%",
 							padding: "8px",
@@ -60,10 +63,39 @@ const weightInput = (
 							border: "1px solid #ccc",
 						}}
 					/>
-				</Box>
+				</div>
 			))}
 		</>
 	);
+
+	const renderSets = () => {
+		return (
+			<Box sx={{ display: "flex", flexDirection: "row" }}>
+				<label htmlFor="sets">Input Sets</label>
+				<input
+					id="sets"
+					type="number"
+					placeholder="Sets"
+					name="sets"
+					required
+					min={1}
+					value={sets} // Assuming you have a state variable `sets`
+					onInput={(e) =>
+						handleInputChange(0, (e.target as HTMLInputElement).value, "sets")
+					}
+					style={{
+						width: "auto",
+						padding: "8px",
+						borderRadius: "4px",
+						border: "1px solid #ccc",
+					}}
+				/>
+				<Typography variant="body2" color="textSecondary">
+					Sets
+				</Typography>
+			</Box>
+		);
+	};
 
 	if (selectedExercise === "running") {
 		return (
@@ -85,15 +117,16 @@ const weightInput = (
 
 	return (
 		<>
+			{renderSets()}
 			<Typography variant="body2" color="textSecondary">
-				{sets} sets x {reps} reps
+				{reps} reps
 			</Typography>
-			{renderSets(sets, handleWeightChange)}
+			{renderWeightInput(sets, handleInputChange)}
 		</>
 	);
 };
 
-export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
+export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 	const { attributes, listeners, setNodeRef, transform, transition } =
 		useSortable({ id });
 
@@ -103,18 +136,24 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 	};
 
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
+	const [sets, setSets] = useState<number>(1); // Initial sets value
 	const [weights, setWeights] = useState<number[]>(Array(sets).fill(0)); // Initialize state with the number of sets
 
 	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedExercise(event.target.value);
 	};
 
-	// Handles weight input changes
-	const handleWeightChange = (index: number, value: string) => {
-		const newWeights = [...weights];
-
-		newWeights[index] = Number(value); // Store the valid numeric value as a string
-		setWeights(newWeights);
+	// Handles  input changes
+	const handleInputChange = (index: number, value: string, field: string) => {
+		if (field === "sets") {
+			// Update the number of sets
+			setSets(Number(value) || 0); // Assuming `sets` is a state variable for sets count
+		} else if (field.startsWith("weight")) {
+			// Update the weights array if the field is related to weight
+			const newWeights = [...weights];
+			newWeights[index] = Number(value) || 0; // Convert value to number, or 0 if invalid
+			setWeights(newWeights);
+		}
 	};
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -187,7 +226,7 @@ export const ExerciseForm = ({ sets, reps, onRemove, id }: ExerciseProps) => {
 					))}
 				</select>
 
-				{weightInput(selectedExercise, sets, reps, weights, handleWeightChange)}
+				{weightInput(selectedExercise, sets, reps, weights, handleInputChange)}
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
