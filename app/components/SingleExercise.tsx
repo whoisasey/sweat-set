@@ -12,6 +12,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
+// import WeightInput from "./ui/Weights";
 import { exercises } from "@/app/utils/exerciseList";
 // import { DragEndEvent } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
@@ -71,7 +72,13 @@ const weightInput = (
 
 	const renderSets = () => {
 		return (
-			<Box sx={{ display: "flex", flexDirection: "row" }}>
+			<Box
+				sx={{
+					display: "flex",
+					flexDirection: "row",
+					alignItems: "center",
+					gap: 2,
+				}}>
 				<label htmlFor="sets">Input Sets</label>
 				<input
 					id="sets"
@@ -82,7 +89,7 @@ const weightInput = (
 					onChange={(e) => setSets(Number(e.target.value))}
 					min={1}
 					style={{
-						width: "100%",
+						width: "10%",
 						padding: "8px",
 						borderRadius: "4px",
 						border: "1px solid #ccc",
@@ -148,7 +155,7 @@ export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 	};
 
 	// Handles  input changes
-	const handleInputChange = (index: number, value: string, field: string) => {
+	const handleInputChange = (index: number, value: string, field?: string) => {
 		if (field === "sets") {
 			// Ensure sets is always at least 1 and update weights if necessary
 			const newSets = Math.max(Number(value) || 1, 1); // Set a minimum value of 1 for sets
@@ -165,7 +172,7 @@ export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 					...new Array(newSets - prevWeights.length).fill(0),
 				]);
 			}
-		} else if (field.startsWith("weight")) {
+		} else if (field?.startsWith("weight")) {
 			// Update the weights array if the field is related to weight
 			const newWeights = [...weights];
 			newWeights[index] = Number(value) || 0; // Convert value to number, or 0 if invalid
@@ -251,6 +258,14 @@ export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 					handleInputChange,
 					setSets,
 				)}
+				{/* <WeightInput
+					selectedExercise={selectedExercise}
+					sets={sets}
+					reps={10}
+					weights={weights}
+					handleInputChange={handleInputChange}
+					setSets={setSets}
+				/> */}
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
