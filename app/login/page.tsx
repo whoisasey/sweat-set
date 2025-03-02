@@ -5,11 +5,14 @@ import React, { FormEvent, useCallback, useState } from "react";
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const LoginPage = () => {
 	const [error, setError] = useState<string>("");
 	// const [loading, setLoading] = useState<boolean>(false);
 	const router = useRouter();
+	const session = useSession();
+	console.log(session);
 
 	const handleSubmit = useCallback(
 		async (e: FormEvent<HTMLFormElement>) => {
