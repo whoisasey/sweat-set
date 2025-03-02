@@ -8,7 +8,7 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -31,6 +31,7 @@ const weightInput = (
 	reps: number,
 	weights: number[],
 	handleInputChange: (index: number, value: string, field: string) => void,
+	setSets: (value: number) => void,
 ) => {
 	// this needs to be loaded after RenderSets, and await the user to select sets
 	const renderWeightInput = (
@@ -48,8 +49,8 @@ const weightInput = (
 						step={5}
 						placeholder="Weight"
 						name={`weight-${index}`}
-						value={weights[index]}
-						onInput={(e) =>
+						value={weights[index] || ""} // Fallback to an empty string to avoid undefined
+						onChange={(e) =>
 							handleInputChange(
 								index,
 								(e.target as HTMLInputElement).value,
@@ -77,14 +78,11 @@ const weightInput = (
 					type="number"
 					placeholder="Sets"
 					name="sets"
-					required
+					value={sets}
+					onChange={(e) => setSets(Number(e.target.value))}
 					min={1}
-					value={sets} // Assuming you have a state variable `sets`
-					onInput={(e) =>
-						handleInputChange(0, (e.target as HTMLInputElement).value, "sets")
-					}
 					style={{
-						width: "auto",
+						width: "100%",
 						padding: "8px",
 						borderRadius: "4px",
 						border: "1px solid #ccc",
@@ -137,7 +135,13 @@ export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
 	const [sets, setSets] = useState<number>(1); // Initial sets value
-	const [weights, setWeights] = useState<number[]>(Array(sets).fill(0)); // Initialize state with the number of sets
+	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
+
+	// Update weights when sets change
+	useEffect(() => {
+		// If the number of sets changes, update the weights array to match the new number of sets
+		setWeights(Array.from({ length: sets }, () => 0) as number[]);
+	}, [sets]);
 
 	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedExercise(event.target.value);
@@ -146,8 +150,21 @@ export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 	// Handles  input changes
 	const handleInputChange = (index: number, value: string, field: string) => {
 		if (field === "sets") {
-			// Update the number of sets
-			setSets(Number(value) || 0); // Assuming `sets` is a state variable for sets count
+			// Ensure sets is always at least 1 and update weights if necessary
+			const newSets = Math.max(Number(value) || 1, 1); // Set a minimum value of 1 for sets
+			setSets(newSets);
+
+			// If the number of sets decreases, trim the weights array
+			if (newSets < weights.length) {
+				setWeights(weights.slice(0, newSets));
+			}
+			// If the number of sets increases, expand the weights array
+			else if (newSets > weights.length) {
+				setWeights((prevWeights) => [
+					...prevWeights,
+					...new Array(newSets - prevWeights.length).fill(0),
+				]);
+			}
 		} else if (field.startsWith("weight")) {
 			// Update the weights array if the field is related to weight
 			const newWeights = [...weights];
@@ -160,7 +177,7 @@ export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 		e.preventDefault();
 
 		const formData = new FormData(e.target as HTMLFormElement);
-		const data: Record<string, any> = {};
+		const data: Record<string, unknown> = {};
 
 		formData.forEach((value, key) => {
 			data[key] = value;
@@ -226,7 +243,14 @@ export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 					))}
 				</select>
 
-				{weightInput(selectedExercise, sets, reps, weights, handleInputChange)}
+				{weightInput(
+					selectedExercise,
+					sets,
+					reps,
+					weights,
+					handleInputChange,
+					setSets,
+				)}
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
