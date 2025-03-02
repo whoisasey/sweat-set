@@ -33,6 +33,7 @@ const weightInput = (
 	weights: number[],
 	handleInputChange: (index: number, value: string, field: string) => void,
 	setSets: (value: number) => void,
+	setReps: (value: number) => void,
 ) => {
 	// this needs to be loaded after RenderSets, and await the user to select sets
 	const renderWeightInput = (
@@ -102,6 +103,38 @@ const weightInput = (
 		);
 	};
 
+	const renderReps = () => {
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					flexDirection: "row",
+					alignItems: "center",
+					gap: 2,
+				}}>
+				<label htmlFor="reps">Input Reps</label>
+				<input
+					id="reps"
+					type="number"
+					placeholder="Sets"
+					name="reps"
+					value={reps}
+					onChange={(e) => setReps(Number(e.target.value))}
+					min={1}
+					style={{
+						width: "10%",
+						padding: "8px",
+						borderRadius: "4px",
+						border: "1px solid #ccc",
+					}}
+				/>
+				<Typography variant="body2" color="textSecondary">
+					Reps
+				</Typography>
+			</Box>
+		);
+	};
+
 	if (selectedExercise === "running") {
 		return (
 			<Box>
@@ -123,15 +156,13 @@ const weightInput = (
 	return (
 		<>
 			{renderSets()}
-			<Typography variant="body2" color="textSecondary">
-				{reps} reps
-			</Typography>
+			{renderReps()}
 			{renderWeightInput(sets, handleInputChange)}
 		</>
 	);
 };
 
-export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
+export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const { attributes, listeners, setNodeRef, transform, transition } =
 		useSortable({ id });
 
@@ -142,6 +173,7 @@ export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
 	const [sets, setSets] = useState<number>(1); // Initial sets value
+	const [reps, setReps] = useState<number>(1);
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
 
 	// Update weights when sets change
@@ -156,6 +188,10 @@ export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 
 	// Handles  input changes
 	const handleInputChange = (index: number, value: string, field?: string) => {
+		if (field === "reps") {
+			setReps(Number(value) || 1);
+		}
+
 		if (field === "sets") {
 			// Ensure sets is always at least 1 and update weights if necessary
 			const newSets = Math.max(Number(value) || 1, 1); // Set a minimum value of 1 for sets
@@ -257,6 +293,7 @@ export const ExerciseForm = ({ reps, onRemove, id }: ExerciseProps) => {
 					weights,
 					handleInputChange,
 					setSets,
+					setReps,
 				)}
 				{/* <WeightInput
 					selectedExercise={selectedExercise}
