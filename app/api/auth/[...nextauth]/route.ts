@@ -37,6 +37,8 @@ const handler = NextAuth({
 						);
 
 						if (isPasswordCorrect) {
+							console.log("logging user in... ✨");
+
 							return user as AuthUser;
 						}
 					}
