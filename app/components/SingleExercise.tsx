@@ -251,6 +251,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 			const result = await response.json();
 			console.log("Success:", result);
+			// TODO: Handle success
 		} catch (error) {
 			console.error("Error submitting exercise:", error);
 		}
