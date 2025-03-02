@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
 import User from "@/app/models/User";
-// import bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 import connect from "@/app/utils/db";
 
 export const POST = async (req: Request) => {
-	const { email, firstName } = await req.json();
+	const {
+		email,
+		firstName,
+		password,
+		// lastName,
+		userId,
+	} = await req.json();
 
 	await connect();
 	console.log("...db connected");
@@ -15,17 +21,21 @@ export const POST = async (req: Request) => {
 		return new NextResponse("User already exists ❌", { status: 400 });
 	}
 
-	// const hashedPassword = await bcrypt.hash(password, 12);
+	const hashedPassword = await bcrypt.hash(password, 12);
 	const newUser = new User({
+		userId,
 		firstName,
 		// lastName,
 		email,
-		// password: hashedPassword,
+		password: hashedPassword,
 	});
 
 	try {
 		await newUser.save();
-		return new NextResponse("User created ✨", { status: 200 });
+		return NextResponse.json(
+			{ message: "User registered successfully ✨" },
+			{ status: 201 },
+		);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
 		console.log(error.message);
