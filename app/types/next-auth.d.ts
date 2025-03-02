@@ -6,6 +6,8 @@ declare module "next-auth" {
 		user: {
 			name: string;
 			userId: string;
+			firstName?: string;
+			lastName?: string;
 			id: string;
 			email: string;
 		};
@@ -14,6 +16,8 @@ declare module "next-auth" {
 	interface User extends DefaultUser {
 		name?: string;
 		userId?: string;
+		firstName?: string;
+		lastName?: string;
 		email?: string;
 		id?: string;
 	}
