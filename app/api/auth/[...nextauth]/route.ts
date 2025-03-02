@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Account, User as AuthUser } from "next-auth";
 
@@ -69,20 +70,29 @@ const handler = NextAuth({
 			// Optionally handle other providers or additional logic
 			return false; // Default return if provider is not "credentials"
 		},
-		async jwt({ token, user }: { token: any; user?: AuthUser; session?: any }) {
+		async jwt({
+			token,
+			user,
+			session,
+		}: {
+			token: any;
+			user?: AuthUser;
+			session?: any;
+		}) {
 			// Pass user information to token if user exists
 			if (user) {
 				return {
 					...token,
-					name: `${user.firstName} ${user.lastName}`,
+					name: `${user.firstName}}`,
 					id: user.userId,
+					session,
 				};
 			}
 
 			// If no user, return the token as is
 			return token;
 		},
-		async session({ session, token }) {
+		async session({ session, token, user }) {
 			return {
 				...session,
 				user: { ...session.user, id: token.id, name: token.name },
