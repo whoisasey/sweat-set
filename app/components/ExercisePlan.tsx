@@ -35,6 +35,7 @@ const ExercisePlan = () => {
 	const removeExercise = (
 		day: string,
 		index: number,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		p0?: { day: string; index: number },
 	) => {
 		setWorkouts((prev) => ({

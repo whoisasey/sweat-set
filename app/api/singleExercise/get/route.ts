@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import SingleExercise from "@/app/models/SingleExercise";
+// import SingleExercise from "@/app/models/SingleExercise";
 import connect from "@/app/utils/db";
 
 // POST handler for adding a message
@@ -37,6 +37,7 @@ export const POST = async (req: Request) => {
 		const data = {};
 		// Respond with success if the message is saved
 		return NextResponse.json({ data }, { status: 200 });
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
 		console.error("Error adding message:", error);
 		const statusCode = error.name === "ValidationError" ? 400 : 500;
