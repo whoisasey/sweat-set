@@ -1,14 +1,14 @@
-import { NextApiRequest, NextApiResponse } from "next";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth, { Account, User as AuthUser } from "next-auth";
 
 import CredentialsProvider from "next-auth/providers/credentials";
+import { NextRequest } from "next/server";
 import User from "@/app/models/User";
 import bcrypt from "bcryptjs";
 import connect from "@/app/utils/db";
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: any, res: any) {
 	const providers = [
 		CredentialsProvider({
 			id: "credentials",
