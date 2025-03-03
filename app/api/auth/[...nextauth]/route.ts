@@ -1,15 +1,15 @@
+import { NextApiRequest, NextApiResponse } from "next";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Account, User as AuthUser } from "next-auth";
+import NextAuth, { Account, User as AuthUser } from "next-auth";
 
 import CredentialsProvider from "next-auth/providers/credentials";
-import NextAuth from "next-auth";
 import User from "@/app/models/User";
 import bcrypt from "bcryptjs";
 import connect from "@/app/utils/db";
 
-const handler = NextAuth({
-	// Configure one or more authentication providers
-	providers: [
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+	const providers = [
 		CredentialsProvider({
 			id: "credentials",
 			name: "Credentials",
@@ -32,18 +32,14 @@ const handler = NextAuth({
 
 					if (user) {
 						const isPasswordCorrect = await bcrypt.compare(
-							password as string,
+							password,
 							user.password,
 						);
 
 						if (isPasswordCorrect) {
 							console.log("logging user in... ✨");
 
-							return {
-								id: user._id.toString(),
-								email: user.email,
-								firstName: user.firstName || "", // Ensure this is a valid field in your database
-							} as AuthUser;
+							return user as AuthUser;
 						}
 					}
 				} catch (err: unknown) {
@@ -52,47 +48,60 @@ const handler = NextAuth({
 				return null;
 			},
 		}),
-	],
-	secret: process.env.NEXTAUTH_SECRET,
-	session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
+	];
 
-	pages: {
-		signIn: "/login",
-	},
-	callbacks: {
-		async signIn({
-			account,
-		}: {
-			user: AuthUser;
-			account: Account | null;
-		}): Promise<boolean> {
-			if (account?.provider === "credentials") {
-				return true;
-			}
+	return await NextAuth(req, res, {
+		providers,
+		secret: process.env.NEXTAUTH_SECRET,
+		session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
 
-			// Optionally handle other providers or additional logic
-			return false; // Default return if provider is not "credentials"
+		pages: {
+			signIn: "/login",
 		},
-		async jwt({ token, user }: { token: any; user?: AuthUser; session?: any }) {
-			// Pass user information to token if user exists
-			if (user) {
+		callbacks: {
+			async signIn({
+				account,
+			}: {
+				user: AuthUser;
+				account: Account | null;
+			}): Promise<boolean> {
+				if (account?.provider === "credentials") {
+					return true;
+				}
+
+				// Optionally handle other providers or additional logic
+				return false; // Default return if provider is not "credentials"
+			},
+			async jwt({
+				token,
+				user,
+				session,
+			}: {
+				token: any;
+				user?: AuthUser;
+				session?: any;
+			}) {
+				// Pass user information to token if user exists
+				if (user) {
+					return {
+						...token,
+						name: `${user.firstName}}`,
+						id: user.userId,
+						session,
+					};
+				}
+
+				// If no user, return the token as is
+				return token;
+			},
+			async session({ session, token, user }) {
 				return {
-					...token,
-					name: user.firstName,
-					id: user.userId,
+					...session,
+					user: { ...session.user, id: token.id, name: token.name },
 				};
-			}
-
-			// If no user, return the token as is
-			return token;
+			},
 		},
-		async session({ session, token }) {
-			return {
-				...session,
-				user: { ...session.user, id: token.id as string, name: token.name },
-			};
-		},
-	},
-});
+	});
+}
 
 export { handler as GET, handler as POST };
