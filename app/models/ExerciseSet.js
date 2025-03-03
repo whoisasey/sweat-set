@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const singleExerciseSchema = new mongoose.Schema(
+const exerciseSetSchema = new mongoose.Schema(
 	{
 		exercise: { type: String, required: true }, // Exercise name (e.g., "squats")
 		exerciseId: { type: String, required: true }, // Unique ID for exercise
@@ -16,5 +16,5 @@ const singleExerciseSchema = new mongoose.Schema(
 
 const db = mongoose.connection.useDb("app");
 
-const User = db.model("SingleExercise", singleExerciseSchema);
-export default User;
+const ExerciseSet = db.model("ExerciseSet", exerciseSetSchema);
+export default ExerciseSet;

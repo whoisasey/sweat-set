@@ -115,7 +115,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		data.date = date;
 
 		try {
-			const response = await fetch("/api/singleExercise/add", {
+			const response = await fetch("/api/exerciseSet/add", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
