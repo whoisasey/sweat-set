@@ -32,6 +32,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
 	const [sets, setSets] = useState<number>(1); // Initial sets value
 	const [reps, setReps] = useState<number>(1);
+	const [date, setDate] = useState<Date>(new Date());
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
 	const [userId, setUserId] = useState<string | undefined>("");
 	const session = useSession();
@@ -72,9 +73,14 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					...new Array(newSets - prevWeights.length).fill(0),
 				]);
 			}
-		} else if (field?.startsWith("weight")) {
+		}
+
+		if (field === "date") {
+			setDate(new Date(value));
+		}
+
+		if (field?.startsWith("weight")) {
 			// Update the weights array if the field is related to weight
-			console.log(value);
 
 			const newWeights = [...weights];
 			newWeights[index] = Number(value) || 0; // Convert value to number, or 0 if invalid
@@ -100,7 +106,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		data.distance =
 			selectedExercise === "running" ? Number(data.distance) || 0 : 0;
 		data.userId = userId; // Replace with actual user ID logic
-		data.date = new Date().toISOString();
+		data.date = date;
 
 		try {
 			const response = await fetch("/api/singleExercise/add", {
@@ -160,6 +166,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					weights={weights}
 					handleInputChange={handleInputChange}
 					setSets={setSets}
+					date={date}
 				/>
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
