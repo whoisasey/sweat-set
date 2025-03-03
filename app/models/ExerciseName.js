@@ -2,12 +2,12 @@ import mongoose from "mongoose";
 
 const exerciseSchema = new mongoose.Schema(
 	{
-		exerciseName: String,
+		exerciseName: { type: String, required: true },
 	},
 	{ timestamps: true },
 );
 
 const db = mongoose.connection.useDb("app");
 
-const User = db.model("ExerciseName", exerciseSchema);
-export default User;
+const ExerciseName = db.model("ExerciseName", exerciseSchema);
+export default ExerciseName;

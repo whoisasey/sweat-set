@@ -1,4 +1,4 @@
-import ExerciseName from "@/app/models/Exercises";
+import ExerciseName from "@/app/models/ExerciseName";
 import { NextResponse } from "next/server";
 import connect from "@/app/utils/db";
 
@@ -9,11 +9,11 @@ export const POST = async (req: Request) => {
 		const body = await req.json();
 
 		const newExercise = new ExerciseName({
-			name: body.exerciseName,
+			exerciseName: body.exerciseName,
 		});
 
 		const savedExercise = await newExercise.save();
-		console.log("New exercise saved 💦");
+		console.log("New exercise saved 💦", savedExercise);
 
 		return NextResponse.json(savedExercise, { status: 201 });
 	} catch (err: unknown) {
