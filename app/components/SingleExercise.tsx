@@ -6,6 +6,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
 import WeightInput from "@/app/components/ui/Weights";
+import { capitalizeWords } from "@/app/utils/helpers";
 import { exercises } from "@/app/utils/exerciseList";
 import { useSession } from "next-auth/react";
 // import { DragEndEvent } from "@dnd-kit/core";
@@ -34,6 +35,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [reps, setReps] = useState<number>(1);
 	const [date, setDate] = useState<Date>(new Date());
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
+	const [newExercise, setNewExercise] = useState<string>("");
 	const [userId, setUserId] = useState<string | undefined>("");
 	const session = useSession();
 
@@ -82,6 +84,10 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				setDate(new Date(value));
 				return;
 
+			case "newExercise":
+				setNewExercise(capitalizeWords(value));
+				return;
+
 			default:
 				// Handle weight input fields dynamically
 				if (field?.startsWith("weight")) {
@@ -113,6 +119,9 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			selectedExercise === "running" ? Number(data.distance) || 0 : 0;
 		data.userId = userId; // Replace with actual user ID logic
 		data.date = date;
+
+		// TODO: check if the new exercise already exists
+		// TODO: if not, add to the data
 
 		try {
 			const response = await fetch("/api/exerciseSet/add", {
@@ -164,8 +173,25 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 						</option>
 					))}
 				</select>
+				{"Exercise not listed?"}
+				<Box>
+					<label htmlFor="newExercise">Input New Exercise</label>
+					<input
+						type="text"
+						name="newExercise"
+						id="newExercise"
+						value={newExercise}
+						onChange={(e) =>
+							handleInputChange(
+								0,
+								(e.target as HTMLInputElement).value,
+								"newExercise",
+							)
+						}
+					/>
+				</Box>
 
-				<WeightInput
+				{/* <WeightInput
 					selectedExercise={selectedExercise}
 					sets={sets}
 					reps={10}
@@ -173,7 +199,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					handleInputChange={handleInputChange}
 					setSets={setSets}
 					date={date}
-				/>
+				/> */}
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
