@@ -5,7 +5,7 @@ import connect from "@/app/utils/db";
 export const POST = async (req: Request) => {
 	try {
 		await connect();
-		console.log("add exercise...");
+		console.log("add exercise set...");
 		const body = await req.json();
 
 		// Validate and transform weights
