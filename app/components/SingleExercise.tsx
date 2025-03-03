@@ -122,7 +122,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 		try {
 			const checkResponse = await fetch(
-				`/api/exercise/get?name=${newExercise}`,
+				`/api/exercise/check?name=${newExercise}`,
 				{
 					method: "GET",
 					headers: {
