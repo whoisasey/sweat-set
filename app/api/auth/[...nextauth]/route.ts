@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Account, User as AuthUser } from "next-auth";
 
@@ -33,14 +32,18 @@ const handler = NextAuth({
 
 					if (user) {
 						const isPasswordCorrect = await bcrypt.compare(
-							password,
+							password as string,
 							user.password,
 						);
 
 						if (isPasswordCorrect) {
 							console.log("logging user in... ✨");
 
-							return user as AuthUser;
+							return {
+								id: user._id.toString(),
+								email: user.email,
+								firstName: user.firstName || "", // Ensure this is a valid field in your database
+							} as AuthUser;
 						}
 					}
 				} catch (err: unknown) {
@@ -70,32 +73,23 @@ const handler = NextAuth({
 			// Optionally handle other providers or additional logic
 			return false; // Default return if provider is not "credentials"
 		},
-		async jwt({
-			token,
-			user,
-			session,
-		}: {
-			token: any;
-			user?: AuthUser;
-			session?: any;
-		}) {
+		async jwt({ token, user }: { token: any; user?: AuthUser; session?: any }) {
 			// Pass user information to token if user exists
 			if (user) {
 				return {
 					...token,
-					name: `${user.firstName}}`,
+					name: user.firstName,
 					id: user.userId,
-					session,
 				};
 			}
 
 			// If no user, return the token as is
 			return token;
 		},
-		async session({ session, token, user }) {
+		async session({ session, token }) {
 			return {
 				...session,
-				user: { ...session.user, id: token.id, name: token.name },
+				user: { ...session.user, id: token.id as string, name: token.name },
 			};
 		},
 	},
