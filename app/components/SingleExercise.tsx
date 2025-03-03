@@ -120,28 +120,62 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		data.userId = userId; // Replace with actual user ID logic
 		data.date = date;
 
-		// TODO: check if the new exercise already exists
-		// TODO: if not, add to the data
-
 		try {
-			const response = await fetch("/api/exerciseSet/add", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
+			const checkResponse = await fetch(
+				`/api/exercise/get?name=${newExercise}`,
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
 				},
-				body: JSON.stringify(data),
-			});
+			);
 
-			if (!response.ok) {
-				throw new Error("Failed to submit exercise data.");
+			if (!checkResponse.ok) {
+				throw new Error("Failed to check if exercise exists");
 			}
 
-			const result = await response.json();
-			console.log("Success:", result);
-			// TODO: Handle success
+			const checkResult = await checkResponse.json();
+
+			if (!checkResult.exists) {
+				const addResponse = await fetch("/api/exercise/add", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ exerciseName: newExercise }),
+				});
+
+				if (!addResponse.ok) {
+					throw new Error("Failed to add new exercise");
+				}
+
+				const addResult = await addResponse.json();
+				console.log("Exercise Added 🥊", addResult);
+			} else {
+				console.log("Exercise already exists!");
+			}
 		} catch (error) {
 			console.error("Error submitting exercise:", error);
 		}
+
+		// try {
+		// 	const response = await fetch("/api/exerciseSet/add", {
+		// 		method: "POST",
+		// 		headers: {
+		// 			"Content-Type": "application/json",
+		// 		},
+		// 		body: JSON.stringify(data),
+		// 	});
+
+		// 	if (!response.ok) {
+		// 		throw new Error("Failed to submit exercise data.");
+		// 	}
+
+		// 	const result = await response.json();
+		// 	console.log("Success:", result);
+		// 	// TODO: Handle success
+		// } catch (error) {
+		// 	console.error("Error submitting exercise:", error);
+		// }
 	};
 
 	return (
