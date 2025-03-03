@@ -14,6 +14,7 @@ import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
 // import WeightInput from "./ui/Weights";
 import { exercises } from "@/app/utils/exerciseList";
+import { useSession } from "next-auth/react";
 // import { DragEndEvent } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 
@@ -175,12 +176,18 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [sets, setSets] = useState<number>(1); // Initial sets value
 	const [reps, setReps] = useState<number>(1);
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
+	const [userId, setUserId] = useState<string | undefined>("");
+	const session = useSession();
 
 	// Update weights when sets change
 	useEffect(() => {
 		// If the number of sets changes, update the weights array to match the new number of sets
 		setWeights(Array.from({ length: sets }, () => 0) as number[]);
 	}, [sets]);
+
+	useEffect(() => {
+		setUserId(session?.data?.user?.id);
+	}, [session]);
 
 	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedExercise(event.target.value);
@@ -233,7 +240,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		data.weights = weights;
 		data.distance =
 			selectedExercise === "running" ? Number(data.distance) || 0 : 0;
-		data.userId = "123"; // Replace with actual user ID logic
+		data.userId = userId; // Replace with actual user ID logic
 		data.date = new Date().toISOString();
 
 		try {
