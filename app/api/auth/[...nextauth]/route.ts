@@ -3,7 +3,6 @@
 import NextAuth, { Account, User as AuthUser } from "next-auth";
 
 import CredentialsProvider from "next-auth/providers/credentials";
-import { NextRequest } from "next/server";
 import User from "@/app/models/User";
 import bcrypt from "bcryptjs";
 import connect from "@/app/utils/db";
