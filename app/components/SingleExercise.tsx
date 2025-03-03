@@ -32,6 +32,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
 	const [sets, setSets] = useState<number>(1); // Initial sets value
 	const [reps, setReps] = useState<number>(1);
+	const [date, setDate] = useState<Date>(new Date());
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
 	const [userId, setUserId] = useState<string | undefined>("");
 	const session = useSession();
@@ -52,33 +53,44 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 	// Handles  input changes
 	const handleInputChange = (index: number, value: string, field?: string) => {
-		if (field === "reps") {
-			setReps(Number(value) || 1);
-		}
+		// Convert input value to a number, default to 1 if invalid (except for weights)
+		const numValue = Number(value) || 1;
 
-		if (field === "sets") {
-			// Ensure sets is always at least 1 and update weights if necessary
-			const newSets = Math.max(Number(value) || 1, 1); // Set a minimum value of 1 for sets
-			setSets(newSets);
+		switch (field) {
+			case "reps":
+				// Ensure reps is always at least 1
+				setReps(numValue);
+				return;
 
-			// If the number of sets decreases, trim the weights array
-			if (newSets < weights.length) {
-				setWeights(weights.slice(0, newSets));
+			case "sets": {
+				// Ensure sets is always at least 1
+				const newSets = Math.max(numValue, 1);
+				setSets(newSets);
+
+				// Adjust the weights array length based on the new number of sets
+				setWeights(
+					(prevWeights) =>
+						newSets > prevWeights.length
+							? [...prevWeights, ...Array(newSets - prevWeights.length).fill(0)] // Expand with zeros
+							: prevWeights.slice(0, newSets), // Trim excess weights
+				);
+				return;
 			}
-			// If the number of sets increases, expand the weights array
-			else if (newSets > weights.length) {
-				setWeights((prevWeights) => [
-					...prevWeights,
-					...new Array(newSets - prevWeights.length).fill(0),
-				]);
-			}
-		} else if (field?.startsWith("weight")) {
-			// Update the weights array if the field is related to weight
-			console.log(value);
 
-			const newWeights = [...weights];
-			newWeights[index] = Number(value) || 0; // Convert value to number, or 0 if invalid
-			setWeights(newWeights);
+			case "date":
+				// Convert the input value to a Date object
+				setDate(new Date(value));
+				return;
+
+			default:
+				// Handle weight input fields dynamically
+				if (field?.startsWith("weight")) {
+					setWeights((prevWeights) => {
+						const newWeights = [...prevWeights];
+						newWeights[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
+						return newWeights;
+					});
+				}
 		}
 	};
 
@@ -100,7 +112,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		data.distance =
 			selectedExercise === "running" ? Number(data.distance) || 0 : 0;
 		data.userId = userId; // Replace with actual user ID logic
-		data.date = new Date().toISOString();
+		data.date = date;
 
 		try {
 			const response = await fetch("/api/singleExercise/add", {
@@ -160,6 +172,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					weights={weights}
 					handleInputChange={handleInputChange}
 					setSets={setSets}
+					date={date}
 				/>
 			</Box>
 			<IconButton color="error" onClick={onRemove}>

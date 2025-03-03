@@ -82,6 +82,28 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 		))}
 	</>
 );
+interface DateInputProps {
+	date: Date;
+	handleInputChange: (index: number, value: string, field?: string) => void;
+}
+
+// Component for entering date
+const DateInput: React.FC<DateInputProps> = ({ handleInputChange, date }) => {
+	return (
+		<>
+			<label htmlFor="date">{"Today's Date"}</label>
+			<input
+				type="date"
+				name="date"
+				id="date"
+				value={date.toISOString().split("T")[0]}
+				onChange={(e) =>
+					handleInputChange(0, (e.target as HTMLInputElement).value, "date")
+				}
+			/>
+		</>
+	);
+};
 
 // Props for WeightInput Component
 interface WeightInputProps {
@@ -89,6 +111,7 @@ interface WeightInputProps {
 	sets: number;
 	reps: number;
 	weights: number[];
+	date: Date;
 	handleInputChange: (index: number, value: string, field?: string) => void;
 	setSets: (value: number) => void;
 }
@@ -101,6 +124,7 @@ const WeightInput: React.FC<WeightInputProps> = ({
 	weights,
 	handleInputChange,
 	setSets,
+	date,
 }) => {
 	if (selectedExercise === "running") {
 		return (
@@ -122,7 +146,6 @@ const WeightInput: React.FC<WeightInputProps> = ({
 
 	return (
 		<>
-			Weights Inputs
 			<SetInput sets={sets} setSets={setSets} />
 			<Typography variant="body2" color="textSecondary">
 				{reps} reps
@@ -132,6 +155,7 @@ const WeightInput: React.FC<WeightInputProps> = ({
 				weights={weights}
 				handleInputChange={handleInputChange}
 			/>
+			<DateInput handleInputChange={handleInputChange} date={date} />
 		</>
 	);
 };
