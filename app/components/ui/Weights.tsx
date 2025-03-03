@@ -64,7 +64,13 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 					placeholder="Weight"
 					name={`weight-${index}`}
 					value={weights[index] || ""} // Fallback to empty string to avoid undefined errors
-					onChange={(e) => handleInputChange(index, e.target.value)}
+					onChange={(e) =>
+						handleInputChange(
+							index,
+							(e.target as HTMLInputElement).value,
+							`weight-${index}`,
+						)
+					}
 					style={{
 						width: "100%",
 						padding: "8px",
@@ -116,6 +122,7 @@ const WeightInput: React.FC<WeightInputProps> = ({
 
 	return (
 		<>
+			Weights Inputs
 			<SetInput sets={sets} setSets={setSets} />
 			<Typography variant="body2" color="textSecondary">
 				{reps} reps
