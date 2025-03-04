@@ -1,17 +1,22 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import ExerciseSet from "@/app/models/ExerciseSet";
-import { NextResponse } from "next/server";
 import connect from "@/app/utils/db";
 
 // gets all exercise history
-export const GET = async (req: Request) => {
+export const GET = async (req: NextRequest) => {
 	await connect();
 
-	// TODO: get userId from params
-	// const {userId} = req.params
+	const { searchParams } = new URL(req.url);
+	const user = searchParams.get("user");
+
 	try {
 		// gets all exercises that matches the UserId
 		// filter by userId
-		const exerciseHistory = await ExerciseSet.find({});
+		const exerciseHistory = (await ExerciseSet.find({})).filter(
+			(item) => item.userId === user,
+		);
+
 		// groups exercises by name (front end?)
 		// later: filters exercises based on exerciseName user selects
 
