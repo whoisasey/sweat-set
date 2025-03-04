@@ -37,6 +37,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
 	const [newExercise, setNewExercise] = useState<string>("");
 	const [userId, setUserId] = useState<string | undefined>("");
+	const [isNewExercise, setIsNewExercise] = useState(false);
 	const session = useSession();
 
 	// Update weights when sets change
@@ -49,8 +50,15 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		setUserId(session?.data?.user?.id);
 	}, [session]);
 
-	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		setSelectedExercise(event.target.value);
+	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		console.log(e.target.value);
+
+		if (e.target.value === "Not Listed") {
+			setIsNewExercise(true);
+		}
+		// if e.target.value === 'Not Listed', set state to true and show input
+		// save value of input as selectedExercise
+		setSelectedExercise(e.target.value);
 	};
 
 	// Handles  input changes
@@ -86,6 +94,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 			case "newExercise":
 				setNewExercise(capitalizeWords(value));
+				setSelectedExercise(value);
 				return;
 
 			default:
@@ -119,6 +128,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			selectedExercise === "running" ? Number(data.distance) || 0 : 0;
 		data.userId = userId; // Replace with actual user ID logic
 		data.date = date;
+		data.exercise = selectedExercise ?? newExercise;
 
 		try {
 			const checkResponse = await fetch(
@@ -157,26 +167,28 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			console.error("Error submitting exercise:", error);
 		}
 
-		// try {
-		// 	const response = await fetch("/api/exerciseSet/add", {
-		// 		method: "POST",
-		// 		headers: {
-		// 			"Content-Type": "application/json",
-		// 		},
-		// 		body: JSON.stringify(data),
-		// 	});
+		try {
+			const response = await fetch("/api/exerciseSet/add", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			});
 
-		// 	if (!response.ok) {
-		// 		throw new Error("Failed to submit exercise data.");
-		// 	}
+			if (!response.ok) {
+				throw new Error("Failed to submit exercise data.");
+			}
 
-		// 	const result = await response.json();
-		// 	console.log("Success:", result);
-		// 	// TODO: Handle success
-		// } catch (error) {
-		// 	console.error("Error submitting exercise:", error);
-		// }
+			const result = await response.json();
+			console.log("Success:", result);
+			// TODO: Handle success
+		} catch (error) {
+			console.error("Error submitting exercise:", error);
+		}
 	};
+
+	// TODO: dropdown pulls from database
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -194,6 +206,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					borderRadius: "8px",
 				}}>
 				{"single exercise"}
+
 				<InputLabel htmlFor="exercise">Exercise</InputLabel>
 				<select
 					name="exercise"
@@ -206,26 +219,28 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 							{exercise.name}
 						</option>
 					))}
+					<option value={"Not Listed"}>Exercise Not Listed</option>
 				</select>
-				{"Exercise not listed?"}
-				<Box>
-					<label htmlFor="newExercise">Input New Exercise</label>
-					<input
-						type="text"
-						name="newExercise"
-						id="newExercise"
-						value={newExercise}
-						onChange={(e) =>
-							handleInputChange(
-								0,
-								(e.target as HTMLInputElement).value,
-								"newExercise",
-							)
-						}
-					/>
-				</Box>
+				{isNewExercise ? (
+					<Box>
+						<label htmlFor="newExercise">Input New Exercise</label>
+						<input
+							type="text"
+							name="newExercise"
+							id="newExercise"
+							value={newExercise}
+							onChange={(e) =>
+								handleInputChange(
+									0,
+									(e.target as HTMLInputElement).value,
+									"newExercise",
+								)
+							}
+						/>
+					</Box>
+				) : null}
 
-				{/* <WeightInput
+				<WeightInput
 					selectedExercise={selectedExercise}
 					sets={sets}
 					reps={10}
@@ -233,7 +248,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					handleInputChange={handleInputChange}
 					setSets={setSets}
 					date={date}
-				/> */}
+				/>
 			</Box>
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
