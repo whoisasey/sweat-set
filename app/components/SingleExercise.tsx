@@ -239,12 +239,20 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					onChange={(e) =>
 						handleChange(e as React.ChangeEvent<HTMLSelectElement>)
 					}>
-					{allExercises.map((exercise) => (
-						<option key={exercise._id} value={exercise.exerciseName}>
-							{exercise.exerciseName}
-						</option>
-					))}
-					<option value={"Not Listed"}>Exercise Not Listed</option>
+					{(!allExercises || allExercises.length === 0) && (
+						<option value=""></option>
+					)}
+					{allExercises
+						.sort((a, b) => a.exerciseName.localeCompare(b.exerciseName))
+						.map((exercise) => (
+							<option key={exercise._id} value={exercise.exerciseName}>
+								{exercise.exerciseName}
+							</option>
+						))}
+
+					{allExercises && allExercises.length > 0 && (
+						<option value="Not Listed">Exercise Not Listed ➕</option>
+					)}
 				</select>
 				{isNewExercise ? (
 					<Box>
