@@ -5,7 +5,7 @@ import connect from "@/app/utils/db";
 export const POST = async (req: Request) => {
 	try {
 		await connect();
-		console.log("add exercise set...");
+		console.log("add exercise name...");
 		const body = await req.json();
 
 		const newExercise = new ExerciseName({
