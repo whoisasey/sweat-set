@@ -13,7 +13,7 @@ export const POST = async (req: Request) => {
 		});
 
 		const savedExercise = await newExercise.save();
-		console.log("New exercise saved 💦", savedExercise);
+		console.log("New exercise saved 🥊 ");
 
 		return NextResponse.json(savedExercise, { status: 201 });
 	} catch (err: unknown) {
