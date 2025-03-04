@@ -185,8 +185,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 						throw new Error("Failed to add new exercise");
 					}
 
-					const addResult = await addResponse.json();
-					console.log("Exercise Added 🥊", addResult);
+					// const addResult = await addResponse.json();
 				} else {
 					console.log("Exercise already exists!");
 				}
@@ -208,8 +207,8 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				throw new Error("Failed to submit exercise data.");
 			}
 
-			const result = await response.json();
-			console.log("Success:", result);
+			// const result = await response.json();
+			// console.log("Success :", result);
 			// TODO: Handle success
 		} catch (error) {
 			console.error("Error submitting exercise:", error);
