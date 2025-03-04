@@ -10,6 +10,7 @@ export const GET = async (req: Request) => {
 	// const {userId} = req.params
 	try {
 		// gets all exercises that matches the UserId
+		// filter by userId
 		const exerciseHistory = await ExerciseSet.find({});
 		// groups exercises by name (front end?)
 		// later: filters exercises based on exerciseName user selects
