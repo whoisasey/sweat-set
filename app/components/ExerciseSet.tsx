@@ -1,5 +1,5 @@
 import { Button, Card, Typography } from "@mui/material";
-import { DndContext, closestCenter } from "@dnd-kit/core";
+// import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
 	SortableContext,
 	verticalListSortingStrategy,
@@ -41,25 +41,25 @@ const ExerciseSet: React.FC<WorkoutDayProps> = ({
 			<Typography variant="h5" fontWeight="bold">
 				{day}
 			</Typography>
-			<DndContext
+			{/* <DndContext
 				collisionDetection={closestCenter}
 				// onDragEnd={onDragEnd}
-			>
-				<SortableContext
-					items={exercises.map((e) => e.id)}
-					strategy={verticalListSortingStrategy}>
-					{exercises.map((exercise, index) => (
-						<ExerciseForm
-							key={exercise.id}
-							id={exercise.id}
-							name={exercise.name}
-							sets={exercise.sets}
-							reps={exercise.reps}
-							onRemove={() => onRemoveExercise(index)}
-						/>
-					))}
-				</SortableContext>
-			</DndContext>
+			> */}
+			<SortableContext
+				items={exercises.map((e) => e.id)}
+				strategy={verticalListSortingStrategy}>
+				{exercises.map((exercise, index) => (
+					<ExerciseForm
+						key={exercise.id}
+						id={exercise.id}
+						name={exercise.name}
+						sets={exercise.sets}
+						reps={exercise.reps}
+						onRemove={() => onRemoveExercise(index)}
+					/>
+				))}
+			</SortableContext>
+			{/* </DndContext> */}
 			<Button
 				variant="outlined"
 				startIcon={<AddIcon />}

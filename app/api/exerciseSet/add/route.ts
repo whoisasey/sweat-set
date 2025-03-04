@@ -1,11 +1,12 @@
+import ExerciseSet from "@/app/models/ExerciseSet";
 import { NextResponse } from "next/server";
-import SingleExercise from "@/app/models/SingleExercise";
 import connect from "@/app/utils/db";
+// TODO: rename to exerciseSet
 
 export const POST = async (req: Request) => {
 	try {
 		await connect();
-		console.log("add exercise...");
+		console.log("add exercise set...");
 		const body = await req.json();
 
 		// Validate and transform weights
@@ -15,7 +16,7 @@ export const POST = async (req: Request) => {
 			.filter((num) => !isNaN(num)); // Filter out any NaN values
 
 		// Constrcut exercise object
-		const newExercise = new SingleExercise({
+		const newExercise = new ExerciseSet({
 			exercise: body.exercise,
 			exerciseId: body.exerciseId,
 			weights,
