@@ -1,49 +1,37 @@
+import ExerciseSet from "@/app/models/ExerciseSet";
 import { NextResponse } from "next/server";
-// import SingleExercise from "@/app/models/SingleExercise";
 import connect from "@/app/utils/db";
 
-// POST handler for adding a message
-export const POST = async (req: Request) => {
+// gets all exercise history
+export const GET = async (req: Request) => {
+	await connect();
+
+	// TODO: get userId from params
+	// const {userId} = req.params
 	try {
-		// Connect to the database
-		await connect();
-		console.log("...ADD SINGLE EXERCISE");
+		// gets all exercises that matches the UserId
+		const exerciseHistory = await ExerciseSet.find({});
+		// groups exercises by name (front end?)
+		// later: filters exercises based on exerciseName user selects
 
-		// Parse the request body
-		const body = await req.json();
-		console.log(body);
+		return NextResponse.json(exerciseHistory, { status: 201 });
+	} catch (err: unknown) {
+		if (err instanceof Error) {
+			console.error("Error adding message:", err);
+			const statusCode = err.name === "ValidationError" ? 400 : 500;
 
-		// Destructure the required fields
-		// const { from, to, message, toUserName } = body;
+			return NextResponse.json(
+				{
+					error: err.message || "An unexpected error occurred",
+				},
+				{ status: statusCode },
+			);
+		}
 
-		// // Validate required fields
-		// if (!from || !to || !message) {
-		// 	return NextResponse.json(
-		// 		{ error: "Missing required fields: from, to, or message" },
-		// 		{ status: 400 },
-		// 	);
-		// }
-
-		// });
-
-		// // Save the message to the database
-		// const data = await SingleExercise.create({
-		// 	message: { text: message },
-		// 	from,
-		// 	to,
-		// 	toUserName,
-		// });
-
-		const data = {};
-		// Respond with success if the message is saved
-		return NextResponse.json({ data }, { status: 200 });
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	} catch (error: any) {
-		console.error("Error adding message:", error);
-		const statusCode = error.name === "ValidationError" ? 400 : 500;
+		console.error("unknown error occurred:", err);
 		return NextResponse.json(
-			{ error: error.message || "An unexpected error occurred" },
-			{ status: statusCode },
+			{ error: "An unexpected error occurred" },
+			{ status: 500 },
 		);
 	}
 };
