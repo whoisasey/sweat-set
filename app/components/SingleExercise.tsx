@@ -21,6 +21,11 @@ export interface ExerciseProps {
 	id: string;
 }
 
+type Exercise = {
+	_id: string;
+	exerciseName: string;
+};
+
 export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const { attributes, listeners, setNodeRef, transform, transition } =
 		useSortable({ id });
@@ -38,7 +43,30 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [newExercise, setNewExercise] = useState<string>("");
 	const [userId, setUserId] = useState<string | undefined>("");
 	const [isNewExercise, setIsNewExercise] = useState(false);
+	const [allExercises, setAllExercises] = useState<Exercise[]>([]);
 	const session = useSession();
+
+	useEffect(() => {
+		const fetchExercises = async () => {
+			try {
+				const response = await fetch("/api/exercise/get");
+				if (!response.ok) {
+					throw new Error("Failed to fetch exercises");
+				}
+
+				const data: Exercise[] = await response.json();
+				setAllExercises(data);
+			} catch (err) {
+				if (err instanceof Error) {
+					console.log(err.message);
+				} else {
+					throw new Error("An unexpected Error occurred");
+				}
+			}
+		};
+
+		fetchExercises();
+	}, []);
 
 	// Update weights when sets change
 	useEffect(() => {
@@ -51,13 +79,10 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	}, [session]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		console.log(e.target.value);
-
 		if (e.target.value === "Not Listed") {
 			setIsNewExercise(true);
 		}
-		// if e.target.value === 'Not Listed', set state to true and show input
-		// save value of input as selectedExercise
+
 		setSelectedExercise(e.target.value);
 	};
 
@@ -130,41 +155,44 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		data.date = date;
 		data.exercise = selectedExercise ?? newExercise;
 
-		try {
-			const checkResponse = await fetch(
-				`/api/exercise/check?name=${newExercise}`,
-				{
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
+		// only run this if newExercise has a value
+		if (newExercise !== "") {
+			try {
+				const checkResponse = await fetch(
+					`/api/exercise/check?name=${newExercise}`,
+					{
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json",
+						},
 					},
-				},
-			);
+				);
 
-			if (!checkResponse.ok) {
-				throw new Error("Failed to check if exercise exists");
-			}
-
-			const checkResult = await checkResponse.json();
-
-			if (!checkResult.exists) {
-				const addResponse = await fetch("/api/exercise/add", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ exerciseName: newExercise }),
-				});
-
-				if (!addResponse.ok) {
-					throw new Error("Failed to add new exercise");
+				if (!checkResponse.ok) {
+					throw new Error("Failed to check if exercise exists");
 				}
 
-				const addResult = await addResponse.json();
-				console.log("Exercise Added 🥊", addResult);
-			} else {
-				console.log("Exercise already exists!");
+				const checkResult = await checkResponse.json();
+
+				if (!checkResult.exists) {
+					const addResponse = await fetch("/api/exercise/add", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ exerciseName: newExercise }),
+					});
+
+					if (!addResponse.ok) {
+						throw new Error("Failed to add new exercise");
+					}
+
+					const addResult = await addResponse.json();
+					console.log("Exercise Added 🥊", addResult);
+				} else {
+					console.log("Exercise already exists!");
+				}
+			} catch (error) {
+				console.error("Error submitting exercise:", error);
 			}
-		} catch (error) {
-			console.error("Error submitting exercise:", error);
 		}
 
 		try {
@@ -187,8 +215,6 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			console.error("Error submitting exercise:", error);
 		}
 	};
-
-	// TODO: dropdown pulls from database
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -214,9 +240,9 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					onChange={(e) =>
 						handleChange(e as React.ChangeEvent<HTMLSelectElement>)
 					}>
-					{exercises.map((exercise) => (
-						<option key={exercise.id} value={exercise.id}>
-							{exercise.name}
+					{allExercises.map((exercise) => (
+						<option key={exercise._id} value={exercise.exerciseName}>
+							{exercise.exerciseName}
 						</option>
 					))}
 					<option value={"Not Listed"}>Exercise Not Listed</option>
