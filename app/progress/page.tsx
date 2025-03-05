@@ -4,8 +4,16 @@ import React, { useEffect, useState } from "react";
 
 import { useSession } from "next-auth/react";
 
+type ProcessedWorkoutData = {
+	exercise: string;
+	data: { date: Date; avgWeight: number }[];
+};
+
 const ProgressPage = () => {
 	const [userId, setUserId] = useState<string>("");
+	const [exerciseHistory, setExerciseHistory] = useState<
+		ProcessedWorkoutData[]
+	>([]);
 	const session = useSession();
 
 	useEffect(() => {
@@ -16,7 +24,6 @@ const ProgressPage = () => {
 		// 1 - if user logged in, gets UserId from session
 		// passes userId into fetch request params to exerciseHistory
 		// get all history for user only
-		// groups exercises by name (front end?)
 
 		const getHistory = async () => {
 			try {
@@ -30,7 +37,7 @@ const ProgressPage = () => {
 					throw new Error("Failed to fetch exercises");
 				}
 				const data = await response.json();
-				console.log(data);
+				setExerciseHistory(data);
 			} catch (error) {
 				console.log(error);
 			}
