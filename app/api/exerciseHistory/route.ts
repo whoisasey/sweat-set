@@ -3,6 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 import ExerciseSet from "@/app/models/ExerciseSet";
 import connect from "@/app/utils/db";
 
+type WorkoutLog = {
+	userId: string;
+	exercise: string;
+	weights: number[];
+	date: Date;
+};
+
+type ProcessedWorkoutData = {
+	exercise: string;
+	data: { date: Date; avgWeight: number }[];
+};
+
 // gets all exercise history
 export const GET = async (req: NextRequest) => {
 	await connect();
@@ -13,14 +25,32 @@ export const GET = async (req: NextRequest) => {
 	try {
 		// gets all exercises that matches the UserId
 		// filter by userId
-		const exerciseHistory = (await ExerciseSet.find({})).filter(
+		const exerciseHistory: WorkoutLog[] = (await ExerciseSet.find({})).filter(
 			(item) => item.userId === user,
 		);
 
-		// groups exercises by name (front end?)
-		// later: filters exercises based on exerciseName user selects
+		// groups exercises by name
 
-		return NextResponse.json(exerciseHistory, { status: 201 });
+		// Process data
+		const grouped: Record<string, { date: Date; avgWeight: number }[]> = {};
+
+		exerciseHistory.forEach((workout) => {
+			const avgWeight =
+				workout.weights.reduce((sum, w) => sum + w, 0) / workout.weights.length;
+
+			if (!grouped[workout.exercise]) grouped[workout.exercise] = [];
+			grouped[workout.exercise].push({ date: workout.date, avgWeight });
+		});
+
+		// Convert to array format
+		const processedData: ProcessedWorkoutData[] = Object.entries(grouped).map(
+			([exercise, data]) => ({
+				exercise,
+				data,
+			}),
+		);
+
+		return NextResponse.json(processedData, { status: 201 });
 	} catch (err: unknown) {
 		if (err instanceof Error) {
 			console.error("Error adding message:", err);
