@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, Card, Typography } from "@mui/material";
 // import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
