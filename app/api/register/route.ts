@@ -13,7 +13,6 @@ export const POST = async (req: Request) => {
 	} = await req.json();
 
 	await connect();
-	console.log("...db connected");
 
 	const existingUser = await User.findOne({ email });
 
@@ -32,6 +31,8 @@ export const POST = async (req: Request) => {
 
 	try {
 		await newUser.save();
+		console.log("User registered successfully ✨");
+
 		return NextResponse.json(
 			{ message: "User registered successfully ✨" },
 			{ status: 201 },

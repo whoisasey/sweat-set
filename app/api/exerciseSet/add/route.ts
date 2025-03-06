@@ -1,12 +1,10 @@
 import ExerciseSet from "@/app/models/ExerciseSet";
 import { NextResponse } from "next/server";
 import connect from "@/app/utils/db";
-// TODO: rename to exerciseSet
 
 export const POST = async (req: Request) => {
 	try {
 		await connect();
-		console.log("add exercise set...");
 		const body = await req.json();
 
 		// Validate and transform weights
