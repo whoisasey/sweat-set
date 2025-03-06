@@ -1,6 +1,7 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
+import Nav from "@/app/components/Nav";
 import SessionProvider from "@/app/providers/SessionProvider";
 // import { ThemeProvider } from "@mui/material/styles";
 // import { UserProvider } from "@/app/providers/UserProvider";
@@ -21,7 +22,10 @@ const RootLayout: React.FC<RootLayoutProps> = async ({ children }) => {
 	return (
 		<html lang="en">
 			<body>
-				<SessionProvider session={session}>{children}</SessionProvider>
+				<SessionProvider session={session}>
+					<Nav />
+					{children}
+				</SessionProvider>
 			</body>
 		</html>
 	);
