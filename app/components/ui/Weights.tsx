@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, InputLabel, TextField, Typography } from "@mui/material";
 
 import React from "react";
@@ -23,9 +25,9 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 			type="number"
 			placeholder="Sets"
 			name="sets"
+			pattern="[0-9]*"
 			value={sets}
 			onChange={(e) => setSets(Math.max(1, Number(e.target.value)))} // Prevents values below 1
-			min={1}
 			className="sets_input"
 			style={{
 				padding: "8px",
@@ -59,7 +61,8 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 				<input
 					id={`weight-${index}`}
 					type="number"
-					min={50}
+					pattern="[0-9]*"
+					min={20}
 					step={5}
 					placeholder="Weight"
 					name={`weight-${index}`}

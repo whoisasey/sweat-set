@@ -251,7 +251,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 							</option>
 						))}
 
-					{allExercises && allExercises.length > 0 && (
+					{allExercises && allExercises.length >= 0 && (
 						<option value="Not Listed">Exercise Not Listed ➕</option>
 					)}
 				</select>
