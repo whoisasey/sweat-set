@@ -5,13 +5,14 @@ import {
 	AreaChart,
 	CartesianGrid,
 	Tooltip,
+	TooltipProps,
 	XAxis,
 	YAxis,
 } from "recharts";
 import { Box, Typography } from "@mui/material";
+import React, { JSX } from "react";
 
 import { ProcessedWorkoutData } from "@/app/progress/page";
-import React from "react";
 import { curveCardinal } from "d3-shape";
 
 const Charts = ({
@@ -20,6 +21,27 @@ const Charts = ({
 	exerciseHistory: ProcessedWorkoutData[];
 }) => {
 	const cardinal = curveCardinal.tension(0.2);
+
+	const CustomTooltip = ({
+		active,
+		payload,
+	}: TooltipProps<number, string>): JSX.Element | null => {
+		if (active && payload && payload.length) {
+			return (
+				<Box className="custom-tooltip">
+					<p>{payload?.[0]?.payload?.date}</p>
+					{payload[0].payload.sets.map(
+						(set: { setNumber: number; weight: number }, idx: number) => (
+							<p key={idx}>
+								Set {set.setNumber}: {set.weight}lbs
+							</p>
+						),
+					)}
+				</Box>
+			);
+		}
+		return null;
+	};
 
 	return (
 		<Box sx={{ width: "auto", margin: "0 auto" }}>
@@ -59,7 +81,7 @@ const Charts = ({
 							tickFormatter={(date) => new Date(date).toLocaleDateString()}
 						/>
 						<YAxis />
-						<Tooltip />
+						<Tooltip content={<CustomTooltip />} />
 						{/* <Area
 							type="monotone"
 							dataKey="avgWeight"
