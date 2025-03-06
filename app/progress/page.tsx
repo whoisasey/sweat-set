@@ -1,5 +1,6 @@
 "use client";
 
+import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import Charts from "../components/ui/Charts";
@@ -47,10 +48,18 @@ const ProgressPage = () => {
 	}, [userId]);
 
 	return (
-		<div className="w-full h-96">
-			<h2 className="text-lg font-bold">Workout Progress</h2>
+		<Box
+			sx={{
+				margin: "0 auto",
+				display: "flex",
+				justifyContent: "center",
+				flexDirection: "column",
+			}}>
+			<Typography variant="h2" sx={{ textAlign: "center" }}>
+				Workout Progress
+			</Typography>
 			<Charts exerciseHistory={exerciseHistory} />
-		</div>
+		</Box>
 	);
 };
 
