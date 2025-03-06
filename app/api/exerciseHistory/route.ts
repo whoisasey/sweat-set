@@ -29,8 +29,6 @@ export const GET = async (req: NextRequest) => {
 			(item) => item.userId === user,
 		);
 
-		// groups exercises by name
-
 		// Process data
 		const grouped: Record<
 			string,
@@ -59,8 +57,8 @@ export const GET = async (req: NextRequest) => {
 		});
 
 		// Convert to array format
-		const processedData: ProcessedWorkoutData[] = Object.entries(grouped).map(
-			([exercise, data]) => ({
+		const processedData: ProcessedWorkoutData[] = Object.entries(grouped)
+			.map(([exercise, data]) => ({
 				exercise,
 				data: data
 					.sort(
@@ -74,8 +72,8 @@ export const GET = async (req: NextRequest) => {
 							day: "2-digit",
 						}),
 					})),
-			}),
-		);
+			}))
+			.sort((a, b) => b.data.length - a.data.length); // sort by length of entries
 
 		return NextResponse.json(processedData, { status: 201 });
 	} catch (err: unknown) {
