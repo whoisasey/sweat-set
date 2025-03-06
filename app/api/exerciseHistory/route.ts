@@ -32,7 +32,14 @@ export const GET = async (req: NextRequest) => {
 		// groups exercises by name
 
 		// Process data
-		const grouped: Record<string, { date: Date; avgWeight: string }[]> = {};
+		const grouped: Record<
+			string,
+			{
+				date: Date;
+				sets: { setNumber: number; weight: number }[];
+				avgWeight: string;
+			}[]
+		> = {};
 
 		exerciseHistory.forEach((workout) => {
 			const avgWeight = (
@@ -40,7 +47,15 @@ export const GET = async (req: NextRequest) => {
 			).toFixed();
 
 			if (!grouped[workout.exercise]) grouped[workout.exercise] = [];
-			grouped[workout.exercise].push({ date: workout.date, avgWeight });
+			grouped[workout.exercise].push({
+				date: workout.date,
+				sets: [
+					{ setNumber: 1, weight: workout.weights[0] },
+					{ setNumber: 2, weight: workout.weights[1] },
+					{ setNumber: 3, weight: workout.weights[2] },
+				],
+				avgWeight,
+			});
 		});
 
 		// Convert to array format
