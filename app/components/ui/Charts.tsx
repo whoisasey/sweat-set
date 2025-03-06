@@ -10,10 +10,27 @@ import {
 	YAxis,
 } from "recharts";
 import { Box, Typography } from "@mui/material";
-import React, { JSX } from "react";
+import React, { JSX, useEffect, useState } from "react";
 
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import { curveCardinal } from "d3-shape";
+
+const useWindowSize = (dimension: "width" | "height") => {
+	const [size, setSize] = useState<number | undefined>(undefined);
+
+	useEffect(() => {
+		const handleResize = () => {
+			setSize(dimension === "width" ? window.innerWidth : window.innerHeight);
+		};
+
+		handleResize();
+
+		window.addEventListener("resize", handleResize);
+
+		return () => window.removeEventListener("resize", handleResize);
+	}, [dimension]);
+	return size;
+};
 
 const Charts = ({
 	exerciseHistory,
@@ -22,6 +39,8 @@ const Charts = ({
 }) => {
 	const cardinal = curveCardinal.tension(0.2);
 
+	const width = useWindowSize("width");
+	// const height = useWindowSize("height");
 	const CustomTooltip = ({
 		active,
 		payload,
@@ -52,27 +71,9 @@ const Charts = ({
 						{exerciseData.exercise}
 					</Typography>
 
-					{/* Chart */}
-					{/* <ResponsiveContainer width="100%" height={300}>
-						<LineChart data={exerciseData.data}>
-							<XAxis
-								dataKey="date"
-								tickFormatter={(date) => new Date(date).toLocaleDateString()}
-							/>
-							<YAxis />
-							<Tooltip />
-							<Line
-								type="monotoneX"
-								dataKey="avgWeight"
-								stroke="#8884d8"
-								fill="#8884d8"
-								fillOpacity={0.3}
-							/>
-						</LineChart>
-					</ResponsiveContainer> */}
 					<AreaChart
-						width={350}
-						height={250}
+						width={width && width < 540 ? 300 : 600}
+						height={300}
 						data={exerciseData.data}
 						margin={{}}>
 						<CartesianGrid strokeDasharray="3 3" />
@@ -80,15 +81,9 @@ const Charts = ({
 							dataKey="date"
 							tickFormatter={(date) => new Date(date).toLocaleDateString()}
 						/>
-						<YAxis />
+						<YAxis type="number" domain={[20, "dataMax + 20"]} />
 						<Tooltip content={<CustomTooltip />} />
-						{/* <Area
-							type="monotone"
-							dataKey="avgWeight"
-							stroke="#8884d8"
-							fill="#8884d8"
-							fillOpacity={0.3}
-						/> */}
+
 						<Area
 							type={cardinal}
 							dataKey="avgWeight"
