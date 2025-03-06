@@ -16,7 +16,7 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	width: 85%;
+	width: 90%;
 	margin: 0 auto;
 }
 
@@ -35,4 +35,14 @@ a {
 	html {
 		color-scheme: dark;
 	}
+}
+
+@media (min-width: 680px) {
+	.sets_input {
+		width: 20%;
+	}
+}
+
+.sets_input {
+	width: 50%;
 }

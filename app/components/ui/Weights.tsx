@@ -26,8 +26,8 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 			value={sets}
 			onChange={(e) => setSets(Math.max(1, Number(e.target.value)))} // Prevents values below 1
 			min={1}
+			className="sets_input"
 			style={{
-				width: "10%",
 				padding: "8px",
 				borderRadius: "4px",
 				border: "1px solid #ccc",
