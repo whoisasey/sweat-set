@@ -1,7 +1,8 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
 import {
+	Area,
+	AreaChart,
 	CartesianGrid,
 	Legend,
 	Line,
@@ -11,6 +12,7 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
+import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import { curveCardinal } from "d3-shape";
@@ -56,9 +58,8 @@ const ProgressPage = () => {
 		};
 		getHistory();
 	}, [userId]);
-	// console.log(exerciseHistory);
 
-	// const cardinal = curveCardinal.tension(0.2);
+	const cardinal = curveCardinal.tension(0.2);
 
 	return (
 		<div className="w-full h-96">
@@ -72,7 +73,7 @@ const ProgressPage = () => {
 					</Typography>
 
 					{/* Chart */}
-					<ResponsiveContainer width="100%" height={300}>
+					{/* <ResponsiveContainer width="100%" height={300}>
 						<LineChart data={exerciseData.data}>
 							<XAxis
 								dataKey="date"
@@ -88,7 +89,39 @@ const ProgressPage = () => {
 								fillOpacity={0.3}
 							/>
 						</LineChart>
-					</ResponsiveContainer>
+					</ResponsiveContainer> */}
+					<AreaChart
+						width={500}
+						height={400}
+						data={exerciseData.data}
+						margin={{
+							top: 10,
+							right: 30,
+							left: 0,
+							bottom: 0,
+						}}>
+						<CartesianGrid strokeDasharray="3 3" />
+						<XAxis
+							dataKey="date"
+							tickFormatter={(date) => new Date(date).toLocaleDateString()}
+						/>
+						<YAxis />
+						<Tooltip />
+						{/* <Area
+							type="monotone"
+							dataKey="avgWeight"
+							stroke="#8884d8"
+							fill="#8884d8"
+							fillOpacity={0.3}
+						/> */}
+						<Area
+							type={cardinal}
+							dataKey="avgWeight"
+							stroke="#82ca9d"
+							fill="#82ca9d"
+							fillOpacity={0.3}
+						/>
+					</AreaChart>
 				</Box>
 			))}
 		</div>
