@@ -20,7 +20,7 @@ const Charts = ({
 	const cardinal = curveCardinal.tension(0.2);
 
 	return (
-		<Box sx={{ maxWidth: "500px", margin: "0 auto" }}>
+		<Box sx={{ width: "auto", margin: "0 auto" }}>
 			{exerciseHistory.map((exerciseData) => (
 				<Box key={exerciseData.exercise} mb={4}>
 					{/* Exercise Name */}
@@ -47,15 +47,10 @@ const Charts = ({
 						</LineChart>
 					</ResponsiveContainer> */}
 					<AreaChart
-						width={500}
-						height={400}
+						width={350}
+						height={250}
 						data={exerciseData.data}
-						margin={{
-							top: 10,
-							right: 30,
-							left: 0,
-							bottom: 0,
-						}}>
+						margin={{}}>
 						<CartesianGrid strokeDasharray="3 3" />
 						<XAxis
 							dataKey="date"
