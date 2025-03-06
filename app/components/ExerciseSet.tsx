@@ -36,7 +36,7 @@ const ExerciseSet: React.FC<WorkoutDayProps> = ({
 	// onDragEnd,
 }) => {
 	return (
-		<Card sx={{ p: 3, mb: 2 }}>
+		<Card sx={{ p: 2, mb: 2 }}>
 			{"exercise set"}
 			<Typography variant="h5" fontWeight="bold">
 				{day}

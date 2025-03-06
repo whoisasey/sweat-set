@@ -68,7 +68,7 @@ const ExercisePlan = () => {
 	// };
 
 	return (
-		<div style={{ maxWidth: "600px", margin: "auto", padding: "20px" }}>
+		<div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
 			{"workout plan"}
 			{Object.keys(workouts).map((day) => (
 				<ExerciseSet
