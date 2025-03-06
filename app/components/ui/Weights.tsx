@@ -62,7 +62,6 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 					id={`weight-${index}`}
 					type="number"
 					pattern="[0-9]*"
-					min={20}
 					step={5}
 					placeholder="Weight"
 					name={`weight-${index}`}

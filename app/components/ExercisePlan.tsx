@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 
+import { Box } from "@mui/material";
 import ExerciseSet from "./ExerciseSet";
 
 type WorkoutsType = {
@@ -68,7 +69,7 @@ const ExercisePlan = () => {
 	// };
 
 	return (
-		<div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
+		<Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
 			{"workout plan"}
 			{Object.keys(workouts).map((day) => (
 				<ExerciseSet
@@ -83,7 +84,7 @@ const ExercisePlan = () => {
 					// onDragEnd={onDragEnd}
 				/>
 			))}
-		</div>
+		</Box>
 	);
 };
 
