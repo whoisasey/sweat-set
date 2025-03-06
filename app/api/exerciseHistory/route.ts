@@ -35,6 +35,8 @@ export const GET = async (req: NextRequest) => {
 		const grouped: Record<string, { date: Date; avgWeight: number }[]> = {};
 
 		exerciseHistory.forEach((workout) => {
+			console.log(workout);
+
 			const avgWeight =
 				workout.weights.reduce((sum, w) => sum + w, 0) / workout.weights.length;
 
@@ -46,7 +48,9 @@ export const GET = async (req: NextRequest) => {
 		const processedData: ProcessedWorkoutData[] = Object.entries(grouped).map(
 			([exercise, data]) => ({
 				exercise,
-				data,
+				data: data.sort(
+					(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+				), // Sort by date (ascending)
 			}),
 		);
 
