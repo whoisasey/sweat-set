@@ -11,7 +11,9 @@ const userSchema = new mongoose.Schema(
 	{ timestamps: true },
 );
 
-const db = mongoose.connection.useDb("app");
+const dbName = process.env.NODE_ENV === "production" ? "app" : "app_dev";
+
+const db = mongoose.connection.useDb(dbName);
 
 const User = db.model("User", userSchema);
 export default User;
