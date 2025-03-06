@@ -44,6 +44,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [userId, setUserId] = useState<string | undefined>("");
 	const [isNewExercise, setIsNewExercise] = useState(false);
 	const [allExercises, setAllExercises] = useState<Exercise[]>([]);
+	const [successMsg, setSuccessMsg] = useState<string>("");
 	const session = useSession();
 
 	useEffect(() => {
@@ -206,7 +207,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			if (!response.ok) {
 				throw new Error("Failed to submit exercise data.");
 			}
-
+			setSuccessMsg("Added Exercise Set 💪🏻");
 			// const result = await response.json();
 			// console.log("Success :", result);
 			// TODO: Handle success
@@ -286,6 +287,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			<IconButton color="error" onClick={onRemove}>
 				<DeleteIcon />
 			</IconButton>
+			<p>{successMsg}</p>
 			<Button type="submit" variant="contained" color="primary">
 				Submit
 			</Button>

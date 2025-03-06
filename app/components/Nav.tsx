@@ -19,6 +19,9 @@ const Nav = () => {
 				<Link href="/progress" sx={{ minWidth: 100 }}>
 					Progress
 				</Link>
+				<Link href="/login" sx={{ minWidth: 100 }}>
+					Login
+				</Link>
 			</Box>
 		</Box>
 	);
