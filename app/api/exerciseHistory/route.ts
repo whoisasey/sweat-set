@@ -12,7 +12,7 @@ type WorkoutLog = {
 
 type ProcessedWorkoutData = {
 	exercise: string;
-	data: { date: Date; avgWeight: number }[];
+	data: { date: Date | string; avgWeight: number }[];
 };
 
 // gets all exercise history
@@ -46,9 +46,18 @@ export const GET = async (req: NextRequest) => {
 		const processedData: ProcessedWorkoutData[] = Object.entries(grouped).map(
 			([exercise, data]) => ({
 				exercise,
-				data: data.sort(
-					(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-				), // Sort by date (ascending)
+				data: data
+					.sort(
+						(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+					) // Sort by date (ascending)
+					.map((entry) => ({
+						...entry,
+						date: new Date(entry.date).toLocaleDateString("en-US", {
+							year: "numeric",
+							month: "2-digit",
+							day: "2-digit",
+						}),
+					})),
 			}),
 		);
 
