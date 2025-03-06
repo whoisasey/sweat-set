@@ -3,7 +3,7 @@
 import { Box, Container, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
 const RegisterPage = () => {
@@ -25,7 +25,7 @@ const RegisterPage = () => {
 		formData,
 		// loading
 	} = formState;
-	// const router = useRouter();
+	const router = useRouter();
 
 	const updateState = (newState: Partial<typeof formState>) => {
 		setFormState((prev) => ({ ...prev, ...newState }));
@@ -53,7 +53,7 @@ const RegisterPage = () => {
 				console.log(data);
 				// TODO: after successful registration, redirect to login with autocomplete info
 				// redirect to login
-				// router.push("/login");
+				router.push("/login");
 			}
 		} catch (err) {
 			console.error("Error submitting form ❌", err);
