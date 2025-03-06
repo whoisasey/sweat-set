@@ -12,7 +12,7 @@ type WorkoutLog = {
 
 type ProcessedWorkoutData = {
 	exercise: string;
-	data: { date: Date | string; avgWeight: number }[];
+	data: { date: Date | string; avgWeight: string }[];
 };
 
 // gets all exercise history
@@ -32,11 +32,12 @@ export const GET = async (req: NextRequest) => {
 		// groups exercises by name
 
 		// Process data
-		const grouped: Record<string, { date: Date; avgWeight: number }[]> = {};
+		const grouped: Record<string, { date: Date; avgWeight: string }[]> = {};
 
 		exerciseHistory.forEach((workout) => {
-			const avgWeight =
-				workout.weights.reduce((sum, w) => sum + w, 0) / workout.weights.length;
+			const avgWeight = (
+				workout.weights.reduce((sum, w) => sum + w, 0) / workout.weights.length
+			).toFixed();
 
 			if (!grouped[workout.exercise]) grouped[workout.exercise] = [];
 			grouped[workout.exercise].push({ date: workout.date, avgWeight });

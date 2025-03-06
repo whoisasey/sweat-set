@@ -1,14 +1,15 @@
 "use client";
 
 import { Button, Card, Typography } from "@mui/material";
-// import { DndContext, closestCenter } from "@dnd-kit/core";
-import {
-	SortableContext,
-	verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 
 import AddIcon from "@mui/icons-material/Add";
 import { ExerciseForm } from "@/app/components/SingleExercise";
+// import { DndContext, closestCenter } from "@dnd-kit/core";
+// import {
+// 	SortableContext,
+// 	verticalListSortingStrategy,
+// } from "@dnd-kit/sortable";
+
 
 // Workout Day Component
 interface WorkoutDayProps {
@@ -47,20 +48,20 @@ const ExerciseSet: React.FC<WorkoutDayProps> = ({
 				collisionDetection={closestCenter}
 				// onDragEnd={onDragEnd}
 			> */}
-			<SortableContext
+			{/* <SortableContext
 				items={exercises.map((e) => e.id)}
-				strategy={verticalListSortingStrategy}>
-				{exercises.map((exercise, index) => (
-					<ExerciseForm
-						key={exercise.id}
-						id={exercise.id}
-						name={exercise.name}
-						sets={exercise.sets}
-						reps={exercise.reps}
-						onRemove={() => onRemoveExercise(index)}
-					/>
-				))}
-			</SortableContext>
+				strategy={verticalListSortingStrategy}> */}
+			{exercises.map((exercise, index) => (
+				<ExerciseForm
+					key={exercise.id}
+					id={exercise.id}
+					name={exercise.name}
+					sets={exercise.sets}
+					reps={exercise.reps}
+					onRemove={() => onRemoveExercise(index)}
+				/>
+			))}
+			{/* </SortableContext> */}
 			{/* </DndContext> */}
 			<Button
 				variant="outlined"
