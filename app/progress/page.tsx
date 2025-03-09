@@ -61,14 +61,22 @@ const ProgressPage = () => {
 				justifyContent: "center",
 				flexDirection: "column",
 			}}>
-			<Typography variant="h2" sx={{ textAlign: "center" }}>
+			<Typography variant="h2" sx={{ textAlign: "center" }} mb={4}>
 				Workout Progress
 			</Typography>
-			<Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
-				<Typography variant="h5" onClick={() => handleViewChange(false)}>
+			<Box sx={{ display: "flex", justifyContent: "space-evenly" }} mb={6}>
+				<Typography
+					variant="h5"
+					onClick={() => handleViewChange(false)}
+					sx={{
+						fontWeight: `${!viewState ? "bold" : "normal"}`,
+					}}>
 					Today{" "}
 				</Typography>
-				<Typography variant="h5" onClick={() => handleViewChange(true)}>
+				<Typography
+					variant="h5"
+					onClick={() => handleViewChange(true)}
+					sx={{ fontWeight: `${viewState ? "bold" : "normal"}` }}>
 					All Time{" "}
 				</Typography>
 			</Box>
