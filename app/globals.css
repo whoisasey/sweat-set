@@ -46,3 +46,9 @@ a {
 .sets_input {
 	width: 50%;
 }
+
+.MuiTypography-h5 {
+	&:hover {
+		cursor: pointer;
+	}
+}
