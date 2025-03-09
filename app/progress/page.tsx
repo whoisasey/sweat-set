@@ -16,6 +16,7 @@ const ProgressPage = () => {
 	const [exerciseHistory, setExerciseHistory] = useState<
 		ProcessedWorkoutData[]
 	>([]);
+	const [viewState, setViewState] = useState(false);
 	const session = useSession();
 
 	useEffect(() => {
@@ -47,6 +48,11 @@ const ProgressPage = () => {
 		getHistory();
 	}, [userId]);
 
+	const handleViewChange = (state: boolean) => {
+		// when true, All Time progress will show
+		setViewState(state);
+	};
+
 	return (
 		<Box
 			sx={{
@@ -55,10 +61,26 @@ const ProgressPage = () => {
 				justifyContent: "center",
 				flexDirection: "column",
 			}}>
-			<Typography variant="h2" sx={{ textAlign: "center" }}>
+			<Typography variant="h2" sx={{ textAlign: "center" }} mb={4}>
 				Workout Progress
 			</Typography>
-			<Charts exerciseHistory={exerciseHistory} />
+			<Box sx={{ display: "flex", justifyContent: "space-evenly" }} mb={6}>
+				<Typography
+					variant="h5"
+					onClick={() => handleViewChange(false)}
+					sx={{
+						fontWeight: `${!viewState ? "bold" : "normal"}`,
+					}}>
+					Today{" "}
+				</Typography>
+				<Typography
+					variant="h5"
+					onClick={() => handleViewChange(true)}
+					sx={{ fontWeight: `${viewState ? "bold" : "normal"}` }}>
+					All Time{" "}
+				</Typography>
+			</Box>
+			<Charts exerciseHistory={exerciseHistory} viewState={viewState} />
 		</Box>
 	);
 };

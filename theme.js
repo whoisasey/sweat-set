@@ -23,15 +23,12 @@ theme = createTheme(theme, {
 			fontSize: 20,
 			fontWeight: 600,
 			padding: "1rem 0",
-			color: "whitesmoke",
 		},
 		h6: {
 			fontSize: 18,
 			fontWeight: 600,
 			padding: "0.5rem 0",
-			color: "whitesmoke",
 		},
-		body2: { fontSize: 16, fontWeight: 600, color: theme.palette.orange.main },
 	},
 });
 

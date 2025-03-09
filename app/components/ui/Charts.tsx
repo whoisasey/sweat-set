@@ -14,6 +14,7 @@ import React, { JSX, useEffect, useState } from "react";
 
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import { curveCardinal } from "d3-shape";
+import { formatDate } from "@/app/utils/helpers";
 
 const useWindowSize = (dimension: "width" | "height") => {
 	const [size, setSize] = useState<number | undefined>(undefined);
@@ -34,11 +35,20 @@ const useWindowSize = (dimension: "width" | "height") => {
 
 const Charts = ({
 	exerciseHistory,
+	viewState,
 }: {
 	exerciseHistory: ProcessedWorkoutData[];
+	viewState: boolean;
 }) => {
 	const cardinal = curveCardinal.tension(0.2);
 
+	function filterByToday(data: ProcessedWorkoutData[]) {
+		const today = formatDate();
+
+		return data.filter((exercise) =>
+			exercise.data.some((entry) => entry.date.toString() == today),
+		);
+	}
 	const width = useWindowSize("width");
 	// const height = useWindowSize("height");
 	const CustomTooltip = ({
@@ -62,38 +72,65 @@ const Charts = ({
 		return null;
 	};
 
+	const renderData = (data: ProcessedWorkoutData[], value: number = 1) => {
+		return data.map(({ data, exercise }) => (
+			<Box key={exercise} mb={4}>
+				<AreaChart
+					width={width && width < 540 ? 300 / value : 600 / value}
+					height={300}
+					data={data}
+					margin={{}}>
+					<CartesianGrid strokeDasharray="3 3" />
+					<XAxis
+						dataKey="date"
+						tickFormatter={(date) => new Date(date).toLocaleDateString()}
+					/>
+					<YAxis type="number" domain={[15, "dataMax + 20"]} />
+					<Tooltip content={<CustomTooltip />} />
+
+					<Area
+						type={cardinal}
+						dataKey="avgWeight"
+						stroke="#82ca9d"
+						fill="#82ca9d"
+						fillOpacity={0.3}
+					/>
+				</AreaChart>
+				{/* Exercise Name */}
+				<Typography
+					variant="h6"
+					gutterBottom
+					sx={{ textAlign: "center" }}
+					pl={6}>
+					{exercise}
+				</Typography>
+			</Box>
+		));
+	};
+
+	if (!viewState) {
+		const filteredExercises = filterByToday(exerciseHistory);
+
+		if (filteredExercises.length > 0) {
+			return (
+				<Box sx={{ display: "flex", flexWrap: "wrap" }}>
+					{renderData(filteredExercises, 2)}
+				</Box>
+			);
+		} else {
+			return (
+				<Box>
+					<Typography variant="h5" sx={{ textAlign: "center" }}>
+						{"Sorry, no exercises today :("}
+					</Typography>
+				</Box>
+			);
+		}
+	}
+
 	return (
 		<Box sx={{ width: "auto", margin: "0 auto" }}>
-			{exerciseHistory.map((exerciseData) => (
-				<Box key={exerciseData.exercise} mb={4}>
-					{/* Exercise Name */}
-					<Typography variant="h6" gutterBottom>
-						{exerciseData.exercise}
-					</Typography>
-
-					<AreaChart
-						width={width && width < 540 ? 300 : 600}
-						height={300}
-						data={exerciseData.data}
-						margin={{}}>
-						<CartesianGrid strokeDasharray="3 3" />
-						<XAxis
-							dataKey="date"
-							tickFormatter={(date) => new Date(date).toLocaleDateString()}
-						/>
-						<YAxis type="number" domain={[20, "dataMax + 20"]} />
-						<Tooltip content={<CustomTooltip />} />
-
-						<Area
-							type={cardinal}
-							dataKey="avgWeight"
-							stroke="#82ca9d"
-							fill="#82ca9d"
-							fillOpacity={0.3}
-						/>
-					</AreaChart>
-				</Box>
-			))}
+			{renderData(exerciseHistory)}
 		</Box>
 	);
 };
