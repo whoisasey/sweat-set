@@ -50,7 +50,6 @@ const Charts = ({
 		);
 	}
 	const width = useWindowSize("width");
-	// const height = useWindowSize("height");
 	const CustomTooltip = ({
 		active,
 		payload,
@@ -74,7 +73,18 @@ const Charts = ({
 
 	const renderChart = (data: ProcessedWorkoutData[], value: number = 1) => {
 		return data.map(({ data, exercise }) => (
-			<Box key={exercise} mb={4}>
+			<Box
+				key={exercise}
+				mb={4}
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					alignItems: "center",
+				}}>
+				<Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+					{exercise}
+				</Typography>
 				<AreaChart
 					width={width && width < 540 ? 300 : 600 / value}
 					height={width && width < 540 ? 200 : 300}
@@ -86,7 +96,6 @@ const Charts = ({
 					/>
 					<YAxis type="number" domain={[15, "dataMax + 20"]} />
 					<Tooltip content={<CustomTooltip />} />
-
 					<Area
 						type={cardinal}
 						dataKey="avgWeight"
@@ -95,9 +104,6 @@ const Charts = ({
 						fillOpacity={0.3}
 					/>
 				</AreaChart>
-				<Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
-					{exercise}
-				</Typography>
 			</Box>
 		));
 	};
