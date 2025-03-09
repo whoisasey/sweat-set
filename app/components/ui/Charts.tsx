@@ -14,6 +14,7 @@ import React, { JSX, useEffect, useState } from "react";
 
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import { curveCardinal } from "d3-shape";
+import { formatDate } from "@/app/utils/helpers";
 
 const useWindowSize = (dimension: "width" | "height") => {
 	const [size, setSize] = useState<number | undefined>(undefined);
@@ -42,11 +43,7 @@ const Charts = ({
 	const cardinal = curveCardinal.tension(0.2);
 
 	function filterByToday(data: ProcessedWorkoutData[]) {
-		const today = new Date().toLocaleDateString("en-US", {
-			year: "numeric",
-			month: "2-digit",
-			day: "2-digit",
-		});
+		const today = formatDate();
 
 		return data.filter((exercise) =>
 			exercise.data.some((entry) => entry.date.toString() == today),

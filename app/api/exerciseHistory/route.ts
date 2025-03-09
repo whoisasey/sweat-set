@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import ExerciseSet from "@/app/models/ExerciseSet";
 import connect from "@/app/utils/db";
+import { formatDate } from "@/app/utils/helpers";
 
 type WorkoutLog = {
 	userId: string;
@@ -66,11 +67,7 @@ export const GET = async (req: NextRequest) => {
 					) // Sort by date (ascending)
 					.map((entry) => ({
 						...entry,
-						date: new Date(entry.date).toLocaleDateString("en-US", {
-							year: "numeric",
-							month: "2-digit",
-							day: "2-digit",
-						}),
+						date: formatDate(entry.date),
 					})),
 			}))
 			.sort((a, b) => b.data.length - a.data.length); // sort by length of entries
