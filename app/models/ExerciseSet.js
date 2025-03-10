@@ -6,7 +6,7 @@ const exerciseSetSchema = new mongoose.Schema(
 		exerciseId: { type: String, required: true }, // Unique ID for exercise
 		weights: { type: [Number], required: true }, // Array of weights per set
 		sets: { type: Number, required: true }, // Total sets
-		reps: { type: Number, required: true }, // Total reps per set
+		reps: { type: [Number], required: true }, // Total reps per set
 		distance: { type: Number, default: 0 }, // Distance for running exercises
 		userId: { type: String, required: true }, // User ID
 		date: { type: Date, required: true }, // Date of exercise entry

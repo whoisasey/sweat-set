@@ -10,11 +10,6 @@ interface SetInputProps {
 	setSets: (value: number) => void;
 }
 
-interface RepInputProps {
-	reps: number;
-	setReps: (value: number) => void;
-}
-
 // Component for entering number of sets
 const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 	<Box
@@ -45,40 +40,11 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 		</Typography>
 	</Box>
 );
-// Component for entering number of REPS
-const RepInput: React.FC<RepInputProps> = ({ reps, setReps }) => (
-	<Box
-		sx={{
-			display: "flex",
-			flexDirection: "row",
-			alignItems: "center",
-			gap: 2,
-		}}>
-		<label htmlFor="reps">Input Reps</label>
-		<input
-			id="reps"
-			type="number"
-			placeholder="Sets"
-			name="reps"
-			pattern="[0-9]*"
-			value={reps}
-			onChange={(e) => setReps(Math.max(6, Number(e.target.value)))} // Prevents values below 6
-			className="sets_input"
-			style={{
-				padding: "8px",
-				borderRadius: "4px",
-				border: "1px solid #ccc",
-			}}
-		/>
-		<Typography variant="body2" color="textSecondary">
-			Reps
-		</Typography>
-	</Box>
-);
 
 // Props for WeightInputs Component
 interface WeightInputsProps {
 	sets: number;
+	reps: number[];
 	weights: number[];
 	handleInputChange: (index: number, value: string, field?: string) => void;
 }
@@ -86,36 +52,74 @@ interface WeightInputsProps {
 // Component for entering weights per set
 const WeightInputs: React.FC<WeightInputsProps> = ({
 	sets,
+	reps,
 	weights,
 	handleInputChange,
 }) => (
 	<>
 		{Array.from({ length: sets }).map((_, index) => (
-			<div key={index}>
-				<label htmlFor={`weight-${index}`}>Input Weight</label>
-				<input
-					id={`weight-${index}`}
-					type="number"
-					pattern="[0-9]*"
-					step={5}
-					placeholder="Weight"
-					name={`weight-${index}`}
-					value={weights[index] || ""} // Fallback to empty string to avoid undefined errors
-					onChange={(e) =>
-						handleInputChange(
-							index,
-							(e.target as HTMLInputElement).value,
-							`weight-${index}`,
-						)
-					}
-					style={{
-						width: "100%",
-						padding: "8px",
-						borderRadius: "4px",
-						border: "1px solid #ccc",
-					}}
-				/>
-			</div>
+			<Box key={index} sx={{ display: "flex" }} gap={4}>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						width: "60%",
+					}}>
+					<label htmlFor={`weight-${index}`}>Input Weight</label>
+					<input
+						id={`weight-${index}`}
+						type="number"
+						pattern="[0-9]*"
+						step={5}
+						placeholder="Weight"
+						name={`weight-${index}`}
+						value={weights[index] || ""} // Fallback to empty string to avoid undefined errors
+						onChange={(e) =>
+							handleInputChange(
+								index,
+								(e.target as HTMLInputElement).value,
+								`weight-${index}`,
+							)
+						}
+						style={{
+							padding: "8px",
+							borderRadius: "4px",
+							border: "1px solid #ccc",
+						}}
+					/>
+				</Box>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						width: "auto",
+					}}>
+					<label htmlFor={`rep-${index}`}>Input Reps</label>
+					<input
+						type="number"
+						name={`rep-${index}`}
+						id={`rep-${index}`}
+						pattern="[0-9]*"
+						value={reps[index] || ""} // Fallback to empty string to avoid undefined errors
+						placeholder="Reps"
+						onChange={(e) =>
+							handleInputChange(
+								index,
+								(e.target as HTMLInputElement).value,
+								`rep-${index}`,
+							)
+						}
+						style={{
+							width: "50%",
+							padding: "8px",
+							borderRadius: "4px",
+							border: "1px solid #ccc",
+						}}
+					/>
+				</Box>
+			</Box>
 		))}
 	</>
 );
@@ -146,12 +150,12 @@ const DateInput: React.FC<DateInputProps> = ({ handleInputChange, date }) => {
 interface WeightInputProps {
 	selectedExercise: string;
 	sets: number;
-	reps: number;
+	reps: number[];
 	weights: number[];
 	date: Date;
 	handleInputChange: (index: number, value: string, field?: string) => void;
 	setSets: (value: number) => void;
-	setReps: (value: number) => void;
+	setReps: (value: number[]) => void;
 }
 
 // Parent Component that handles weight and set inputs
@@ -162,7 +166,6 @@ const WeightInput: React.FC<WeightInputProps> = ({
 	weights,
 	handleInputChange,
 	setSets,
-	setReps,
 	date,
 }) => {
 	if (selectedExercise === "running") {
@@ -186,9 +189,9 @@ const WeightInput: React.FC<WeightInputProps> = ({
 	return (
 		<>
 			<SetInput sets={sets} setSets={setSets} />
-			<RepInput reps={reps} setReps={setReps} />
 			<WeightInputs
 				sets={sets}
+				reps={reps}
 				weights={weights}
 				handleInputChange={handleInputChange}
 			/>
