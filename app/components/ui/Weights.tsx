@@ -3,6 +3,7 @@
 import { Box, InputLabel, TextField, Typography } from "@mui/material";
 
 import React from "react";
+import { capitalizeWords } from "@/app/utils/helpers";
 
 // Props for SetInput Component
 interface SetInputProps {
@@ -55,74 +56,57 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 	reps,
 	weights,
 	handleInputChange,
-}) => (
-	<>
-		{Array.from({ length: sets }).map((_, index) => (
-			<Box key={index} sx={{ display: "flex" }} gap={4}>
-				<Box
-					sx={{
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "center",
-						width: "60%",
-					}}>
-					<label htmlFor={`weight-${index}`}>Input Weight</label>
-					<input
-						id={`weight-${index}`}
-						type="number"
-						pattern="[0-9]*"
-						step={5}
-						placeholder="Weight"
-						name={`weight-${index}`}
-						value={weights[index] || ""} // Fallback to empty string to avoid undefined errors
-						onChange={(e) =>
-							handleInputChange(
-								index,
-								(e.target as HTMLInputElement).value,
-								`weight-${index}`,
-							)
-						}
-						style={{
-							padding: "8px",
-							borderRadius: "4px",
-							border: "1px solid #ccc",
-						}}
-					/>
+}) => {
+	const renderInputs = (
+		state: number[],
+		input: string,
+		index: number,
+		width: string,
+	) => (
+		<Box
+			sx={{
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "center",
+				width: width,
+			}}>
+			<label htmlFor={`${input}-${index}`}>{`Input ${capitalizeWords(
+				input,
+			)}s`}</label>
+			<input
+				id={`${input}-${index}`}
+				type="number"
+				pattern="[0-9]*"
+				step={5}
+				name={`${input}-${index}`}
+				value={state[index] || ""} // Fallback to empty string to avoid undefined errors
+				onChange={(e) =>
+					handleInputChange(
+						index,
+						(e.target as HTMLInputElement).value,
+						`${input}-${index}`,
+					)
+				}
+				style={{
+					padding: "8px",
+					borderRadius: "4px",
+					border: "1px solid #ccc",
+				}}
+			/>
+		</Box>
+	);
+
+	return (
+		<>
+			{Array.from({ length: sets }).map((_, index) => (
+				<Box key={index} sx={{ display: "flex" }} gap={4}>
+					{renderInputs(weights, "weight", index, "60%")}
+					{renderInputs(reps, "rep", index, "auto")}
 				</Box>
-				<Box
-					sx={{
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "center",
-						width: "auto",
-					}}>
-					<label htmlFor={`rep-${index}`}>Input Reps</label>
-					<input
-						type="number"
-						name={`rep-${index}`}
-						id={`rep-${index}`}
-						pattern="[0-9]*"
-						value={reps[index] || ""} // Fallback to empty string to avoid undefined errors
-						placeholder="Reps"
-						onChange={(e) =>
-							handleInputChange(
-								index,
-								(e.target as HTMLInputElement).value,
-								`rep-${index}`,
-							)
-						}
-						style={{
-							width: "50%",
-							padding: "8px",
-							borderRadius: "4px",
-							border: "1px solid #ccc",
-						}}
-					/>
-				</Box>
-			</Box>
-		))}
-	</>
-);
+			))}
+		</>
+	);
+};
 interface DateInputProps {
 	date: Date;
 	handleInputChange: (index: number, value: string, field?: string) => void;
