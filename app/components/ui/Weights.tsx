@@ -10,6 +10,11 @@ interface SetInputProps {
 	setSets: (value: number) => void;
 }
 
+interface RepInputProps {
+	reps: number;
+	setReps: (value: number) => void;
+}
+
 // Component for entering number of sets
 const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 	<Box
@@ -37,6 +42,36 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 		/>
 		<Typography variant="body2" color="textSecondary">
 			Sets
+		</Typography>
+	</Box>
+);
+// Component for entering number of REPS
+const RepInput: React.FC<RepInputProps> = ({ reps, setReps }) => (
+	<Box
+		sx={{
+			display: "flex",
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 2,
+		}}>
+		<label htmlFor="reps">Input Reps</label>
+		<input
+			id="reps"
+			type="number"
+			placeholder="Sets"
+			name="reps"
+			pattern="[0-9]*"
+			value={reps}
+			onChange={(e) => setReps(Math.max(6, Number(e.target.value)))} // Prevents values below 6
+			className="sets_input"
+			style={{
+				padding: "8px",
+				borderRadius: "4px",
+				border: "1px solid #ccc",
+			}}
+		/>
+		<Typography variant="body2" color="textSecondary">
+			Reps
 		</Typography>
 	</Box>
 );
@@ -116,6 +151,7 @@ interface WeightInputProps {
 	date: Date;
 	handleInputChange: (index: number, value: string, field?: string) => void;
 	setSets: (value: number) => void;
+	setReps: (value: number) => void;
 }
 
 // Parent Component that handles weight and set inputs
@@ -126,6 +162,7 @@ const WeightInput: React.FC<WeightInputProps> = ({
 	weights,
 	handleInputChange,
 	setSets,
+	setReps,
 	date,
 }) => {
 	if (selectedExercise === "running") {
@@ -149,9 +186,7 @@ const WeightInput: React.FC<WeightInputProps> = ({
 	return (
 		<>
 			<SetInput sets={sets} setSets={setSets} />
-			<Typography variant="body2" color="textSecondary">
-				{reps} reps
-			</Typography>
+			<RepInput reps={reps} setReps={setReps} />
 			<WeightInputs
 				sets={sets}
 				weights={weights}

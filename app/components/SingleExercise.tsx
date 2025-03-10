@@ -37,7 +37,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
 	const [sets, setSets] = useState<number>(1); // Initial sets value
-	const [reps, setReps] = useState<number>(1);
+	const [reps, setReps] = useState<number>(10);
 	const [date, setDate] = useState<Date>(new Date());
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
 	const [newExercise, setNewExercise] = useState<string>("");
@@ -94,6 +94,8 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 		switch (field) {
 			case "reps":
+				console.log("reps:", value);
+
 				// Ensure reps is always at least 1
 				setReps(numValue);
 				return;
@@ -277,7 +279,8 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				<WeightInput
 					selectedExercise={selectedExercise}
 					sets={sets}
-					reps={10}
+					reps={reps}
+					setReps={setReps}
 					weights={weights}
 					handleInputChange={handleInputChange}
 					setSets={setSets}
