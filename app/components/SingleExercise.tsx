@@ -2,12 +2,12 @@
 
 import { Box, Button, IconButton, InputLabel } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
-import { capitalizeWords, formatDate } from "@/app/utils/helpers";
 
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import WeightInput from "@/app/components/ui/Weights";
+import { capitalizeWords } from "@/app/utils/helpers";
 import { exercises } from "@/app/utils/exerciseList";
 import { useSession } from "next-auth/react";
 // import { DragEndEvent } from "@dnd-kit/core";
@@ -84,9 +84,6 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	}, [session]);
 
 	useEffect(() => {
-		// when user selects exercise, get the most recent data object
-		// set success message
-
 		const getHistory = async () => {
 			try {
 				const response = await fetch(`/api/exerciseHistory?user=${userId}`, {
@@ -99,51 +96,52 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					throw new Error("Failed to fetch exercises");
 				}
 				const data = await response.json();
-
 				setExerciseHistory(data);
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 			}
 		};
+
 		getHistory();
+	}, [userId]); // Only fetch when `userId` changes
+
+	useEffect(() => {
+		if (exerciseHistory.length === 0 || !selectedExercise) return;
+
+		const today = new Date();
+		today.setHours(0, 0, 0, 0); // Normalize today's date
 
 		const findMostRecent = () => {
-			// find exercise based on selectedExercise
 			const exercise = exerciseHistory.find(
 				({ exercise }) => exercise === selectedExercise,
 			);
 			if (!exercise) return null;
 
-			const today = formatDate();
-
-			// find the most recent entry: before today
 			const mostRecentEntry = exercise.data
-				.filter((entry) => formatDate(entry.date) <= today) // Keep only dates  before today
+				.filter(
+					(entry) =>
+						new Date(new Date(entry.date).setHours(0, 0, 0, 0)).getTime() <
+						today.getTime(),
+				) // Filter entries before today
 				.sort(
 					(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-				)[0]; // Sort and pick the latest
+				)[0]; // Get latest entry
+
 			console.log("mostRecentEntry", mostRecentEntry);
 
-			// get total volume
-			const getTotalVolume = (mostRecentEntry: {
-				date?: Date;
-				avgWeight?: number;
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				sets?: any;
-			}) => {
-				return mostRecentEntry.sets.reduce(
-					(total: number, set: { weight: number; reps: number }) =>
-						total + set.weight * set.reps,
-					0,
-				);
-			};
+			if (!mostRecentEntry) return;
 
-			const totalVolume = getTotalVolume(mostRecentEntry);
-			console.log("total volume:", totalVolume);
+			// Calculate total volume
+			const totalVolume = mostRecentEntry.sets?.reduce(
+				(total, set) => total + (set.weight || 0) * (set.reps || 10), //default reps =10
+				0,
+			);
+
+			console.log("Total volume:", totalVolume);
 		};
 
 		findMostRecent();
-	}, [selectedExercise, userId]);
+	}, [exerciseHistory, selectedExercise]); // Re-run when history or selection changes
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		if (e.target.value === "Not Listed") {
