@@ -128,8 +128,8 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					});
 				}
 				if (field?.startsWith("rep")) {
-					setReps((prevWeights) => {
-						const newReps = [...prevWeights];
+					setReps((prevReps) => {
+						const newReps = [...prevReps];
 						newReps[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
 						return newReps;
 					});
