@@ -107,8 +107,6 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		};
 		getHistory();
 
-		// console.log(exerciseHistory);
-
 		const findMostRecent = () => {
 			// find exercise based on selectedExercise
 			const exercise = exerciseHistory.find(
@@ -118,18 +116,33 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 			const today = formatDate();
 
-			// find the most recent entry: on or before today
+			// find the most recent entry: before today
 			const mostRecentEntry = exercise.data
-
-				.filter((entry) => formatDate(entry.date) <= today) // Keep only dates on or before today
+				.filter((entry) => formatDate(entry.date) <= today) // Keep only dates  before today
 				.sort(
 					(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
 				)[0]; // Sort and pick the latest
 			console.log("mostRecentEntry", mostRecentEntry);
+
+			// get total volume
+			const getTotalVolume = (mostRecentEntry: {
+				date?: Date;
+				avgWeight?: number;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				sets?: any;
+			}) => {
+				return mostRecentEntry.sets.reduce(
+					(total: number, set: { weight: number; reps: number }) =>
+						total + set.weight * set.reps,
+					0,
+				);
+			};
+
+			const totalVolume = getTotalVolume(mostRecentEntry);
+			console.log("total volume:", totalVolume);
 		};
 
 		findMostRecent();
-		// console.log(selectedExercise, getLatestData);
 	}, [selectedExercise, userId]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
