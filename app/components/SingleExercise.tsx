@@ -5,6 +5,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { ExerciseData } from "@/app/types/ExerciseTypes";
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import WeightInput from "@/app/components/ui/Weights";
 import { capitalizeWords } from "@/app/utils/helpers";
@@ -49,6 +50,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [exerciseHistory, setExerciseHistory] = useState<
 		ProcessedWorkoutData[]
 	>([]);
+	const [savedResult, setSavedResult] = useState<ExerciseData>({});
 	const session = useSession();
 
 	useEffect(() => {
@@ -133,18 +135,50 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			if (!mostRecentEntry) return;
 
 			//2) Calculate total volume
-			const totalVolume = mostRecentEntry.sets?.reduce(
+			const prevTotalVolume = mostRecentEntry.sets?.reduce(
 				(total, set) => total + (set.weight || 0) * (set.reps || 10), //default reps =10
 				0,
 			);
 
-			console.log("Total volume:", totalVolume);
+			console.log("Prev Total volume:", prevTotalVolume);
 
-			// 3) compare prev total with todays total
+			// 3) get data
+			// get data from submit
+			// get total volume from saved result
+			const getTodaysVolume = (workout: ExerciseData) => {
+				let totalVolume = 0;
+
+				for (let i = 0; i < workout.sets; i++) {
+					totalVolume += workout.weights[i] * workout.reps[i];
+				}
+				return totalVolume;
+			};
+
+			const todaysVolume = getTodaysVolume(savedResult);
+
+			console.log("todaysVolume:", todaysVolume);
+
+			// 4) compare prev total with todays total
+			const calculatePercentageChange = (
+				prevTotalVolume: number,
+				todaysVolume: number,
+			) => {
+				const change =
+					((todaysVolume - prevTotalVolume) / prevTotalVolume) * 100;
+				return change.toFixed() + "%";
+			};
+
+			const percentChange = calculatePercentageChange(
+				prevTotalVolume,
+				todaysVolume,
+			);
+
+			setSuccessMsg(`Added Exercise Set 💪🏻, ${percentChange} Volume!`);
 		};
 
 		findMostRecent();
-	}, [exerciseHistory, selectedExercise]); // Re-run when history or selection changes
+	}, [exerciseHistory, selectedExercise, savedResult]); // Re-run when history or selection changes
+	// console.log(savedResult);
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		if (e.target.value === "Not Listed") {
@@ -277,7 +311,8 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				throw new Error("Failed to submit exercise data.");
 			}
 			setSuccessMsg("Added Exercise Set 💪🏻");
-			// const result = await response.json();
+			const result = await response.json();
+			setSavedResult(result);
 			// console.log("Success :", result);
 			// TODO: Handle success
 		} catch (error) {
