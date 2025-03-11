@@ -50,7 +50,21 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [exerciseHistory, setExerciseHistory] = useState<
 		ProcessedWorkoutData[]
 	>([]);
-	const [savedResult, setSavedResult] = useState<ExerciseData>({});
+	const [savedResult, setSavedResult] = useState<ExerciseData>({
+		sets: 0,
+		reps: [],
+		weights: [],
+		exerciseId: "",
+		exercise: "",
+		date: new Date().toISOString(),
+		userId: "",
+		distance: 0,
+		_id: "",
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+		__v: 0,
+	});
+	// const [volumeChange, setVolumeChange] = useState<string>("");
 	const session = useSession();
 
 	useEffect(() => {
@@ -130,8 +144,6 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
 				)[0]; // Get latest entry
 
-			// console.log("mostRecentEntry", mostRecentEntry);
-
 			if (!mostRecentEntry) return;
 
 			//2) Calculate total volume
@@ -157,28 +169,10 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			const todaysVolume = getTodaysVolume(savedResult);
 
 			console.log("todaysVolume:", todaysVolume);
-
-			// 4) compare prev total with todays total
-			const calculatePercentageChange = (
-				prevTotalVolume: number,
-				todaysVolume: number,
-			) => {
-				const change =
-					((todaysVolume - prevTotalVolume) / prevTotalVolume) * 100;
-				return change.toFixed() + "%";
-			};
-
-			const percentChange = calculatePercentageChange(
-				prevTotalVolume,
-				todaysVolume,
-			);
-
-			setSuccessMsg(`Added Exercise Set 💪🏻, ${percentChange} Volume!`);
 		};
 
 		findMostRecent();
 	}, [exerciseHistory, selectedExercise, savedResult]); // Re-run when history or selection changes
-	// console.log(savedResult);
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		if (e.target.value === "Not Listed") {
@@ -310,7 +304,22 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			if (!response.ok) {
 				throw new Error("Failed to submit exercise data.");
 			}
-			setSuccessMsg("Added Exercise Set 💪🏻");
+			//TODO: 4) compare prev total with todays total
+			// const calculatePercentageChange = (
+			// 	prevTotalVolume: number,
+			// 	todaysVolume: number,
+			// ) => {
+			// 	const change =
+			// 		((todaysVolume - prevTotalVolume) / prevTotalVolume) * 100;
+			// 	return change.toFixed() + "%";
+			// };
+
+			// const percentChange = calculatePercentageChange(
+			// 	prevTotalVolume,
+			// 	todaysVolume,
+			// );
+			// setVolumeChange(percentChange);
+			// setSuccessMsg(`Added Exercise Set 💪🏻, ${volumeChange} change in Volume`);
 			const result = await response.json();
 			setSavedResult(result);
 			// console.log("Success :", result);
