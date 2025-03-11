@@ -16,7 +16,7 @@ import { useSortable } from "@dnd-kit/sortable";
 export interface ExerciseProps {
 	name?: string;
 	sets: number;
-	reps: number;
+	reps: number[];
 	onRemove: () => void;
 	id: string;
 }
@@ -37,7 +37,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
 	const [sets, setSets] = useState<number>(1); // Initial sets value
-	const [reps, setReps] = useState<number>(1);
+	const [reps, setReps] = useState<number[]>([]); //start with an empty array
 	const [date, setDate] = useState<Date>(new Date());
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
 	const [newExercise, setNewExercise] = useState<string>("");
@@ -93,11 +93,6 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		const numValue = Number(value) || 1;
 
 		switch (field) {
-			case "reps":
-				// Ensure reps is always at least 1
-				setReps(numValue);
-				return;
-
 			case "sets": {
 				// Ensure sets is always at least 1
 				const newSets = Math.max(numValue, 1);
@@ -130,6 +125,13 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 						const newWeights = [...prevWeights];
 						newWeights[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
 						return newWeights;
+					});
+				}
+				if (field?.startsWith("rep")) {
+					setReps((prevReps) => {
+						const newReps = [...prevReps];
+						newReps[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
+						return newReps;
 					});
 				}
 		}
@@ -277,7 +279,8 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				<WeightInput
 					selectedExercise={selectedExercise}
 					sets={sets}
-					reps={10}
+					reps={reps}
+					setReps={setReps}
 					weights={weights}
 					handleInputChange={handleInputChange}
 					setSets={setSets}

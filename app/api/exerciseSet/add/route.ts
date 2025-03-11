@@ -7,19 +7,26 @@ export const POST = async (req: Request) => {
 		await connect();
 		const body = await req.json();
 
-		// Validate and transform weights
-		const weights = Object.keys(body)
-			.filter((key) => key.startsWith("weight-")) // Filter keys that start with "weight-"
-			.map((key) => Number(body[key])) // Convert each value to a number
-			.filter((num) => !isNaN(num)); // Filter out any NaN values
+		const transformToArray = (state: string) => {
+			// Validate and transform
+			// transforms weights or reps into an array
+			return Object.keys(body)
+				.filter((key) => key.startsWith(`${state}-`)) // Filter keys that start with "weight-"
+				.map((key) => Number(body[key])) // Convert each value to a number
+				.filter((num) => !isNaN(num)); // Filter out any NaN values
+		};
 
-		// Constrcut exercise object
+		const weights = transformToArray("weight");
+
+		const reps = transformToArray("rep");
+
+		// Construct exercise object
 		const newExercise = new ExerciseSet({
 			exercise: body.exercise,
 			exerciseId: body.exerciseId,
 			weights,
 			sets: Number(body.sets) || 0,
-			reps: Number(body.reps) || 0,
+			reps,
 			distance: Number(body.distance) || 0,
 			userId: body.userId,
 			date: new Date(body.date),

@@ -49,8 +49,8 @@ const RegisterPage = () => {
 			});
 
 			if (response.ok) {
-				const data = await response.json();
-				console.log(data);
+				// const data = await response.json();
+				// console.log(data);
 				// TODO: after successful registration, redirect to login with autocomplete info
 				// redirect to login
 				router.push("/login");

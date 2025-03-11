@@ -113,7 +113,7 @@ const Charts = ({
 
 		if (filteredExercises.length > 0) {
 			return (
-				<Box sx={{ display: "flex", flexWrap: "wrap", margin: "0 auto" }}>
+				<Box sx={{ display: "flex", flexWrap: "wrap" }}>
 					{renderChart(filteredExercises, 2)}
 				</Box>
 			);
@@ -128,7 +128,11 @@ const Charts = ({
 		}
 	}
 
-	return <Box sx={{ margin: "0 auto" }}>{renderChart(exerciseHistory)}</Box>;
+	return (
+		<Box sx={{ margin: `${width && width < 540 ? "0" : " 0 auto"}` }}>
+			{renderChart(exerciseHistory)}
+		</Box>
+	);
 };
 
 export default Charts;

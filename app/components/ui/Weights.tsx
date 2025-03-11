@@ -3,6 +3,7 @@
 import { Box, InputLabel, TextField, Typography } from "@mui/material";
 
 import React from "react";
+import { capitalizeWords } from "@/app/utils/helpers";
 
 // Props for SetInput Component
 interface SetInputProps {
@@ -44,6 +45,7 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 // Props for WeightInputs Component
 interface WeightInputsProps {
 	sets: number;
+	reps: number[];
 	weights: number[];
 	handleInputChange: (index: number, value: string, field?: string) => void;
 }
@@ -51,39 +53,60 @@ interface WeightInputsProps {
 // Component for entering weights per set
 const WeightInputs: React.FC<WeightInputsProps> = ({
 	sets,
+	reps,
 	weights,
 	handleInputChange,
-}) => (
-	<>
-		{Array.from({ length: sets }).map((_, index) => (
-			<div key={index}>
-				<label htmlFor={`weight-${index}`}>Input Weight</label>
-				<input
-					id={`weight-${index}`}
-					type="number"
-					pattern="[0-9]*"
-					step={5}
-					placeholder="Weight"
-					name={`weight-${index}`}
-					value={weights[index] || ""} // Fallback to empty string to avoid undefined errors
-					onChange={(e) =>
-						handleInputChange(
-							index,
-							(e.target as HTMLInputElement).value,
-							`weight-${index}`,
-						)
-					}
-					style={{
-						width: "100%",
-						padding: "8px",
-						borderRadius: "4px",
-						border: "1px solid #ccc",
-					}}
-				/>
-			</div>
-		))}
-	</>
-);
+}) => {
+	const renderInputs = (
+		state: number[],
+		input: string,
+		index: number,
+		width: string,
+	) => (
+		<Box
+			sx={{
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "center",
+				width: width,
+			}}>
+			<label htmlFor={`${input}-${index}`}>{`Input ${capitalizeWords(
+				input,
+			)}s`}</label>
+			<input
+				id={`${input}-${index}`}
+				type="number"
+				pattern="[0-9]*"
+				step={5}
+				name={`${input}-${index}`}
+				value={state[index] || ""} // Fallback to empty string to avoid undefined errors
+				onChange={(e) =>
+					handleInputChange(
+						index,
+						(e.target as HTMLInputElement).value,
+						`${input}-${index}`,
+					)
+				}
+				style={{
+					padding: "8px",
+					borderRadius: "4px",
+					border: "1px solid #ccc",
+				}}
+			/>
+		</Box>
+	);
+
+	return (
+		<>
+			{Array.from({ length: sets }).map((_, index) => (
+				<Box key={index} sx={{ display: "flex" }} gap={4}>
+					{renderInputs(weights, "weight", index, "60%")}
+					{renderInputs(reps, "rep", index, "auto")}
+				</Box>
+			))}
+		</>
+	);
+};
 interface DateInputProps {
 	date: Date;
 	handleInputChange: (index: number, value: string, field?: string) => void;
@@ -111,11 +134,12 @@ const DateInput: React.FC<DateInputProps> = ({ handleInputChange, date }) => {
 interface WeightInputProps {
 	selectedExercise: string;
 	sets: number;
-	reps: number;
+	reps: number[];
 	weights: number[];
 	date: Date;
 	handleInputChange: (index: number, value: string, field?: string) => void;
 	setSets: (value: number) => void;
+	setReps: (value: number[]) => void;
 }
 
 // Parent Component that handles weight and set inputs
@@ -149,11 +173,9 @@ const WeightInput: React.FC<WeightInputProps> = ({
 	return (
 		<>
 			<SetInput sets={sets} setSets={setSets} />
-			<Typography variant="body2" color="textSecondary">
-				{reps} reps
-			</Typography>
 			<WeightInputs
 				sets={sets}
+				reps={reps}
 				weights={weights}
 				handleInputChange={handleInputChange}
 			/>

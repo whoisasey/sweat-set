@@ -6,12 +6,12 @@ import { Box } from "@mui/material";
 import ExerciseSet from "./ExerciseSet";
 
 type WorkoutsType = {
-	[day: string]: { id: string; name: string; sets: number; reps: number }[];
+	[day: string]: { id: string; name: string; sets: number; reps: number[] }[];
 };
 
 const ExercisePlan = () => {
 	const [workouts, setWorkouts] = useState<WorkoutsType>({
-		Monday: [{ id: "squat", name: "Squat", sets: 3, reps: 6 }],
+		Monday: [{ id: "squat", name: "Squat", sets: 3, reps: [6] }],
 		// Tuesday: [{ id: "running", name: "Running", sets: 1, reps: 30 }],
 	});
 
@@ -20,7 +20,7 @@ const ExercisePlan = () => {
 			id: `exercise-${Date.now()}`,
 			name: "New Exercise",
 			sets: 3,
-			reps: 10,
+			reps: [10],
 		};
 		setWorkouts((prev) => ({
 			...prev,
