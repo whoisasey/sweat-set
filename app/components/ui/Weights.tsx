@@ -4,6 +4,7 @@ import { Box, InputLabel, TextField, Typography } from "@mui/material";
 
 import React from "react";
 import { capitalizeWords } from "@/app/utils/helpers";
+import { useWindowSize } from "@/app/utils/helpers";
 
 // Props for SetInput Component
 interface SetInputProps {
@@ -20,7 +21,10 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 			alignItems: "center",
 			gap: 2,
 		}}>
-		<label htmlFor="sets">Input Sets</label>
+		<label htmlFor="sets" hidden>
+			{" "}
+			Sets
+		</label>
 		<input
 			id="sets"
 			type="number"
@@ -49,7 +53,6 @@ interface WeightInputsProps {
 	weights: number[];
 	handleInputChange: (index: number, value: string, field?: string) => void;
 }
-
 // Component for entering weights per set
 const WeightInputs: React.FC<WeightInputsProps> = ({
 	sets,
@@ -57,6 +60,8 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 	weights,
 	handleInputChange,
 }) => {
+	const windowWidth = useWindowSize("width");
+
 	const renderInputs = (
 		state: number[],
 		input: string,
@@ -68,16 +73,19 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 				display: "flex",
 				flexDirection: "column",
 				justifyContent: "center",
-				width: width,
+				width: `${
+					windowWidth && windowWidth < 540 ? "calc(50% - 32px)" : width
+				}`,
 			}}>
-			<label htmlFor={`${input}-${index}`}>{`Input ${capitalizeWords(
+			<label htmlFor={`${input}-${index}`}>{`${capitalizeWords(
 				input,
 			)}s`}</label>
 			<input
 				id={`${input}-${index}`}
 				type="number"
 				pattern="[0-9]*"
-				step={5}
+				min={input === "weight" ? 10 : 0}
+				step={input === "weight" ? 5 : 1}
 				name={`${input}-${index}`}
 				value={state[index] || ""} // Fallback to empty string to avoid undefined errors
 				onChange={(e) =>

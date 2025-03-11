@@ -52,3 +52,7 @@ a {
 		cursor: pointer;
 	}
 }
+
+.MuiBox-root {
+	padding-bottom: 1rem;
+}
