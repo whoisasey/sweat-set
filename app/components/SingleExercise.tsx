@@ -111,6 +111,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		const today = new Date();
 		today.setHours(0, 0, 0, 0); // Normalize today's date
 
+		// 1) filter most recent entry based on selectedExercise
 		const findMostRecent = () => {
 			const exercise = exerciseHistory.find(
 				({ exercise }) => exercise === selectedExercise,
@@ -127,17 +128,19 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
 				)[0]; // Get latest entry
 
-			console.log("mostRecentEntry", mostRecentEntry);
+			// console.log("mostRecentEntry", mostRecentEntry);
 
 			if (!mostRecentEntry) return;
 
-			// Calculate total volume
+			//2) Calculate total volume
 			const totalVolume = mostRecentEntry.sets?.reduce(
 				(total, set) => total + (set.weight || 0) * (set.reps || 10), //default reps =10
 				0,
 			);
 
 			console.log("Total volume:", totalVolume);
+
+			// 3) compare prev total with todays total
 		};
 
 		findMostRecent();
