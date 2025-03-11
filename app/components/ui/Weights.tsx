@@ -4,7 +4,7 @@ import { Box, InputLabel, TextField, Typography } from "@mui/material";
 
 import React from "react";
 import { capitalizeWords } from "@/app/utils/helpers";
-import { useWindowSize } from "@/app/utils/helpers";
+import { useWindowSize } from "@/app/utils/helpers-fe";
 
 // Props for SetInput Component
 interface SetInputProps {

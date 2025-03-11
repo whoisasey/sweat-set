@@ -15,7 +15,7 @@ import React, { JSX } from "react";
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import { curveCardinal } from "d3-shape";
 import { formatDate } from "@/app/utils/helpers";
-import { useWindowSize } from "@/app/utils/helpers";
+import { useWindowSize } from "@/app/utils/helpers-fe";
 
 const Charts = ({
 	exerciseHistory,

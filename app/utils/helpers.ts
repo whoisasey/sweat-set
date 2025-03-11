@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 export const capitalizeWords = (value: string) => {
 	return value
 		.split(" ")
@@ -13,21 +11,4 @@ export const formatDate = (dateString?: string | Date) => {
 		month: "2-digit",
 		day: "2-digit",
 	});
-};
-
-export const useWindowSize = (dimension: "width" | "height") => {
-	const [size, setSize] = useState<number | undefined>(undefined);
-
-	useEffect(() => {
-		const handleResize = () => {
-			setSize(dimension === "width" ? window.innerWidth : window.innerHeight);
-		};
-
-		handleResize();
-
-		window.addEventListener("resize", handleResize);
-
-		return () => window.removeEventListener("resize", handleResize);
-	}, [dimension]);
-	return size;
 };
