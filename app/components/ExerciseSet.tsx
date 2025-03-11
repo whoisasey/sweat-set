@@ -4,12 +4,12 @@ import { Button, Card, Typography } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import { ExerciseForm } from "@/app/components/SingleExercise";
+
 // import { DndContext, closestCenter } from "@dnd-kit/core";
 // import {
 // 	SortableContext,
 // 	verticalListSortingStrategy,
 // } from "@dnd-kit/sortable";
-
 
 // Workout Day Component
 interface WorkoutDayProps {
@@ -26,7 +26,7 @@ interface WorkoutDayProps {
 interface ExerciseProps {
 	name?: string;
 	sets: number;
-	reps: number;
+	reps: number[];
 	onRemove: () => void;
 	id: string;
 }
