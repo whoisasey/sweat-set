@@ -2,11 +2,12 @@
 
 import { Box, Button, IconButton, InputLabel } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
+import { capitalizeWords, formatDate } from "@/app/utils/helpers";
 
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { ProcessedWorkoutData } from "@/app/progress/page";
 import WeightInput from "@/app/components/ui/Weights";
-import { capitalizeWords } from "@/app/utils/helpers";
 import { exercises } from "@/app/utils/exerciseList";
 import { useSession } from "next-auth/react";
 // import { DragEndEvent } from "@dnd-kit/core";
@@ -45,6 +46,9 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [isNewExercise, setIsNewExercise] = useState(false);
 	const [allExercises, setAllExercises] = useState<Exercise[]>([]);
 	const [successMsg, setSuccessMsg] = useState<string>("");
+	const [exerciseHistory, setExerciseHistory] = useState<
+		ProcessedWorkoutData[]
+	>([]);
 	const session = useSession();
 
 	useEffect(() => {
@@ -78,6 +82,55 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	useEffect(() => {
 		setUserId(session?.data?.user?.id);
 	}, [session]);
+
+	useEffect(() => {
+		// when user selects exercise, get the most recent data object
+		// set success message
+
+		const getHistory = async () => {
+			try {
+				const response = await fetch(`/api/exerciseHistory?user=${userId}`, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				});
+				if (!response.ok) {
+					throw new Error("Failed to fetch exercises");
+				}
+				const data = await response.json();
+
+				setExerciseHistory(data);
+			} catch (error) {
+				console.log(error);
+			}
+		};
+		getHistory();
+
+		// console.log(exerciseHistory);
+
+		const findMostRecent = () => {
+			// find exercise based on selectedExercise
+			const exercise = exerciseHistory.find(
+				({ exercise }) => exercise === selectedExercise,
+			);
+			if (!exercise) return null;
+
+			const today = formatDate();
+
+			// find the most recent entry: on or before today
+			const mostRecentEntry = exercise.data
+
+				.filter((entry) => formatDate(entry.date) <= today) // Keep only dates on or before today
+				.sort(
+					(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+				)[0]; // Sort and pick the latest
+			console.log("mostRecentEntry", mostRecentEntry);
+		};
+
+		findMostRecent();
+		// console.log(selectedExercise, getLatestData);
+	}, [selectedExercise, userId]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		if (e.target.value === "Not Listed") {
