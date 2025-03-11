@@ -10,28 +10,12 @@ import {
 	YAxis,
 } from "recharts";
 import { Box, Typography } from "@mui/material";
-import React, { JSX, useEffect, useState } from "react";
+import React, { JSX } from "react";
 
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import { curveCardinal } from "d3-shape";
 import { formatDate } from "@/app/utils/helpers";
-
-const useWindowSize = (dimension: "width" | "height") => {
-	const [size, setSize] = useState<number | undefined>(undefined);
-
-	useEffect(() => {
-		const handleResize = () => {
-			setSize(dimension === "width" ? window.innerWidth : window.innerHeight);
-		};
-
-		handleResize();
-
-		window.addEventListener("resize", handleResize);
-
-		return () => window.removeEventListener("resize", handleResize);
-	}, [dimension]);
-	return size;
-};
+import { useWindowSize } from "@/app/utils/helpers-fe";
 
 const Charts = ({
 	exerciseHistory,

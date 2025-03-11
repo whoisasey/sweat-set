@@ -236,29 +236,31 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				{"single exercise"}
 
 				<InputLabel htmlFor="exercise">Exercise</InputLabel>
-				<select
-					name="exercise"
-					id="exercise"
-					onChange={(e) =>
-						handleChange(e as React.ChangeEvent<HTMLSelectElement>)
-					}>
-					{(!allExercises || allExercises.length === 0) && (
-						<option value=""></option>
-					)}
-					{allExercises
-						.sort((a, b) => a.exerciseName.localeCompare(b.exerciseName))
-						.map((exercise) => (
-							<option key={exercise._id} value={exercise.exerciseName}>
-								{exercise.exerciseName}
-							</option>
-						))}
-
-					{allExercises && allExercises.length >= 0 && (
-						<option value="Not Listed">Exercise Not Listed ➕</option>
-					)}
-				</select>
+				<Box>
+					<select
+						name="exercise"
+						id="exercise"
+						style={{ width: "100%" }}
+						onChange={(e) =>
+							handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+						}>
+						{(!allExercises || allExercises.length === 0) && (
+							<option value=""></option>
+						)}
+						{allExercises
+							.sort((a, b) => a.exerciseName.localeCompare(b.exerciseName))
+							.map((exercise) => (
+								<option key={exercise._id} value={exercise.exerciseName}>
+									{exercise.exerciseName}
+								</option>
+							))}
+						{allExercises && allExercises.length >= 0 && (
+							<option value="Not Listed">Exercise Not Listed ➕</option>
+						)}
+					</select>
+				</Box>
 				{isNewExercise ? (
-					<Box>
+					<Box sx={{ display: "flex", flexDirection: "column" }}>
 						<label htmlFor="newExercise">Input New Exercise</label>
 						<input
 							type="text"
