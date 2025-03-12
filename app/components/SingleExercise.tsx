@@ -2,10 +2,13 @@
 
 import { Box, Button, IconButton, InputLabel } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
+import {
+	calculatePercentageChange,
+	getTodaysVolume,
+} from "@/app/utils/helpers-fe";
 
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { ExerciseData } from "@/app/types/ExerciseTypes";
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import WeightInput from "@/app/components/ui/Weights";
 import { capitalizeWords } from "@/app/utils/helpers";
@@ -134,7 +137,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 			if (!mostRecentEntry) return;
 
-			//2) Calculate total volume
+			//2) Calculate total prev volume
 			const prevTotalVolume = mostRecentEntry.sets?.reduce(
 				(total, set) => total + (set.weight || 0) * (set.reps || 10), //default reps =10
 				0,
@@ -279,30 +282,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 			const result = await response.json();
 
-			const getTodaysVolume = (workout: ExerciseData) => {
-				let totalVolume = 0;
-
-				if (workout.exercise !== "") {
-					for (let i = 0; i < workout.sets; i++) {
-						totalVolume += workout.weights[i] * workout.reps[i];
-					}
-					return totalVolume;
-				}
-				return 0;
-			};
-
 			const todaysVolume = getTodaysVolume(result);
-
-			const calculatePercentageChange = async (
-				prevVolume: number,
-				todaysVolume: number,
-			) => {
-				if (prevVolume === 0) console.log("No previous volume to calculate!");
-				// TODO: add handling for this ^
-
-				const change = ((todaysVolume - prevVolume) / prevVolume) * 100;
-				return change.toFixed() + "%";
-			};
 
 			const percentChange = await calculatePercentageChange(
 				prevTotalVolume,
