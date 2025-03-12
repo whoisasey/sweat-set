@@ -153,7 +153,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			);
 
 			console.log("Prev Total volume:", prevTotalVolume);
-
+			// TODO: setstate for prev volume
 			// 3) get data
 			// get data from submit
 			// get total volume from saved result
@@ -169,6 +169,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			const todaysVolume = getTodaysVolume(savedResult);
 
 			console.log("todaysVolume:", todaysVolume);
+			// TODO: set state for todays volume
 		};
 
 		findMostRecent();
