@@ -46,24 +46,12 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [userId, setUserId] = useState<string | undefined>("");
 	const [isNewExercise, setIsNewExercise] = useState(false);
 	const [allExercises, setAllExercises] = useState<Exercise[]>([]);
+	const [prevTotalVolume, setPrevTotalVolume] = useState<number>(0);
 	const [successMsg, setSuccessMsg] = useState<string>("");
 	const [exerciseHistory, setExerciseHistory] = useState<
 		ProcessedWorkoutData[]
 	>([]);
-	const [savedResult, setSavedResult] = useState<ExerciseData>({
-		sets: 0,
-		reps: [],
-		weights: [],
-		exerciseId: "",
-		exercise: "",
-		date: new Date().toISOString(),
-		userId: "",
-		distance: 0,
-		_id: "",
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toISOString(),
-		__v: 0,
-	});
+
 	// const [volumeChange, setVolumeChange] = useState<string>("");
 	const session = useSession();
 
@@ -152,28 +140,11 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				0,
 			);
 
-			console.log("Prev Total volume:", prevTotalVolume);
-			// TODO: setstate for prev volume
-			// 3) get data
-			// get data from submit
-			// get total volume from saved result
-			const getTodaysVolume = (workout: ExerciseData) => {
-				let totalVolume = 0;
-
-				for (let i = 0; i < workout.sets; i++) {
-					totalVolume += workout.weights[i] * workout.reps[i];
-				}
-				return totalVolume;
-			};
-
-			const todaysVolume = getTodaysVolume(savedResult);
-
-			console.log("todaysVolume:", todaysVolume);
-			// TODO: set state for todays volume
+			setPrevTotalVolume(prevTotalVolume);
 		};
 
 		findMostRecent();
-	}, [exerciseHistory, selectedExercise, savedResult]); // Re-run when history or selection changes
+	}, [exerciseHistory, selectedExercise]); // Re-run when history or selection changes
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		if (e.target.value === "Not Listed") {
@@ -305,24 +276,41 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			if (!response.ok) {
 				throw new Error("Failed to submit exercise data.");
 			}
-			//TODO: 4) compare prev total with todays total
-			// const calculatePercentageChange = (
-			// 	prevTotalVolume: number,
-			// 	todaysVolume: number,
-			// ) => {
-			// 	const change =
-			// 		((todaysVolume - prevTotalVolume) / prevTotalVolume) * 100;
-			// 	return change.toFixed() + "%";
-			// };
 
-			// const percentChange = calculatePercentageChange(
-			// 	prevTotalVolume,
-			// 	todaysVolume,
-			// );
-			// setVolumeChange(percentChange);
-			// setSuccessMsg(`Added Exercise Set 💪🏻, ${volumeChange} change in Volume`);
 			const result = await response.json();
-			setSavedResult(result);
+
+			const getTodaysVolume = (workout: ExerciseData) => {
+				let totalVolume = 0;
+
+				if (workout.exercise !== "") {
+					for (let i = 0; i < workout.sets; i++) {
+						totalVolume += workout.weights[i] * workout.reps[i];
+					}
+					return totalVolume;
+				}
+				return 0;
+			};
+
+			const todaysVolume = getTodaysVolume(result);
+
+			const calculatePercentageChange = async (
+				prevVolume: number,
+				todaysVolume: number,
+			) => {
+				if (prevVolume === 0) console.log("No previous volume to calculate!");
+				// TODO: add handling for this ^
+
+				const change = ((todaysVolume - prevVolume) / prevVolume) * 100;
+				return change.toFixed() + "%";
+			};
+
+			const percentChange = await calculatePercentageChange(
+				prevTotalVolume,
+				todaysVolume,
+			);
+
+			setSuccessMsg(`Exercise Added 💪🏻 \n\n ${percentChange} change in Volume`);
+
 			// console.log("Success :", result);
 			// TODO: Handle success
 		} catch (error) {
