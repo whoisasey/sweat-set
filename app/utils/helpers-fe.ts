@@ -36,10 +36,11 @@ export const getTodaysVolume = (workout: ExerciseData) => {
 export const calculatePercentageChange = async (
 	prevVolume: number,
 	todaysVolume: number,
-) => {
-	if (prevVolume === 0) console.log("No previous volume to calculate!");
-	// TODO: add handling for this ^
+): Promise<string> => {
+	if (prevVolume === 0) {
+		return "New Stats Added for Exercise";
+	}
 
 	const change = ((todaysVolume - prevVolume) / prevVolume) * 100;
-	return change.toFixed() + "%";
+	return `${change.toFixed()}% change in Volume`;
 };

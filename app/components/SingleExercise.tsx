@@ -289,9 +289,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				todaysVolume,
 			);
 
-			setSuccessMsg(`Exercise Added 💪🏻 \n\n ${percentChange} change in Volume`);
-
-			// console.log("Success :", result);
+			setSuccessMsg(`Exercise Added 💪🏻 \n\n ${percentChange}`);
 			// TODO: Handle success
 		} catch (error) {
 			console.error("Error submitting exercise:", error);
