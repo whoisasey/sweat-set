@@ -12,3 +12,11 @@ export interface ExerciseData {
 	updatedAt: string;
 	__v: number;
 }
+
+export interface ExerciseProps {
+	name?: string;
+	sets: number;
+	reps: number[];
+	onRemove: () => void;
+	id: string;
+}
