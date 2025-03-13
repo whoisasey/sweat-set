@@ -249,10 +249,8 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					if (!addResponse.ok) {
 						throw new Error("Failed to add new exercise");
 					}
-
-					// const addResult = await addResponse.json();
 				} else {
-					console.log("Exercise already exists!");
+					setSuccessMsg("Exercise already exists!");
 				}
 			} catch (error) {
 				console.error("Error submitting exercise:", error);
@@ -280,8 +278,9 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				prevTotalVolume,
 				todaysVolume,
 			);
-
-			setSuccessMsg(`Exercise Added 💪🏻 \n\n ${percentChange}`);
+			if (successMsg === "") {
+				setSuccessMsg(`Exercise Added 💪🏻 \n\n ${percentChange}`);
+			}
 			// TODO: Handle success
 		} catch (error) {
 			console.error("Error submitting exercise:", error);
