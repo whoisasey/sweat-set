@@ -22,6 +22,7 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 			gap: 2,
 		}}>
 		<label htmlFor="sets" hidden>
+			{" "}
 			Sets
 		</label>
 		<input
@@ -29,8 +30,9 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 			type="number"
 			placeholder="Sets"
 			name="sets"
+			pattern="[0-9]*"
 			value={sets}
-			onChange={(e) => setSets(Math.max(0, Number(e.target.value)))} // Prevents values below 1
+			onChange={(e) => setSets(Math.max(1, Number(e.target.value)))} // Prevents values below 1
 			className="sets_input"
 			style={{
 				padding: "8px",
@@ -81,7 +83,8 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 			<input
 				id={`${input}-${index}`}
 				type="number"
-				min={0}
+				pattern="[0-9]*"
+				min={input === "weight" ? 10 : 0}
 				step={input === "weight" ? 5 : 1}
 				name={`${input}-${index}`}
 				value={state[index] || ""} // Fallback to empty string to avoid undefined errors
