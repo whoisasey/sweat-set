@@ -2,21 +2,24 @@
 
 import { Box, Button, IconButton, InputLabel } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
-import {
-	calculatePercentageChange,
-	getTodaysVolume,
-} from "@/app/utils/helpers-fe";
 
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { ExerciseProps } from "@/app/types/ExerciseTypes";
-import { ProcessedWorkoutData } from "@/app/progress/page";
 import WeightInput from "@/app/components/ui/Weights";
 import { capitalizeWords } from "@/app/utils/helpers";
 import { exercises } from "@/app/utils/exerciseList";
 import { useSession } from "next-auth/react";
 // import { DragEndEvent } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
+
+// Exercise Component
+export interface ExerciseProps {
+	name?: string;
+	sets: number;
+	reps: number[];
+	onRemove: () => void;
+	id: string;
+}
 
 type Exercise = {
 	_id: string;
@@ -41,13 +44,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	const [userId, setUserId] = useState<string | undefined>("");
 	const [isNewExercise, setIsNewExercise] = useState(false);
 	const [allExercises, setAllExercises] = useState<Exercise[]>([]);
-	const [prevTotalVolume, setPrevTotalVolume] = useState<number>(0);
 	const [successMsg, setSuccessMsg] = useState<string>("");
-	const [exerciseHistory, setExerciseHistory] = useState<
-		ProcessedWorkoutData[]
-	>([]);
-
-	// const [volumeChange, setVolumeChange] = useState<string>("");
 	const session = useSession();
 
 	useEffect(() => {
@@ -81,65 +78,6 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	useEffect(() => {
 		setUserId(session?.data?.user?.id);
 	}, [session]);
-
-	useEffect(() => {
-		const getHistory = async () => {
-			try {
-				const response = await fetch(`/api/exerciseHistory?user=${userId}`, {
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
-				if (!response.ok) {
-					throw new Error("Failed to fetch exercises");
-				}
-				const data = await response.json();
-				setExerciseHistory(data);
-			} catch (error) {
-				console.error(error);
-			}
-		};
-
-		getHistory();
-	}, [userId]); // Only fetch when `userId` changes
-
-	useEffect(() => {
-		if (exerciseHistory.length === 0 || !selectedExercise) return;
-
-		const today = new Date();
-		today.setHours(0, 0, 0, 0); // Normalize today's date
-
-		// 1) filter most recent entry based on selectedExercise
-		const findMostRecent = () => {
-			const exercise = exerciseHistory.find(
-				({ exercise }) => exercise === selectedExercise,
-			);
-			if (!exercise) return null;
-
-			const mostRecentEntry = exercise.data
-				.filter(
-					(entry) =>
-						new Date(new Date(entry.date).setHours(0, 0, 0, 0)).getTime() <
-						today.getTime(),
-				) // Filter entries before today
-				.sort(
-					(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-				)[0]; // Get latest entry
-
-			if (!mostRecentEntry) return;
-
-			//2) Calculate total prev volume
-			const prevTotalVolume = mostRecentEntry.sets?.reduce(
-				(total, set) => total + (set.weight || 0) * (set.reps || 10), //default reps =10
-				0,
-			);
-
-			setPrevTotalVolume(prevTotalVolume);
-		};
-
-		findMostRecent();
-	}, [exerciseHistory, selectedExercise]); // Re-run when history or selection changes
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		if (e.target.value === "Not Listed") {
@@ -249,8 +187,10 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					if (!addResponse.ok) {
 						throw new Error("Failed to add new exercise");
 					}
+
+					// const addResult = await addResponse.json();
 				} else {
-					setSuccessMsg("Exercise already exists!");
+					console.log("Exercise already exists!");
 				}
 			} catch (error) {
 				console.error("Error submitting exercise:", error);
@@ -269,18 +209,9 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			if (!response.ok) {
 				throw new Error("Failed to submit exercise data.");
 			}
-
-			const result = await response.json();
-
-			const todaysVolume = getTodaysVolume(result);
-
-			const percentChange = await calculatePercentageChange(
-				prevTotalVolume,
-				todaysVolume,
-			);
-			if (successMsg === "") {
-				setSuccessMsg(`Exercise Added 💪🏻 \n\n ${percentChange}`);
-			}
+			setSuccessMsg("Added Exercise Set 💪🏻");
+			// const result = await response.json();
+			// console.log("Success :", result);
 			// TODO: Handle success
 		} catch (error) {
 			console.error("Error submitting exercise:", error);

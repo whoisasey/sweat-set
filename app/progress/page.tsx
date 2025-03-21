@@ -8,11 +8,7 @@ import { useSession } from "next-auth/react";
 
 export type ProcessedWorkoutData = {
 	exercise: string;
-	data: {
-		date: Date;
-		avgWeight: number;
-		sets: { setNumber: number; weight: number; reps: number }[];
-	}[];
+	data: { date: Date; avgWeight: number }[];
 };
 
 const ProgressPage = () => {
