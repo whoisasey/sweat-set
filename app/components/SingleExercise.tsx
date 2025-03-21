@@ -5,21 +5,13 @@ import React, { FormEvent, useEffect, useState } from "react";
 
 import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { ExerciseProps } from "@/app/types/ExerciseTypes";
 import WeightInput from "@/app/components/ui/Weights";
 import { capitalizeWords } from "@/app/utils/helpers";
 import { exercises } from "@/app/utils/exerciseList";
 import { useSession } from "next-auth/react";
 // import { DragEndEvent } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
-
-// Exercise Component
-export interface ExerciseProps {
-	name?: string;
-	sets: number;
-	reps: number[];
-	onRemove: () => void;
-	id: string;
-}
 
 type Exercise = {
 	_id: string;

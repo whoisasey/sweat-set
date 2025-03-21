@@ -4,6 +4,7 @@ import { Button, Card, Typography } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import { ExerciseForm } from "@/app/components/SingleExercise";
+import { ExerciseProps } from "@/app/types/ExerciseTypes";
 
 // import { DndContext, closestCenter } from "@dnd-kit/core";
 // import {
@@ -21,14 +22,6 @@ interface WorkoutDayProps {
 	// 	active: { id: string };
 	// 	over: { id: string } | null;
 	// }) => void;
-}
-
-interface ExerciseProps {
-	name?: string;
-	sets: number;
-	reps: number[];
-	onRemove: () => void;
-	id: string;
 }
 
 const ExerciseSet: React.FC<WorkoutDayProps> = ({
