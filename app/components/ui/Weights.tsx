@@ -22,7 +22,6 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 			gap: 2,
 		}}>
 		<label htmlFor="sets" hidden>
-			{" "}
 			Sets
 		</label>
 		<input
