@@ -4,6 +4,17 @@ export const workoutPlan = [
 		focus: "Endurance & Strength Stability",
 		days: [
 			{
+				weekday: "Sunday",
+				type: "Full Body Strength Training",
+				exercises: [
+					{ name: "Deadlifts", rep: "4x6-8" },
+					{ name: "Incline Dumbbell Press", rep: "3x8-10" },
+					{ name: "Lat Pulldown or Assisted Pull-Ups", rep: "3x8-12" },
+					{ name: "Step-Through Lunges", rep: "3x10 per leg" },
+					{ name: "Core: Hanging Knee Raises", rep: "3x12" },
+				],
+			},
+			{
 				weekday: "Monday",
 				type: "Short Strength (Unilateral Lower Body, 30-40 min)",
 				exercises: [
@@ -40,23 +51,23 @@ export const workoutPlan = [
 			},
 			{ weekday: "Friday", type: "Recovery Day" },
 			{ weekday: "Saturday", type: "Hot Yoga (Mobility & Recovery)" },
-			{
-				weekday: "Sunday",
-				type: "Full Body Strength Training",
-				exercises: [
-					{ name: "Deadlifts", rep: "4x6-8" },
-					{ name: "Incline Dumbbell Press", rep: "3x8-10" },
-					{ name: "Lat Pulldown or Assisted Pull-Ups", rep: "3x8-12" },
-					{ name: "Step-Through Lunges", rep: "3x10 per leg" },
-					{ name: "Core: Hanging Knee Raises", rep: "3x12" },
-				],
-			},
 		],
 	},
 	{
 		week: 2,
 		focus: "Progression & Speed Focus",
 		days: [
+			{
+				weekday: "Sunday",
+				type: "Full Body Strength Training",
+				exercises: [
+					{ name: "Trap Bar Deadlifts", rep: "4x6-8" },
+					{ name: "Push-Ups or Dumbbell Press", rep: "3x8-10" },
+					{ name: "Single-Leg Step Downs", rep: "3x8-10 per leg" },
+					{ name: "Cable Rows", rep: "3x10-12" },
+					{ name: "Core: Hanging Knee Raises", rep: "3x12" },
+				],
+			},
 			{
 				weekday: "Monday",
 				type: "Short Strength (Unilateral Lower Body, 30-40 min)",
@@ -87,17 +98,6 @@ export const workoutPlan = [
 			},
 			{ weekday: "Friday", type: "Recovery Day" },
 			{ weekday: "Saturday", type: "Hot Yoga (Mobility & Recovery)" },
-			{
-				weekday: "Sunday",
-				type: "Full Body Strength Training",
-				exercises: [
-					{ name: "Trap Bar Deadlifts", rep: "4x6-8" },
-					{ name: "Push-Ups or Dumbbell Press", rep: "3x8-10" },
-					{ name: "Single-Leg Step Downs", rep: "3x8-10 per leg" },
-					{ name: "Cable Rows", rep: "3x10-12" },
-					{ name: "Core: Hanging Knee Raises", rep: "3x12" },
-				],
-			},
 		],
 	},
 ];
