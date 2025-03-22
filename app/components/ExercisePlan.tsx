@@ -4,9 +4,15 @@ import React, { useState } from "react";
 
 import { Box } from "@mui/material";
 import ExerciseSet from "./ExerciseSet";
+import { workoutPlan } from "@/app/data/workoutPlan";
 
 type WorkoutsType = {
-	[day: string]: { id: string; name: string; sets: number; reps: number[] }[];
+	[weekday: string]: {
+		id: string;
+		name: string;
+		sets: number;
+		reps: number[];
+	}[];
 };
 
 const ExercisePlan = () => {
@@ -68,22 +74,29 @@ const ExercisePlan = () => {
 	// 	});
 	// };
 
+	// console.log(workoutPlan);
+
 	return (
 		<Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
 			{"workout plan"}
-			{Object.keys(workouts).map((day) => (
-				<ExerciseSet
-					key={day}
-					day={day}
-					exercises={workouts[day].map((exercise, index) => ({
-						...exercise,
-						onRemove: () => removeExercise(day, index, { day, index }),
-					}))}
-					onAddExercise={() => addExercise(day)}
-					onRemoveExercise={(index) => removeExercise(day, index)}
-					// onDragEnd={onDragEnd}
-				/>
-			))}
+			{workoutPlan.map(({ days }) => {
+				return days.map(({ weekday, exercises, type }, idx) => {
+					return (
+						// <></>
+						<ExerciseSet
+							key={idx}
+							day={weekday}
+							exercises={exercises?.map((exercise, idx) => ({
+								...exercise,
+								onRemove: () => removeExercise(weekday, idx, { weekday, idx }),
+							}))}
+							// onAddExercise={() => addExercise(weekday)}
+							// onRemoveExercise={(idx) => removeExercise(weekday, idx)}
+							// onDragEnd={onDragEnd}
+						/>
+					);
+				});
+			})}
 		</Box>
 	);
 };

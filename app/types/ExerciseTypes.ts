@@ -1,7 +1,7 @@
 export interface ExerciseProps {
 	name?: string;
 	sets: number;
-	reps: number[];
+	reps?: number[] | number;
 	onRemove: () => void;
-	id: string;
+	id?: string;
 }

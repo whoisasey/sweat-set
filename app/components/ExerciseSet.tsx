@@ -33,7 +33,6 @@ const ExerciseSet: React.FC<WorkoutDayProps> = ({
 }) => {
 	return (
 		<Card sx={{ p: 2, mb: 2 }}>
-			{"exercise set"}
 			<Typography variant="h5" fontWeight="bold">
 				{day}
 			</Typography>
@@ -44,16 +43,17 @@ const ExerciseSet: React.FC<WorkoutDayProps> = ({
 			{/* <SortableContext
 				items={exercises.map((e) => e.id)}
 				strategy={verticalListSortingStrategy}> */}
-			{exercises.map((exercise, index) => (
-				<ExerciseForm
-					key={exercise.id}
-					id={exercise.id}
-					name={exercise.name}
-					sets={exercise.sets}
-					reps={exercise.reps}
-					onRemove={() => onRemoveExercise(index)}
-				/>
-			))}
+			{exercises &&
+				exercises.map(({ name, reps, sets }, idx) => (
+					<ExerciseForm
+						key={name}
+						id={name}
+						name={name}
+						sets={sets}
+						reps={10}
+						onRemove={() => onRemoveExercise(idx)}
+					/>
+				))}
 			{/* </SortableContext> */}
 			{/* </DndContext> */}
 			<Button

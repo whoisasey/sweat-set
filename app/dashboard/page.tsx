@@ -5,8 +5,6 @@ import { Box, Typography } from "@mui/material";
 import { workoutPlan } from "@/app/data/workoutPlan";
 
 const DashboardPage = () => {
-	console.log(workoutPlan);
-
 	return (
 		<Box>
 			<Typography variant="h4">Workout Plan</Typography>
@@ -23,7 +21,7 @@ const DashboardPage = () => {
 								</Typography>
 								{exercises?.map(({ name, rep }, idx) => (
 									<Box key={idx}>
-										{name} - {rep}
+										{name} - {rep} reps
 									</Box>
 								))}
 							</Box>
