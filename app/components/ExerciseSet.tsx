@@ -16,7 +16,7 @@ import { ExerciseProps } from "@/app/types/ExerciseTypes";
 interface WorkoutDayProps {
 	day: string;
 	exercises: ExerciseProps[];
-	onAddExercise: () => void;
+	// onAddExercise: () => void;
 	onRemoveExercise: (index: number) => void;
 	// onDragEnd: (event: {
 	// 	active: { id: string };
@@ -26,6 +26,7 @@ interface WorkoutDayProps {
 
 const ExerciseSet: React.FC<WorkoutDayProps> = ({
 	day,
+	title,
 	exercises,
 	onAddExercise,
 	onRemoveExercise,
@@ -34,7 +35,7 @@ const ExerciseSet: React.FC<WorkoutDayProps> = ({
 	return (
 		<Card sx={{ p: 2, mb: 2 }}>
 			<Typography variant="h5" fontWeight="bold">
-				{day}
+				{day} - {title}
 			</Typography>
 			{/* <DndContext
 				collisionDetection={closestCenter}
@@ -50,7 +51,7 @@ const ExerciseSet: React.FC<WorkoutDayProps> = ({
 						id={name}
 						name={name}
 						sets={sets}
-						reps={10}
+						reps={reps}
 						onRemove={() => onRemoveExercise(idx)}
 					/>
 				))}

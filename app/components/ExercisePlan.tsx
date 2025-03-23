@@ -7,32 +7,49 @@ import ExerciseSet from "./ExerciseSet";
 import { workoutPlan } from "@/app/data/workoutPlan";
 
 type WorkoutsType = {
-	[weekday: string]: {
-		id: string;
-		name: string;
-		sets: number;
-		reps: number[];
+	workoutPlan: {
+		week: number;
+		focus: string;
+		days: {
+			weekday: string;
+			type: string;
+			exercises?: {
+				name: string;
+				sets: number;
+				rep: number;
+			}[];
+		}[];
 	}[];
 };
 
 const ExercisePlan = () => {
 	const [workouts, setWorkouts] = useState<WorkoutsType>({
-		Monday: [{ id: "squat", name: "Squat", sets: 3, reps: [6] }],
-		// Tuesday: [{ id: "running", name: "Running", sets: 1, reps: 30 }],
+		workoutPlan: workoutPlan.map((plan) => ({
+			...plan,
+			days: plan.days.map((day) => ({
+				...day,
+				exercises: day.exercises?.map((exercise) => ({
+					name: exercise.name,
+					sets: exercise.sets,
+					rep: exercise.rep,
+				})),
+			})),
+			...workoutPlan,
+		})),
 	});
 
-	const addExercise = (day: string) => {
-		const newExercise = {
-			id: `exercise-${Date.now()}`,
-			name: "New Exercise",
-			sets: 3,
-			reps: [10],
-		};
-		setWorkouts((prev) => ({
-			...prev,
-			[day]: [...prev[day], newExercise],
-		}));
-	};
+	// const addExercise = (day: string) => {
+	// 	const newExercise = {
+	// 		id: `exercise-${Date.now()}`,
+	// 		name: "New Exercise",
+	// 		sets: 3,
+	// 		reps: [10],
+	// 	};
+	// 	setWorkouts((prev) => ({
+	// 		...prev,
+	// 		[day]: [...prev[day], newExercise],
+	// 	}));
+	// };
 
 	// interface RemoveExerciseProps {
 	// 	day: string;
@@ -40,14 +57,21 @@ const ExercisePlan = () => {
 	// }
 
 	const removeExercise = (
-		day: string,
-		index: number,
+		weekday: string,
+		idx: number,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		p0?: { day: string; index: number },
+		p0?: { weekday: string; idx: number },
 	) => {
+		// setWorkouts(
+		// 	(prev) =>{
+		// 	...prev,
+		// 			// TODO: target nested days array and remove exercise
+		// 			// [weekday]: prev[weekday].filter((_, i) => i !== idx),
+		// 		},
+		// );
 		setWorkouts((prev) => ({
 			...prev,
-			[day]: prev[day].filter((_, i) => i !== index),
+			[weekday]: prev[weekday].filter((_, i) => i !== idx),
 		}));
 	};
 
@@ -78,20 +102,18 @@ const ExercisePlan = () => {
 
 	return (
 		<Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-			{"workout plan"}
 			{workoutPlan.map(({ days }) => {
-				return days.map(({ weekday, exercises, type }, idx) => {
+				return days.map(({ weekday, exercises }, idx) => {
 					return (
-						// <></>
 						<ExerciseSet
 							key={idx}
 							day={weekday}
-							exercises={exercises?.map((exercise, idx) => ({
+							exercises={(exercises || []).map((exercise, idx) => ({
 								...exercise,
 								onRemove: () => removeExercise(weekday, idx, { weekday, idx }),
 							}))}
 							// onAddExercise={() => addExercise(weekday)}
-							// onRemoveExercise={(idx) => removeExercise(weekday, idx)}
+							onRemoveExercise={(idx) => removeExercise(weekday, idx)}
 							// onDragEnd={onDragEnd}
 						/>
 					);
