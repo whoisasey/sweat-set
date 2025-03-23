@@ -3,30 +3,23 @@
 import { Box, Button, IconButton, InputLabel } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
 
-import { CSS } from "@dnd-kit/utilities";
+// import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ExerciseProps } from "@/app/types/ExerciseTypes";
 import WeightInput from "@/app/components/ui/Weights";
 import { capitalizeWords } from "@/app/utils/helpers";
 import { exercises } from "@/app/utils/exerciseList";
 import { useSession } from "next-auth/react";
+
 // import { DragEndEvent } from "@dnd-kit/core";
-import { useSortable } from "@dnd-kit/sortable";
+// import { useSortable } from "@dnd-kit/sortable";
 
 type Exercise = {
 	_id: string;
 	exerciseName: string;
 };
 
-export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
-	const { attributes, listeners, setNodeRef, transform, transition } =
-		useSortable({ id });
-
-	const style = {
-		transform: CSS.Transform.toString(transform),
-		transition,
-	};
-
+export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
 	const [sets, setSets] = useState<number>(1); // Initial sets value
 	const [reps, setReps] = useState<number[]>([]); //start with an empty array
@@ -71,13 +64,19 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		setUserId(session?.data?.user?.id);
 	}, [session]);
 
-	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		if (e.target.value === "Not Listed") {
+	const handleChange = (e: React.ChangeEvent<HTMLSelectElement> | string) => {
+		const newValue = typeof e === "string" ? e : e.target.value;
+
+		if (newValue === "Not Listed") {
 			setIsNewExercise(true);
 		}
 
-		setSelectedExercise(e.target.value);
+		setSelectedExercise(newValue);
 	};
+
+	useEffect(() => {
+		if (name) handleChange(name);
+	}, [name]);
 
 	// Handles  input changes
 	const handleInputChange = (index: number, value: string, field?: string) => {
@@ -213,10 +212,6 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	return (
 		<form onSubmit={handleSubmit}>
 			<Box
-				ref={setNodeRef}
-				style={style}
-				{...attributes}
-				{...listeners}
 				sx={{
 					display: "flex",
 					flexDirection: "column",
@@ -225,17 +220,14 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					border: "1px solid #ccc",
 					borderRadius: "8px",
 				}}>
-				{"single exercise"}
-
 				<InputLabel htmlFor="exercise">Exercise</InputLabel>
 				<Box>
 					<select
 						name="exercise"
 						id="exercise"
 						style={{ width: "100%" }}
-						onChange={(e) =>
-							handleChange(e as React.ChangeEvent<HTMLSelectElement>)
-						}>
+						value={name}
+						onChange={handleChange}>
 						{(!allExercises || allExercises.length === 0) && (
 							<option value=""></option>
 						)}
