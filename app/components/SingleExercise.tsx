@@ -5,6 +5,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 
 // import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Exercise } from "@/app/types/ExerciseTypes";
 import { ExerciseProps } from "@/app/types/ExerciseTypes";
 import WeightInput from "@/app/components/ui/Weights";
 import { capitalizeWords } from "@/app/utils/helpers";
@@ -13,11 +14,6 @@ import { useSession } from "next-auth/react";
 
 // import { DragEndEvent } from "@dnd-kit/core";
 // import { useSortable } from "@dnd-kit/sortable";
-
-type Exercise = {
-	_id: string;
-	exerciseName: string;
-};
 
 export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
@@ -216,7 +212,7 @@ export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 					display: "flex",
 					flexDirection: "column",
 					p: 2,
-					mb: 1,
+					my: 2,
 					border: "1px solid #ccc",
 					borderRadius: "8px",
 				}}>
