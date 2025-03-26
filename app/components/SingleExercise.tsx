@@ -28,7 +28,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 	};
 
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
-	const [sets, setSets] = useState<number>(1); // Initial sets value
+	const [sets, setSets] = useState<number>(0); // Initial sets value
 	const [reps, setReps] = useState<number[]>([]); //start with an empty array
 	const [date, setDate] = useState<Date>(new Date());
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
