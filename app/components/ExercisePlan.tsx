@@ -24,6 +24,21 @@ type WorkoutsType = {
 	}[];
 };
 
+// const ExercisePlan = () => {
+// 	const [workouts, setWorkouts] = useState<WorkoutsType>({
+// 		plan: workoutPlan.map((plan) => ({
+// 			...plan,
+// 			days: plan.days.map((day) => ({
+// 				...day,
+// 				exercises: day.exercises?.map((exercise) => ({
+// 					name: exercise.name,
+// 					sets: exercise.reps ?? 0,
+// 					reps: exercise.sets ?? 0,
+// 				})),
+// 			})),
+// 			...workoutPlan,
+// 		})),
+// 	});
 const ExercisePlan = () => {
 	const [workouts, setWorkouts] = useState<WorkoutsType>({
 		plan: workoutPlan.map((plan) => ({
@@ -32,11 +47,8 @@ const ExercisePlan = () => {
 				...day,
 				exercises: day.exercises?.map((exercise) => ({
 					name: exercise.name,
-					sets: exercise.sets ?? 0,
-					rep:
-						typeof exercise.rep === "number"
-							? exercise.rep
-							: parseInt(exercise.rep as string, 10) || 0,
+					sets: exercise.reps ?? 0,
+					rep: exercise.sets ?? 0,
 				})),
 			})),
 			...workoutPlan,

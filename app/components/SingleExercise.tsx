@@ -15,10 +15,10 @@ import { useSession } from "next-auth/react";
 // import { DragEndEvent } from "@dnd-kit/core";
 // import { useSortable } from "@dnd-kit/sortable";
 
-export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
+export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
-	const [sets, setSets] = useState<number>(0); // Initial sets value
-	const [reps, setReps] = useState<number[]>([]); //start with an empty array
+	const [updatedSets, setUpdatedSets] = useState<number>(0); // Initial sets value
+	const [updatedReps, setUpdatedReps] = useState<number[]>([]); //start with an empty array
 	const [date, setDate] = useState<Date>(new Date());
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
 	const [newExercise, setNewExercise] = useState<string>("");
@@ -51,10 +51,10 @@ export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 	}, []);
 
 	// Update weights when sets change
-	useEffect(() => {
-		// If the number of sets changes, update the weights array to match the new number of sets
-		setWeights(Array.from({ length: sets }, () => 0) as number[]);
-	}, [sets]);
+	// useEffect(() => {
+	// 	// If the number of sets changes, update the weights array to match the new number of sets
+	// 	setWeights(Array.from({ length: sets }, () => 0) as number[]);
+	// }, [sets]);
 
 	useEffect(() => {
 		setUserId(session?.data?.user?.id);
@@ -83,7 +83,7 @@ export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 			case "sets": {
 				// Ensure sets is always at least 1
 				const newSets = Math.max(numValue, 1);
-				setSets(newSets);
+				setUpdatedSets(newSets);
 
 				// Adjust the weights array length based on the new number of sets
 				setWeights(
@@ -115,7 +115,7 @@ export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 					});
 				}
 				if (field?.startsWith("rep")) {
-					setReps((prevReps) => {
+					setUpdatedReps((prevReps) => {
 						const newReps = [...prevReps];
 						newReps[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
 						return newReps;
@@ -275,11 +275,13 @@ export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 				<WeightInput
 					selectedExercise={selectedExercise}
 					sets={sets}
+					updatedSets={updatedSets}
 					reps={reps}
-					setReps={setReps}
+					updatedReps={updatedReps}
+					setUpdatedReps={setUpdatedReps}
 					weights={weights}
 					handleInputChange={handleInputChange}
-					setSets={setSets}
+					setUpdatedSets={setUpdatedSets}
 					date={date}
 				/>
 			</Box>
