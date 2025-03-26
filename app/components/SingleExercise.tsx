@@ -232,7 +232,13 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 					<select
 						name="exercise"
 						id="exercise"
-						style={{ width: "100%" }}
+						style={{
+							width: "100%",
+							padding: "8px",
+							borderRadius: "4px",
+							border: "1px solid #ccc",
+							fontSize: "16px",
+						}}
 						onChange={(e) =>
 							handleChange(e as React.ChangeEvent<HTMLSelectElement>)
 						}>
@@ -266,6 +272,12 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 									"newExercise",
 								)
 							}
+							style={{
+								padding: "8px",
+								borderRadius: "4px",
+								border: "1px solid #ccc",
+								fontSize: "16px",
+							}}
 						/>
 					</Box>
 				) : null}

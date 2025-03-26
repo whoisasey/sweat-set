@@ -38,6 +38,7 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 				padding: "8px",
 				borderRadius: "4px",
 				border: "1px solid #ccc",
+				fontSize: "16px",
 			}}
 		/>
 		<Typography variant="body2" color="textSecondary">
@@ -99,6 +100,7 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 					padding: "8px",
 					borderRadius: "4px",
 					border: "1px solid #ccc",
+					fontSize: "16px",
 				}}
 			/>
 		</Box>
