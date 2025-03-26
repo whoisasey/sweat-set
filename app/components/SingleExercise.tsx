@@ -221,6 +221,7 @@ export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 					<select
 						name="exercise"
 						id="exercise"
+						value={name}
 						style={{
 							width: "100%",
 							padding: "8px",

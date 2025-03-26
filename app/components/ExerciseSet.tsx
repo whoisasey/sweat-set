@@ -16,7 +16,8 @@ import { ExerciseProps } from "@/app/types/ExerciseTypes";
 interface WorkoutDayProps {
 	day: string;
 	exercises: ExerciseProps[];
-	// onAddExercise: () => void;
+	title: string;
+	onAddExercise: () => void;
 	onRemoveExercise: (index: number) => void;
 	// onDragEnd: (event: {
 	// 	active: { id: string };

@@ -28,7 +28,9 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setSets }) => (
 			id="sets"
 			inputMode="numeric"
 			pattern="\d*"
-			type="text"
+			type="number"
+			step={1}
+			min={0}
 			placeholder="Sets"
 			name="sets"
 			value={sets}
