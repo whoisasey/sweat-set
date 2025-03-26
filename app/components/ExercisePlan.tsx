@@ -7,7 +7,9 @@ import ExerciseSet from "./ExerciseSet";
 import { workoutPlan } from "@/app/data/workoutPlan";
 
 type WorkoutsType = {
-	workoutPlan: {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	[key: string]: any; // Add an index signature to allow dynamic property access
+	plan: {
 		week: number;
 		focus: string;
 		days: {
@@ -24,14 +26,17 @@ type WorkoutsType = {
 
 const ExercisePlan = () => {
 	const [workouts, setWorkouts] = useState<WorkoutsType>({
-		workoutPlan: workoutPlan.map((plan) => ({
+		plan: workoutPlan.map((plan) => ({
 			...plan,
 			days: plan.days.map((day) => ({
 				...day,
 				exercises: day.exercises?.map((exercise) => ({
 					name: exercise.name,
-					sets: exercise.sets,
-					rep: exercise.rep,
+					sets: exercise.sets ?? 0,
+					rep:
+						typeof exercise.rep === "number"
+							? exercise.rep
+							: parseInt(exercise.rep as string, 10) || 0,
 				})),
 			})),
 			...workoutPlan,
@@ -62,16 +67,20 @@ const ExercisePlan = () => {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		p0?: { weekday: string; idx: number },
 	) => {
-		// setWorkouts(
-		// 	(prev) =>{
-		// 	...prev,
-		// 			// TODO: target nested days array and remove exercise
-		// 			// [weekday]: prev[weekday].filter((_, i) => i !== idx),
-		// 		},
-		// );
-		setWorkouts((prev) => ({
+		setWorkouts((prev: WorkoutsType) => ({
 			...prev,
-			[weekday]: prev[weekday].filter((_, i) => i !== idx),
+			plan: prev.plan.map((plan: WorkoutsType["plan"][number]) => ({
+				...plan,
+				days: plan.days.map(
+					(day: WorkoutsType["plan"][number]["days"][number]) =>
+						day.weekday === weekday
+							? {
+									...day,
+									exercises: day.exercises?.filter((_, i: number) => i !== idx),
+							  }
+							: day,
+				),
+			})),
 		}));
 	};
 
@@ -100,9 +109,11 @@ const ExercisePlan = () => {
 
 	// console.log(workoutPlan);
 
+	const { plan } = workouts;
+
 	return (
 		<Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-			{workoutPlan.map(({ days }) => {
+			{plan.map(({ days }) => {
 				return days.map(({ weekday, exercises }, idx) => {
 					return (
 						<ExerciseSet
@@ -114,7 +125,10 @@ const ExercisePlan = () => {
 							}))}
 							// onAddExercise={() => addExercise(weekday)}
 							onRemoveExercise={(idx) => removeExercise(weekday, idx)}
-							// onDragEnd={onDragEnd}
+							title={""}
+							onAddExercise={function (): void {
+								throw new Error("Function not implemented.");
+							}} // onDragEnd={onDragEnd}
 						/>
 					);
 				});
