@@ -186,7 +186,7 @@ const WeightInput: React.FC<WeightInputProps> = ({
 			</Box>
 		);
 	}
-
+	// TODO: get the value of reps and pass into the input field
 	return (
 		<>
 			<SetInput
