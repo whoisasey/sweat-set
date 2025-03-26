@@ -16,6 +16,10 @@ export const workoutPlan = [
 			},
 			{
 				weekday: "Monday",
+				type: "Recovery Day",
+			},
+			{
+				weekday: "Tuesday",
 				type: "Short Strength (Unilateral Lower Body, 30-40 min)",
 				exercises: [
 					{ name: "Bulgarian Split Squat", rep: 3, sets: 10 },
@@ -25,23 +29,16 @@ export const workoutPlan = [
 				],
 			},
 			{
-				weekday: "Tuesday",
+				weekday: "Wednesday",
 				type: "Running (Endurance Focus, 25-30 min)",
 				workout: "Run/Walk Intervals: 4 min run / 1 min walk (repeat 5x)",
 			},
 			{
-				weekday: "Wednesday",
-				type: "Full Body Strength Training",
-				exercises: [
-					{ name: "Barbell Squat", rep: 3, sets: 8 },
-					{ name: "Dumbbell Bench Press", rep: 3, sets: 10 },
-					{ name: "Barbell Row", rep: 3, sets: 10 },
-					{ name: "Single-Leg Glute Bridges", rep: 3, sets: 10 },
-					{ name: "Core: Russian Twists", rep: 3, sets: 20 },
-				],
+				weekday: "Thursday",
+				type: "Recovery Day",
 			},
 			{
-				weekday: "Thursday",
+				weekday: "Friday",
 				type: "Short Upper Body Strength (30-40 min)",
 				exercises: [
 					{ name: "Single-Arm Dumbbell Overhead Press", rep: 3 },
@@ -49,7 +46,6 @@ export const workoutPlan = [
 					{ name: "Core: Pallof Press", rep: 3, sets: 10 },
 				],
 			},
-			{ weekday: "Friday", type: "Recovery Day" },
 			{ weekday: "Saturday", type: "Hot Yoga (Mobility & Recovery)" },
 		],
 	},
@@ -70,6 +66,10 @@ export const workoutPlan = [
 			},
 			{
 				weekday: "Monday",
+				type: "Recovery Day",
+			},
+			{
+				weekday: "Tuesday",
 				type: "Short Strength (Unilateral Lower Body, 30-40 min)",
 				exercises: [
 					{ name: "Lateral Lunges", rep: 3, sets: 10 },
@@ -79,13 +79,16 @@ export const workoutPlan = [
 				],
 			},
 			{
-				weekday: "Tuesday",
+				weekday: "Wednesday",
 				type: "Running (Speed or Tempo Focus, 20-30 min)",
 				workout: "30-sec sprint + 90-sec walk (repeat 6-8x)",
 			},
-			{ weekday: "Wednesday", type: "Recovery Day" },
 			{
 				weekday: "Thursday",
+				type: "Recovery Day",
+			},
+			{
+				weekday: "Friday",
 				type: "Short Upper Body Strength (30-40 min)",
 				exercises: [
 					{ name: "Single-Arm Dumbbell Bench Press", rep: 3, sets: 10 },
@@ -97,7 +100,6 @@ export const workoutPlan = [
 					},
 				],
 			},
-			{ weekday: "Friday", type: "Recovery Day" },
 			{ weekday: "Saturday", type: "Hot Yoga (Mobility & Recovery)" },
 		],
 	},

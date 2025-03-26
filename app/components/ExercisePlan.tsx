@@ -114,7 +114,7 @@ const ExercisePlan = () => {
 	return (
 		<Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
 			{plan.map(({ days }) => {
-				return days.map(({ weekday, exercises }, idx) => {
+				return days.map(({ weekday, exercises, type }, idx) => {
 					return (
 						<ExerciseSet
 							key={idx}
@@ -125,7 +125,7 @@ const ExercisePlan = () => {
 							}))}
 							// onAddExercise={() => addExercise(weekday)}
 							onRemoveExercise={(idx) => removeExercise(weekday, idx)}
-							title={""}
+							title={type}
 							onAddExercise={function (): void {
 								throw new Error("Function not implemented.");
 							}} // onDragEnd={onDragEnd}
