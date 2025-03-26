@@ -17,7 +17,7 @@ import { useSession } from "next-auth/react";
 
 export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
-	const [sets, setSets] = useState<number>(1); // Initial sets value
+	const [sets, setSets] = useState<number>(0); // Initial sets value
 	const [reps, setReps] = useState<number[]>([]); //start with an empty array
 	const [date, setDate] = useState<Date>(new Date());
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
@@ -221,9 +221,16 @@ export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 					<select
 						name="exercise"
 						id="exercise"
-						style={{ width: "100%" }}
-						value={name}
-						onChange={handleChange}>
+						style={{
+							width: "100%",
+							padding: "8px",
+							borderRadius: "4px",
+							border: "1px solid #ccc",
+							fontSize: "16px",
+						}}
+						onChange={(e) =>
+							handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+						}>
 						{(!allExercises || allExercises.length === 0) && (
 							<option value=""></option>
 						)}
@@ -254,6 +261,12 @@ export const ExerciseForm = ({ onRemove, name }: ExerciseProps) => {
 									"newExercise",
 								)
 							}
+							style={{
+								padding: "8px",
+								borderRadius: "4px",
+								border: "1px solid #ccc",
+								fontSize: "16px",
+							}}
 						/>
 					</Box>
 				) : null}
