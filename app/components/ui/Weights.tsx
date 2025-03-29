@@ -65,51 +65,50 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 }) => {
 	const windowWidth = useWindowSize("width");
 
-	// console.log("sets:", sets, );
-	// console.log("reps:", reps,);
-
 	const renderInputs = (
 		state: number[] | number,
 		input: string,
 		index: number,
 		width: string,
-	) => (
-		<Box
-			sx={{
-				display: "flex",
-				flexDirection: "column",
-				justifyContent: "center",
-				width: `${
-					windowWidth && windowWidth < 540 ? "calc(50% - 32px)" : width
-				}`,
-			}}>
-			<label htmlFor={`${input}-${index}`}>{`${capitalizeWords(
-				input,
-			)}s`}</label>
-			<input
-				id={`${input}-${index}`}
-				inputMode="decimal"
-				type="number"
-				step={0.5}
-				min={0}
-				name={`${input}-${index}`}
-				value={Array.isArray(state) ? state.join(", ") : state || ""} // Convert array to string or fallback to empty string
-				onChange={(e) =>
-					handleInputChange(
-						index,
-						(e.target as HTMLInputElement).value,
-						`${input}-${index}`,
-					)
-				}
-				style={{
-					padding: "8px",
-					borderRadius: "4px",
-					border: "1px solid #ccc",
-					fontSize: "16px",
-				}}
-			/>
-		</Box>
-	);
+	) => {
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					width: `${
+						windowWidth && windowWidth < 540 ? "calc(50% - 32px)" : width
+					}`,
+				}}>
+				<label htmlFor={`${input}-${index}`}>{`${capitalizeWords(
+					input,
+				)}s`}</label>
+				<input
+					id={`${input}-${index}`}
+					inputMode="decimal"
+					type="number"
+					step={0.5}
+					min={0}
+					name={`${input}-${index}`}
+					// value={state[index] || 0} // Fallback to empty string to avoid undefined errors
+					onChange={(e) =>
+						handleInputChange(
+							index,
+							(e.target as HTMLInputElement).value,
+							`${input}-${index}`,
+						)
+					}
+					style={{
+						padding: "8px",
+						borderRadius: "4px",
+						border: "1px solid #ccc",
+						fontSize: "16px",
+					}}
+				/>
+			</Box>
+		);
+	};
 
 	return (
 		<>

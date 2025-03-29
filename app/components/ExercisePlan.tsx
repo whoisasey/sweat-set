@@ -18,7 +18,7 @@ type WorkoutsType = {
 			exercises?: {
 				name: string;
 				sets: number;
-				rep: number;
+				reps: number;
 			}[];
 		}[];
 	}[];
@@ -48,7 +48,7 @@ const ExercisePlan = () => {
 				exercises: day.exercises?.map((exercise) => ({
 					name: exercise.name,
 					sets: exercise.reps ?? 0,
-					rep: exercise.sets ?? 0,
+					reps: exercise.sets ?? 0,
 				})),
 			})),
 			...workoutPlan,

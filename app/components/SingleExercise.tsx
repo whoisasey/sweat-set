@@ -117,11 +117,7 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 				// Handle weight input fields dynamically
 				if (field?.startsWith("weight")) {
 					setWeights((prevWeights) => {
-						// console.log(prevWeights);
-
 						const newWeights = [...prevWeights];
-						// console.log(newWeights);
-
 						newWeights[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
 						return newWeights;
 					});
