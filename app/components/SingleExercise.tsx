@@ -51,10 +51,10 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 	}, []);
 
 	// Update weights when sets change
-	// useEffect(() => {
-	// 	// If the number of sets changes, update the weights array to match the new number of sets
-	// 	setWeights(Array.from({ length: sets }, () => 0) as number[]);
-	// }, [sets]);
+	useEffect(() => {
+		// If the number of sets changes, update the weights array to match the new number of sets
+		setWeights(Array.from({ length: updatedSets }, () => 0) as number[]);
+	}, [updatedSets]);
 
 	useEffect(() => {
 		setUserId(session?.data?.user?.id);
@@ -63,15 +63,19 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement> | string) => {
 		const newValue = typeof e === "string" ? e : e.target.value;
 
+		// Only update if the value has changed
+		if (newValue !== selectedExercise) {
+			setSelectedExercise(newValue);
+		}
+
 		if (newValue === "Not Listed") {
 			setIsNewExercise(true);
 		}
-
-		setSelectedExercise(newValue);
 	};
 
 	useEffect(() => {
 		if (name) handleChange(name);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [name]);
 
 	// Handles  input changes
@@ -221,7 +225,7 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 					<select
 						name="exercise"
 						id="exercise"
-						value={name}
+						value={selectedExercise}
 						style={{
 							width: "100%",
 							padding: "8px",
