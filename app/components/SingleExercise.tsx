@@ -50,6 +50,10 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 		fetchExercises();
 	}, []);
 
+	useEffect(() => {
+		setUpdatedSets(sets as number);
+	}, [updatedSets, sets]);
+
 	// Update weights when sets change
 	useEffect(() => {
 		// If the number of sets changes, update the weights array to match the new number of sets
@@ -113,7 +117,11 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 				// Handle weight input fields dynamically
 				if (field?.startsWith("weight")) {
 					setWeights((prevWeights) => {
+						// console.log(prevWeights);
+
 						const newWeights = [...prevWeights];
+						// console.log(newWeights);
+
 						newWeights[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
 						return newWeights;
 					});
