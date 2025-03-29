@@ -70,45 +70,50 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 		input: string,
 		index: number,
 		width: string,
-	) => {
-		return (
-			<Box
-				sx={{
-					display: "flex",
-					flexDirection: "column",
-					justifyContent: "center",
-					width: `${
-						windowWidth && windowWidth < 540 ? "calc(50% - 32px)" : width
-					}`,
-				}}>
-				<label htmlFor={`${input}-${index}`}>{`${capitalizeWords(
-					input,
-				)}s`}</label>
-				<input
-					id={`${input}-${index}`}
-					inputMode="decimal"
-					type="number"
-					step={0.5}
-					min={0}
-					name={`${input}-${index}`}
-					// value={state[index] || 0} // Fallback to empty string to avoid undefined errors
-					onChange={(e) =>
-						handleInputChange(
-							index,
-							(e.target as HTMLInputElement).value,
-							`${input}-${index}`,
-						)
-					}
-					style={{
-						padding: "8px",
-						borderRadius: "4px",
-						border: "1px solid #ccc",
-						fontSize: "16px",
-					}}
-				/>
-			</Box>
-		);
-	};
+	) => (
+		<Box
+			sx={{
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "center",
+				width: `${
+					windowWidth && windowWidth < 540 ? "calc(50% - 32px)" : width
+				}`,
+			}}>
+			<label htmlFor={`${input}-${index}`}>{`${capitalizeWords(
+				input,
+			)}s`}</label>
+			<input
+				id={`${input}-${index}`}
+				inputMode="decimal"
+				type="number"
+				step={0.5}
+				min={0}
+				value={
+					input === "rep"
+						? Array.isArray(reps)
+							? reps[index] || 0
+							: reps
+						: undefined
+				} // Ensure reps is a number or fallback to 0
+				name={`${input}-${index}`}
+				// value={state[index] || 0} // Fallback to empty string to avoid undefined errors
+				onChange={(e) =>
+					handleInputChange(
+						index,
+						(e.target as HTMLInputElement).value,
+						`${input}-${index}`,
+					)
+				}
+				style={{
+					padding: "8px",
+					borderRadius: "4px",
+					border: "1px solid #ccc",
+					fontSize: "16px",
+				}}
+			/>
+		</Box>
+	);
 
 	return (
 		<>
