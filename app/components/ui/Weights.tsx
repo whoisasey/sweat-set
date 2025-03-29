@@ -72,6 +72,8 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 		index: number,
 		width: string,
 	) => (
+		// TODO: rep is returning state[0] as 0
+		// console.log(input, state) ||
 		<Box
 			sx={{
 				display: "flex",
@@ -94,11 +96,10 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 					input === "rep"
 						? Array.isArray(state)
 							? Number(state[index]).toString() // Ensure reps is a string
-							: 0
+							: state
 						: undefined
 				} // Ensure reps is a string or fallback to "0"
 				name={`${input}-${index}`}
-				// value={state[index] || 0} // Fallback to empty string to avoid undefined errors
 				onChange={(e) =>
 					handleInputChange(
 						index,
@@ -166,7 +167,7 @@ interface WeightInputProps {
 // Parent Component that handles weight and set inputs
 const WeightInput: React.FC<WeightInputProps> = ({
 	selectedExercise,
-	sets,
+	updatedSets,
 	weights,
 	handleInputChange,
 	setUpdatedSets,
@@ -194,11 +195,13 @@ const WeightInput: React.FC<WeightInputProps> = ({
 	return (
 		<>
 			<SetInput
-				sets={typeof sets === "string" ? Number(sets) : sets}
+				sets={
+					typeof updatedSets === "string" ? Number(updatedSets) : updatedSets
+				}
 				setUpdatedSets={setUpdatedSets}
 			/>
 			<WeightInputs
-				sets={typeof sets === "string" ? Number(sets) : sets || 0}
+				sets={Number(updatedSets)}
 				reps={
 					Array.isArray(updatedReps) || typeof updatedReps === "number"
 						? updatedReps

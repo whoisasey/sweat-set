@@ -4,7 +4,7 @@ export type Exercise = {
 };
 export interface ExerciseProps {
 	name?: string;
-	sets?: number | string | undefined;
+	sets?: number;
 	reps?: number[];
 	onRemove?: () => void;
 	id?: string;

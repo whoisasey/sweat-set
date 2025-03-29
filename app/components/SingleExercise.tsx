@@ -51,9 +51,13 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 	}, []);
 
 	useEffect(() => {
-		setUpdatedSets(sets as number);
 		setUpdatedReps(reps as number[]);
-	}, [updatedSets, sets, reps]);
+	}, [reps]);
+
+	useEffect(() => {
+		if (sets) setUpdatedSets(sets);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [sets]);
 
 	// Update weights when sets change
 	useEffect(() => {
@@ -85,7 +89,7 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 
 	useEffect(() => {
 		if (reps) handleInputChange(0, reps, "rep");
-		// console.log(reps);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [reps]);
 
 	// Handles  input changes
@@ -103,6 +107,7 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 				// Ensure sets is always at least 1
 				const newSets = Math.max(numValue, 1);
 				setUpdatedSets(newSets);
+				console.log(updatedSets);
 
 				// Adjust the weights array length based on the new number of sets
 				setWeights(
@@ -138,10 +143,7 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 
 					setUpdatedReps((prevReps) => {
 						const newReps = [...prevReps];
-
 						newReps[index] = newValue || 0; // Ensure weight defaults to 0 if invalid
-						console.log(newReps);
-
 						return newReps;
 					});
 				}
@@ -228,6 +230,7 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 			console.error("Error submitting exercise:", error);
 		}
 	};
+	// console.log(updatedSets);
 
 	return (
 		<form onSubmit={handleSubmit}>
