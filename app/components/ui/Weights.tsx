@@ -53,6 +53,7 @@ const SetInput: React.FC<SetInputProps> = ({ sets, setUpdatedSets }) => (
 interface WeightInputsProps {
 	sets: number;
 	reps: number[] | number;
+	updatedReps?: number[] | number;
 	weights: number[];
 	handleInputChange: (index: number, value: string, field?: string) => void;
 }
@@ -66,7 +67,7 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 	const windowWidth = useWindowSize("width");
 
 	const renderInputs = (
-		state: number[] | number,
+		state: number | number[],
 		input: string,
 		index: number,
 		width: string,
@@ -91,11 +92,11 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 				min={0}
 				value={
 					input === "rep"
-						? Array.isArray(reps)
-							? reps[index] || 0
-							: reps
+						? Array.isArray(state)
+							? Number(state[index]).toString() // Ensure reps is a string
+							: 0
 						: undefined
-				} // Ensure reps is a number or fallback to 0
+				} // Ensure reps is a string or fallback to "0"
 				name={`${input}-${index}`}
 				// value={state[index] || 0} // Fallback to empty string to avoid undefined errors
 				onChange={(e) =>
@@ -154,7 +155,6 @@ interface WeightInputProps {
 	selectedExercise: string;
 	sets?: number | string;
 	updatedSets?: number;
-	reps?: number[] | number | string;
 	updatedReps?: number[] | number;
 	weights: number[];
 	date: Date;
@@ -167,10 +167,10 @@ interface WeightInputProps {
 const WeightInput: React.FC<WeightInputProps> = ({
 	selectedExercise,
 	sets,
-	reps,
 	weights,
 	handleInputChange,
 	setUpdatedSets,
+	updatedReps,
 	date,
 }) => {
 	if (selectedExercise === "running") {
@@ -190,7 +190,7 @@ const WeightInput: React.FC<WeightInputProps> = ({
 			</Box>
 		);
 	}
-	// TODO: get the value of reps and pass into the input field
+
 	return (
 		<>
 			<SetInput
@@ -199,7 +199,11 @@ const WeightInput: React.FC<WeightInputProps> = ({
 			/>
 			<WeightInputs
 				sets={typeof sets === "string" ? Number(sets) : sets || 0}
-				reps={Array.isArray(reps) || typeof reps === "number" ? reps : []}
+				reps={
+					Array.isArray(updatedReps) || typeof updatedReps === "number"
+						? updatedReps
+						: []
+				}
 				weights={weights}
 				handleInputChange={handleInputChange}
 			/>

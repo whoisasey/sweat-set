@@ -52,7 +52,8 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 
 	useEffect(() => {
 		setUpdatedSets(sets as number);
-	}, [updatedSets, sets]);
+		setUpdatedReps(reps as number[]);
+	}, [updatedSets, sets, reps]);
 
 	// Update weights when sets change
 	useEffect(() => {
@@ -82,11 +83,21 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [name]);
 
+	useEffect(() => {
+		if (reps) handleInputChange(0, reps, "rep");
+		// console.log(reps);
+	}, [reps]);
+
 	// Handles  input changes
-	const handleInputChange = (index: number, value: string, field?: string) => {
+	const handleInputChange = (
+		index: number,
+		value: string | number[],
+		field?: string,
+	) => {
 		// Convert input value to a number, default to 1 if invalid (except for weights)
 		const numValue = Number(value) || 1;
 
+		const stringVal = typeof value === "string" ? value : "";
 		switch (field) {
 			case "sets": {
 				// Ensure sets is always at least 1
@@ -105,12 +116,12 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 
 			case "date":
 				// Convert the input value to a Date object
-				setDate(new Date(value));
+				setDate(new Date(stringVal));
 				return;
 
 			case "newExercise":
-				setNewExercise(capitalizeWords(value));
-				setSelectedExercise(value);
+				setNewExercise(capitalizeWords(stringVal));
+				setSelectedExercise(stringVal);
 				return;
 
 			default:
@@ -123,9 +134,14 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 					});
 				}
 				if (field?.startsWith("rep")) {
+					const newValue = Number(value) || 0; // Ensure weight defaults to 0 if invalid
+
 					setUpdatedReps((prevReps) => {
 						const newReps = [...prevReps];
-						newReps[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
+
+						newReps[index] = newValue || 0; // Ensure weight defaults to 0 if invalid
+						console.log(newReps);
+
 						return newReps;
 					});
 				}
@@ -144,7 +160,7 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 
 		// Add form data
 		data.sets = sets;
-		data.reps = reps;
+		data.reps = updatedReps;
 		data.exerciseId = selectedExercise;
 		data.weights = weights;
 		data.distance =
@@ -284,7 +300,6 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 					selectedExercise={selectedExercise}
 					sets={sets}
 					updatedSets={updatedSets}
-					reps={reps}
 					updatedReps={updatedReps}
 					setUpdatedReps={setUpdatedReps}
 					weights={weights}
