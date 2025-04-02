@@ -72,8 +72,6 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 		index: number,
 		width: string,
 	) => (
-		// TODO: rep is returning state[0] as 0
-		// console.log(input, state) ||
 		<Box
 			sx={{
 				display: "flex",

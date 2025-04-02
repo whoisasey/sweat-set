@@ -9,14 +9,13 @@ import { Exercise } from "@/app/types/ExerciseTypes";
 import { ExerciseProps } from "@/app/types/ExerciseTypes";
 import WeightInput from "@/app/components/ui/Weights";
 import { capitalizeWords } from "@/app/utils/helpers";
-import { exercises } from "@/app/utils/exerciseList";
 import { useSession } from "next-auth/react";
 
 // import { DragEndEvent } from "@dnd-kit/core";
 // import { useSortable } from "@dnd-kit/sortable";
 
 export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
-	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
+	const [selectedExercise, setSelectedExercise] = useState<string>("");
 	const [updatedSets, setUpdatedSets] = useState<number>(0); // Initial sets value
 	const [updatedReps, setUpdatedReps] = useState<number[]>([]); //start with an empty array
 	const [date, setDate] = useState<Date>(new Date());
@@ -69,6 +68,17 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 		setUserId(session?.data?.user?.id);
 	}, [session]);
 
+	useEffect(() => {
+		if (name) handleChange(name);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [name]);
+
+	useEffect(() => {
+		if (reps) handleInputChange(0, reps, "rep");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [reps]);
+
+	// TODO: on effect, set the selected exercise to the first one in the list
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement> | string) => {
 		const newValue = typeof e === "string" ? e : e.target.value;
 
@@ -81,16 +91,6 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 			setIsNewExercise(true);
 		}
 	};
-
-	useEffect(() => {
-		if (name) handleChange(name);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [name]);
-
-	useEffect(() => {
-		if (reps) handleInputChange(0, reps, "rep");
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [reps]);
 
 	// Handles  input changes
 	const handleInputChange = (
@@ -107,7 +107,7 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 				// Ensure sets is always at least 1
 				const newSets = Math.max(numValue, 1);
 				setUpdatedSets(newSets);
-				console.log(updatedSets);
+				// console.log(updatedSets);
 
 				// Adjust the weights array length based on the new number of sets
 				setWeights(
@@ -134,16 +134,16 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 				if (field?.startsWith("weight")) {
 					setWeights((prevWeights) => {
 						const newWeights = [...prevWeights];
+
 						newWeights[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
+
 						return newWeights;
 					});
 				}
 				if (field?.startsWith("rep")) {
-					const newValue = Number(value) || 0; // Ensure weight defaults to 0 if invalid
-
 					setUpdatedReps((prevReps) => {
 						const newReps = [...prevReps];
-						newReps[index] = newValue || 0; // Ensure weight defaults to 0 if invalid
+						newReps[index] = Number(value) || newReps[index];
 						return newReps;
 					});
 				}
