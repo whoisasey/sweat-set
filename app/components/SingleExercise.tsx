@@ -78,7 +78,6 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [reps]);
 
-	// TODO: on effect, set the selected exercise to the first one in the list
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement> | string) => {
 		const newValue = typeof e === "string" ? e : e.target.value;
 
