@@ -78,6 +78,8 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [reps]);
 
+	// TODO: add error handling if selectedExercise does not have a value
+	// TODO: based on day of the week of the 2-week split, show different exercises
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement> | string) => {
 		const newValue = typeof e === "string" ? e : e.target.value;
 

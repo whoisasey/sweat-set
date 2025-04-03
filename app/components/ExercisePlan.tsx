@@ -6,6 +6,8 @@ import { Box } from "@mui/material";
 import ExerciseSet from "./ExerciseSet";
 import { workoutPlan } from "@/app/data/workoutPlan";
 
+// import { updateDateArray, weekdayToIndexMap } from "@/app/utils/helpers-fe";
+
 type WorkoutsType = {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[key: string]: any; // Add an index signature to allow dynamic property access
@@ -24,21 +26,6 @@ type WorkoutsType = {
 	}[];
 };
 
-// const ExercisePlan = () => {
-// 	const [workouts, setWorkouts] = useState<WorkoutsType>({
-// 		plan: workoutPlan.map((plan) => ({
-// 			...plan,
-// 			days: plan.days.map((day) => ({
-// 				...day,
-// 				exercises: day.exercises?.map((exercise) => ({
-// 					name: exercise.name,
-// 					sets: exercise.reps ?? 0,
-// 					reps: exercise.sets ?? 0,
-// 				})),
-// 			})),
-// 			...workoutPlan,
-// 		})),
-// 	});
 const ExercisePlan = () => {
 	const [workouts, setWorkouts] = useState<WorkoutsType>({
 		plan: workoutPlan.map((plan) => ({
@@ -125,8 +112,10 @@ const ExercisePlan = () => {
 
 	return (
 		<Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-			{plan.map(({ days }) => {
+			{plan.map(({ days, week }) => {
 				return days.map(({ weekday, exercises, type }, idx) => {
+					// console.log(`${week}${idx}`, weekday);
+
 					return (
 						<ExerciseSet
 							key={idx}
