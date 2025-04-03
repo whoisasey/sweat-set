@@ -4,6 +4,7 @@ import React, { useState } from "react";
 
 import { Box } from "@mui/material";
 import ExerciseSet from "./ExerciseSet";
+import { formatDate } from "@/app/utils/helpers";
 import { workoutPlan } from "@/app/data/workoutPlan";
 
 // import { updateDateArray, weekdayToIndexMap } from "@/app/utils/helpers-fe";
@@ -16,6 +17,7 @@ type WorkoutsType = {
 		focus: string;
 		days: {
 			weekday: string;
+			date: string | Date;
 			type: string;
 			exercises?: {
 				name: string;
@@ -32,6 +34,7 @@ const ExercisePlan = () => {
 			...plan,
 			days: plan.days.map((day) => ({
 				...day,
+				date: new Date(day?.date ?? ""),
 				exercises: day.exercises?.map((exercise) => ({
 					name: exercise.name,
 					sets: exercise.sets ?? 0,
@@ -109,6 +112,14 @@ const ExercisePlan = () => {
 	// console.log(workoutPlan);
 
 	const { plan } = workouts;
+	// console.log(plan);
+
+	// map over workoutPlan and filter the object that matches todays date
+	const currentPlan = plan.filter((item) => {
+		item.days.filter((day) => {
+			const date = new Date(day.date);
+		});
+	});
 
 	return (
 		<Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
