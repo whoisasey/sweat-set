@@ -1,12 +1,11 @@
 "use client";
 
+import { Box, Button, Card, Typography } from "@mui/material";
 import React, { useState } from "react";
 
-import { Box } from "@mui/material";
-import ExerciseSet from "./ExerciseSet";
+import AddIcon from "@mui/icons-material/Add";
+import { ExerciseForm } from "./SingleExercise";
 import { workoutPlan } from "@/app/data/workoutPlan";
-
-// import { updateDateArray, weekdayToIndexMap } from "@/app/utils/helpers-fe";
 
 type WorkoutsType = {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,6 +27,8 @@ type WorkoutsType = {
 };
 
 const ExercisePlan = () => {
+	// TODO: fix to updated data
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [workouts, setWorkouts] = useState<WorkoutsType>({
 		plan: workoutPlan.map((plan) => ({
 			...plan,
@@ -108,12 +109,8 @@ const ExercisePlan = () => {
 	// 	});
 	// };
 
-	// console.log(workoutPlan);
-
-	const { plan } = workouts;
-
-	// const todaysDate = new Date("2025-04-04T04:00:00.000Z");
-	const todaysDate = new Date();
+	const todaysDate = new Date("2025-04-04T04:00:00.000Z");
+	// const todaysDate = new Date();
 	const formattedToday = todaysDate.toLocaleDateString("en-US", {
 		weekday: "long",
 		year: "numeric",
@@ -121,39 +118,48 @@ const ExercisePlan = () => {
 		day: "numeric",
 	});
 
-	console.log("todays date", formattedToday);
-
 	// map over workoutPlan and filter the object that matches todays date
 	const todaysWorkout = workoutPlan
 		.flatMap((week) => week.days)
 		.find((day) => {
 			return day.date?.trim() === formattedToday;
 		});
-	console.log(todaysWorkout);
 
 	return (
 		<Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-			{plan.map(({ days, week }) => {
-				return days.map(({ weekday, exercises, type }, idx) => {
-					// console.log(`${week}${idx}`, weekday);
+			<Typography variant="h5" fontWeight="bold">
+				{todaysWorkout?.weekday} - {todaysWorkout?.type}
+			</Typography>
 
-					return (
-						<ExerciseSet
-							key={idx}
-							day={weekday}
-							exercises={(exercises || []).map((exercise, idx) => ({
-								...exercise,
-								onRemove: () => removeExercise(weekday, idx, { weekday, idx }),
-							}))}
-							// onAddExercise={() => addExercise(weekday)}
-							onRemoveExercise={(idx) => removeExercise(weekday, idx)}
-							title={type}
-							onAddExercise={function (): void {
-								throw new Error("Function not implemented.");
-							}} // onDragEnd={onDragEnd}
+			{todaysWorkout?.exercises?.map(({ name, reps, sets }, idx) => {
+				return (
+					<Card
+						key={idx}
+						sx={{
+							mb: 2,
+							p: 2,
+							my: 2,
+							border: "1px solid #ccc",
+							boxShadow: 0,
+							borderRadius: "8px",
+						}}>
+						<ExerciseForm
+							key={name}
+							id={name}
+							name={name}
+							sets={sets}
+							reps={reps}
+							onRemove={() => removeExercise(todaysWorkout.weekday, idx)}
 						/>
-					);
-				});
+						<Button
+							variant="outlined"
+							startIcon={<AddIcon />}
+							// onClick={addexercise}
+							sx={{ mt: 2 }}>
+							Add Exercise
+						</Button>
+					</Card>
+				);
 			})}
 		</Box>
 	);

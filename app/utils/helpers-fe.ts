@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-// import { workoutPlan } from "@/app/data/workoutPlan";
-
 export const useWindowSize = (dimension: "width" | "height") => {
 	const [size, setSize] = useState<number | undefined>(undefined);
 

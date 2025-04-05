@@ -239,10 +239,6 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 				sx={{
 					display: "flex",
 					flexDirection: "column",
-					p: 2,
-					my: 2,
-					border: "1px solid #ccc",
-					borderRadius: "8px",
 				}}>
 				<InputLabel htmlFor="exercise">Exercise</InputLabel>
 				<Box>
