@@ -109,8 +109,8 @@ const ExercisePlan = () => {
 	// 	});
 	// };
 
-	const todaysDate = new Date("2025-04-04T04:00:00.000Z");
-	// const todaysDate = new Date();
+	// const todaysDate = new Date("2025-04-04T04:00:00.000Z");
+	const todaysDate = new Date();
 	const formattedToday = todaysDate.toLocaleDateString("en-US", {
 		weekday: "long",
 		year: "numeric",
@@ -130,6 +130,9 @@ const ExercisePlan = () => {
 			<Typography variant="h5" fontWeight="bold">
 				{todaysWorkout?.weekday} - {todaysWorkout?.type}
 			</Typography>
+			{todaysWorkout?.exercises === undefined && (
+				<Typography variant="h6">Rest Day!</Typography>
+			)}
 
 			{todaysWorkout?.exercises?.map(({ name, reps, sets }, idx) => {
 				return (
