@@ -4,7 +4,6 @@ import React, { useState } from "react";
 
 import { Box } from "@mui/material";
 import ExerciseSet from "./ExerciseSet";
-import { formatDate } from "@/app/utils/helpers";
 import { workoutPlan } from "@/app/data/workoutPlan";
 
 // import { updateDateArray, weekdayToIndexMap } from "@/app/utils/helpers-fe";
@@ -112,14 +111,25 @@ const ExercisePlan = () => {
 	// console.log(workoutPlan);
 
 	const { plan } = workouts;
-	// console.log(plan);
+
+	// const todaysDate = new Date("2025-04-04T04:00:00.000Z");
+	const todaysDate = new Date();
+	const formattedToday = todaysDate.toLocaleDateString("en-US", {
+		weekday: "long",
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
+
+	console.log("todays date", formattedToday);
 
 	// map over workoutPlan and filter the object that matches todays date
-	const currentPlan = plan.filter((item) => {
-		item.days.filter((day) => {
-			const date = new Date(day.date);
+	const todaysWorkout = workoutPlan
+		.flatMap((week) => week.days)
+		.find((day) => {
+			return day.date?.trim() === formattedToday;
 		});
-	});
+	console.log(todaysWorkout);
 
 	return (
 		<Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
