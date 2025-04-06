@@ -7,9 +7,10 @@ const exerciseSchema = new mongoose.Schema(
 	{ timestamps: true },
 );
 
-const dbName = process.env.NODE_ENV === "production" ? "app" : "app_dev";
+// const dbName = process.env.NODE_ENV === "production" ? "app" : "app_dev";
 
-const db = mongoose.connection.useDb(dbName);
+// const db = mongoose.connection.useDb(dbName);
+const db = mongoose.connection.useDb("app");
 
 const ExerciseName = db.model("ExerciseName", exerciseSchema);
 export default ExerciseName;

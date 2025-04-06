@@ -24,6 +24,9 @@ const Nav = () => {
 				<Link href="/login" sx={{ minWidth: 100 }}>
 					Login
 				</Link>
+				<Link href="/dashboard" sx={{ minWidth: 100 }}>
+					Dashboard
+				</Link>
 			</Box>
 		</Box>
 	);

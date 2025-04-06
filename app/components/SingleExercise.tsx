@@ -3,33 +3,21 @@
 import { Box, Button, IconButton, InputLabel } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
 
-import { CSS } from "@dnd-kit/utilities";
+// import { CSS } from "@dnd-kit/utilities";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Exercise } from "@/app/types/ExerciseTypes";
 import { ExerciseProps } from "@/app/types/ExerciseTypes";
 import WeightInput from "@/app/components/ui/Weights";
 import { capitalizeWords } from "@/app/utils/helpers";
-import { exercises } from "@/app/utils/exerciseList";
 import { useSession } from "next-auth/react";
+
 // import { DragEndEvent } from "@dnd-kit/core";
-import { useSortable } from "@dnd-kit/sortable";
+// import { useSortable } from "@dnd-kit/sortable";
 
-type Exercise = {
-	_id: string;
-	exerciseName: string;
-};
-
-export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
-	const { attributes, listeners, setNodeRef, transform, transition } =
-		useSortable({ id });
-
-	const style = {
-		transform: CSS.Transform.toString(transform),
-		transition,
-	};
-
-	const [selectedExercise, setSelectedExercise] = useState(exercises[0].id);
-	const [sets, setSets] = useState<number>(0); // Initial sets value
-	const [reps, setReps] = useState<number[]>([]); //start with an empty array
+export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
+	const [selectedExercise, setSelectedExercise] = useState<string>("");
+	const [updatedSets, setUpdatedSets] = useState<number>(0); // Initial sets value
+	const [updatedReps, setUpdatedReps] = useState<number[]>([]); //start with an empty array
 	const [date, setDate] = useState<Date>(new Date());
 	const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
 	const [newExercise, setNewExercise] = useState<string>("");
@@ -61,34 +49,66 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 		fetchExercises();
 	}, []);
 
+	useEffect(() => {
+		setUpdatedReps(reps as number[]);
+	}, [reps]);
+
+	useEffect(() => {
+		if (sets) setUpdatedSets(sets);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [sets]);
+
 	// Update weights when sets change
 	useEffect(() => {
 		// If the number of sets changes, update the weights array to match the new number of sets
-		setWeights(Array.from({ length: sets }, () => 0) as number[]);
-	}, [sets]);
+		setWeights(Array.from({ length: updatedSets }, () => 0) as number[]);
+	}, [updatedSets]);
 
 	useEffect(() => {
 		setUserId(session?.data?.user?.id);
 	}, [session]);
 
-	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		if (e.target.value === "Not Listed") {
-			setIsNewExercise(true);
+	useEffect(() => {
+		if (name) handleChange(name);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [name]);
+
+	useEffect(() => {
+		if (reps) handleInputChange(0, reps, "rep");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [reps]);
+
+	// TODO: add error handling if selectedExercise does not have a value
+	// TODO: based on day of the week of the 2-week split, show different exercises
+	const handleChange = (e: React.ChangeEvent<HTMLSelectElement> | string) => {
+		const newValue = typeof e === "string" ? e : e.target.value;
+
+		// Only update if the value has changed
+		if (newValue !== selectedExercise) {
+			setSelectedExercise(newValue);
 		}
 
-		setSelectedExercise(e.target.value);
+		if (newValue === "Not Listed") {
+			setIsNewExercise(true);
+		}
 	};
 
 	// Handles  input changes
-	const handleInputChange = (index: number, value: string, field?: string) => {
+	const handleInputChange = (
+		index: number,
+		value: string | number[],
+		field?: string,
+	) => {
 		// Convert input value to a number, default to 1 if invalid (except for weights)
 		const numValue = Number(value) || 1;
 
+		const stringVal = typeof value === "string" ? value : "";
 		switch (field) {
 			case "sets": {
 				// Ensure sets is always at least 1
 				const newSets = Math.max(numValue, 1);
-				setSets(newSets);
+				setUpdatedSets(newSets);
+				// console.log(updatedSets);
 
 				// Adjust the weights array length based on the new number of sets
 				setWeights(
@@ -102,12 +122,12 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 			case "date":
 				// Convert the input value to a Date object
-				setDate(new Date(value));
+				setDate(new Date(stringVal));
 				return;
 
 			case "newExercise":
-				setNewExercise(capitalizeWords(value));
-				setSelectedExercise(value);
+				setNewExercise(capitalizeWords(stringVal));
+				setSelectedExercise(stringVal);
 				return;
 
 			default:
@@ -115,14 +135,16 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				if (field?.startsWith("weight")) {
 					setWeights((prevWeights) => {
 						const newWeights = [...prevWeights];
+
 						newWeights[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
+
 						return newWeights;
 					});
 				}
 				if (field?.startsWith("rep")) {
-					setReps((prevReps) => {
+					setUpdatedReps((prevReps) => {
 						const newReps = [...prevReps];
-						newReps[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
+						newReps[index] = Number(value) || newReps[index];
 						return newReps;
 					});
 				}
@@ -141,7 +163,7 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 
 		// Add form data
 		data.sets = sets;
-		data.reps = reps;
+		data.reps = updatedReps;
 		data.exerciseId = selectedExercise;
 		data.weights = weights;
 		data.distance =
@@ -209,29 +231,21 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 			console.error("Error submitting exercise:", error);
 		}
 	};
+	// console.log(updatedSets);
 
 	return (
 		<form onSubmit={handleSubmit}>
 			<Box
-				ref={setNodeRef}
-				style={style}
-				{...attributes}
-				{...listeners}
 				sx={{
 					display: "flex",
 					flexDirection: "column",
-					p: 2,
-					mb: 1,
-					border: "1px solid #ccc",
-					borderRadius: "8px",
 				}}>
-				{"single exercise"}
-
 				<InputLabel htmlFor="exercise">Exercise</InputLabel>
 				<Box>
 					<select
 						name="exercise"
 						id="exercise"
+						value={selectedExercise}
 						style={{
 							width: "100%",
 							padding: "8px",
@@ -285,11 +299,12 @@ export const ExerciseForm = ({ onRemove, id }: ExerciseProps) => {
 				<WeightInput
 					selectedExercise={selectedExercise}
 					sets={sets}
-					reps={reps}
-					setReps={setReps}
+					updatedSets={updatedSets}
+					updatedReps={updatedReps}
+					setUpdatedReps={setUpdatedReps}
 					weights={weights}
 					handleInputChange={handleInputChange}
-					setSets={setSets}
+					setUpdatedSets={setUpdatedSets}
 					date={date}
 				/>
 			</Box>
