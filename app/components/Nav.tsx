@@ -6,28 +6,18 @@ import React from "react";
 
 const Nav = () => {
 	return (
-		<Box sx={{ display: "flex", justifyContent: "center" }}>
-			<Box
-				sx={{
-					maxWidth: "fit-content",
-					display: "flex",
-					alignItems: "center",
-					textAlign: "center",
-					p: 3,
-				}}>
-				<Link href="/" sx={{ minWidth: 100 }}>
-					Home
-				</Link>
-				<Link href="/progress" sx={{ minWidth: 100 }}>
-					Progress
-				</Link>
-				<Link href="/login" sx={{ minWidth: 100 }}>
-					Login
-				</Link>
-				<Link href="/dashboard" sx={{ minWidth: 100 }}>
-					Dashboard
-				</Link>
-			</Box>
+		<Box
+			sx={{
+				display: "flex",
+				alignItems: "center",
+				textAlign: "center",
+				justifyContent: "space-around",
+				py: 3,
+			}}>
+			<Link href="/">Home</Link>
+			<Link href="/progress">Progress</Link>
+			<Link href="/login">Login</Link>
+			<Link href="/dashboard">Dashboard</Link>
 		</Box>
 	);
 };
