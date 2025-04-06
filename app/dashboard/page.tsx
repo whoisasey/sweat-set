@@ -19,9 +19,9 @@ const DashboardPage = () => {
 								<Typography variant="h6">
 									{weekday} - {type}
 								</Typography>
-								{exercises?.map(({ name, reps }, idx) => (
+								{exercises?.map(({ name, reps, sets }, idx) => (
 									<Box key={idx}>
-										{name} - {reps} reps
+										{name} - {sets} sets x {reps[idx]} reps
 									</Box>
 								))}
 							</Box>

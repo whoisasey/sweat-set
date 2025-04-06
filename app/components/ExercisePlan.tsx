@@ -53,25 +53,23 @@ const ExercisePlan = () => {
 		setTodaysPlan(match ?? null);
 	}, []);
 
-	// const addExercise = (day: string) => {
-	// 	const newExercise = {
-	// 		id: `exercise-${Date.now()}`,
-	// 		name: "New Exercise",
-	// 		sets: 3,
-	// 		reps: [10],
-	// 	};
-	// 	setWorkouts((prev) => ({
-	// 		...prev,
-	// 		[day]: [...prev[day], newExercise],
-	// 	}));
-	// };
+	const addExercise = () => {
+		const newExercise = {
+			name: "New Exercise",
+			sets: 3,
+			reps: [10, 10, 10],
+		};
 
-	// interface RemoveExerciseProps {
-	// 	day: string;
-	// 	index: number;
-	// }
+		setTodaysPlan((prev) => {
+			if (!prev) return prev;
 
-	// TODO: fix with new data
+			return {
+				...prev,
+				exercises: [...(prev.exercises ?? []), newExercise],
+			};
+		});
+	};
+
 	const removeExercise = (idx: number) => {
 		setTodaysPlan((prev) => {
 			if (!prev || !prev.exercises) return prev;
@@ -83,37 +81,6 @@ const ExercisePlan = () => {
 			};
 		});
 	};
-
-	// const onDragEnd = (event: DragEndEvent) => {
-	// 	const { active, over } = event;
-	// 	if (!over || active.id === over.id) return;
-
-	// 	setWorkouts((prev) => {
-	// 		const updatedWorkouts = { ...prev };
-	// 		for (const day in updatedWorkouts) {
-	// 			const currentExercises = updatedWorkouts[day];
-	// 			const oldIndex = currentExercises.findIndex((e) => e.id === active.id);
-	// 			const newIndex = currentExercises.findIndex((e) => e.id === over.id);
-	// 			if (oldIndex !== -1 && newIndex !== -1) {
-	// 				updatedWorkouts[day] = arrayMove(
-	// 					currentExercises,
-	// 					oldIndex,
-	// 					newIndex,
-	// 				);
-	// 				break;
-	// 			}
-	// 		}
-	// 		return updatedWorkouts;
-	// 	});
-	// };
-
-	// map over workoutPlan and filter the object that matches todays date
-	// const todaysWorkout = workoutPlan
-	// 	.flatMap((week) => week.days)
-	// 	.find((day) => {
-	// 		return day.date?.trim() === formattedToday;
-	// 	});
-	// console.log(todaysWorkout);
 
 	// TODO later: add exercise to the workout plan if its a recovery day
 	return (
@@ -145,16 +112,19 @@ const ExercisePlan = () => {
 							reps={reps}
 							onRemove={() => removeExercise(idx)}
 						/>
-						<Button
-							variant="outlined"
-							startIcon={<AddIcon />}
-							// onClick={addexercise}
-							sx={{ mt: 2 }}>
+						<Button variant="outlined" startIcon={<AddIcon />} sx={{ mt: 2 }}>
 							Add Exercise
 						</Button>
 					</Card>
 				);
 			})}
+			<Button
+				variant="outlined"
+				startIcon={<AddIcon />}
+				onClick={addExercise}
+				sx={{ mt: 2 }}>
+				Add Set
+			</Button>
 		</Box>
 	);
 };
