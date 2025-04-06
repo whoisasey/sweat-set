@@ -20,23 +20,24 @@ type Day = {
 	exercises?: Exercise[];
 };
 
-type Plan = {
-	week: number;
-	focus: string;
-	days: Day[];
-};
+// type Plan = {
+// 	week: number;
+// 	focus: string;
+// 	days: Day[];
+// };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type WorkoutsType = {
-	plan: Plan[];
-};
+// type WorkoutsType = {
+// 	plan: Plan[];
+// };
 
 const ExercisePlan = () => {
 	const [todaysPlan, setTodaysPlan] = useState<Day | null>(null);
 
 	useEffect(() => {
-		const today = new Date("2025-04-04T04:00:00.000Z");
-		// const todaysDate = new Date();
+		const today =
+			process.env.NODE_ENV === "development"
+				? new Date("2025-04-04T04:00:00.000Z")
+				: new Date();
 
 		// Replace with `new Date()` in production
 		const formattedToday = today.toLocaleDateString("en-US", {
