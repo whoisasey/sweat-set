@@ -1,49 +1,57 @@
 "use client";
 
 import { Box, Button, Card, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
 import { ExerciseForm } from "./SingleExercise";
 import { workoutPlan } from "@/app/data/workoutPlan";
 
+type Exercise = {
+	name: string;
+	sets: number;
+	reps: number[];
+};
+
+type Day = {
+	weekday: string;
+	date: string | Date;
+	type: string;
+	exercises?: Exercise[];
+};
+
+type Plan = {
+	week: number;
+	focus: string;
+	days: Day[];
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type WorkoutsType = {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	[key: string]: any; // Add an index signature to allow dynamic property access
-	plan: {
-		week: number;
-		focus: string;
-		days: {
-			weekday: string;
-			date: string | Date;
-			type: string;
-			exercises?: {
-				name: string;
-				sets: number;
-				reps: number[];
-			}[];
-		}[];
-	}[];
+	plan: Plan[];
 };
 
 const ExercisePlan = () => {
-	// TODO: fix to updated data
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [workouts, setWorkouts] = useState<WorkoutsType>({
-		plan: workoutPlan.map((plan) => ({
-			...plan,
-			days: plan.days.map((day) => ({
-				...day,
-				date: new Date(day?.date ?? ""),
-				exercises: day.exercises?.map((exercise) => ({
-					name: exercise.name,
-					sets: exercise.sets ?? 0,
-					reps: exercise.reps.map((rep) => rep ?? 0),
-				})),
-			})),
-			...workoutPlan,
-		})),
-	});
+	const [todaysPlan, setTodaysPlan] = useState<Day | null>(null);
+
+	useEffect(() => {
+		const today = new Date("2025-04-04T04:00:00.000Z");
+		// const todaysDate = new Date();
+
+		// Replace with `new Date()` in production
+		const formattedToday = today.toLocaleDateString("en-US", {
+			weekday: "long",
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		});
+
+		const match = workoutPlan
+			.flatMap((week) => week.days)
+			.find((day) => day.date?.trim() === formattedToday);
+
+		setTodaysPlan(match ?? null);
+	}, []);
 
 	// const addExercise = (day: string) => {
 	// 	const newExercise = {
@@ -63,27 +71,17 @@ const ExercisePlan = () => {
 	// 	index: number;
 	// }
 
-	const removeExercise = (
-		weekday: string,
-		idx: number,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		p0?: { weekday: string; idx: number },
-	) => {
-		setWorkouts((prev: WorkoutsType) => ({
-			...prev,
-			plan: prev.plan.map((plan: WorkoutsType["plan"][number]) => ({
-				...plan,
-				days: plan.days.map(
-					(day: WorkoutsType["plan"][number]["days"][number]) =>
-						day.weekday === weekday
-							? {
-									...day,
-									exercises: day.exercises?.filter((_, i: number) => i !== idx),
-							  }
-							: day,
-				),
-			})),
-		}));
+	// TODO: fix with new data
+	const removeExercise = (idx: number) => {
+		setTodaysPlan((prev) => {
+			if (!prev || !prev.exercises) return prev;
+
+			const updatedExercises = prev.exercises.filter((_, i) => i !== idx);
+			return {
+				...prev,
+				exercises: updatedExercises,
+			};
+		});
 	};
 
 	// const onDragEnd = (event: DragEndEvent) => {
@@ -109,32 +107,25 @@ const ExercisePlan = () => {
 	// 	});
 	// };
 
-	// const todaysDate = new Date("2025-04-04T04:00:00.000Z");
-	const todaysDate = new Date();
-	const formattedToday = todaysDate.toLocaleDateString("en-US", {
-		weekday: "long",
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
-
 	// map over workoutPlan and filter the object that matches todays date
-	const todaysWorkout = workoutPlan
-		.flatMap((week) => week.days)
-		.find((day) => {
-			return day.date?.trim() === formattedToday;
-		});
+	// const todaysWorkout = workoutPlan
+	// 	.flatMap((week) => week.days)
+	// 	.find((day) => {
+	// 		return day.date?.trim() === formattedToday;
+	// 	});
+	// console.log(todaysWorkout);
 
+	// TODO later: add exercise to the workout plan if its a recovery day
 	return (
 		<Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
 			<Typography variant="h5" fontWeight="bold">
-				{todaysWorkout?.weekday} - {todaysWorkout?.type}
+				{todaysPlan?.weekday} - {todaysPlan?.type}
 			</Typography>
-			{todaysWorkout?.exercises === undefined && (
+			{todaysPlan?.exercises === undefined && (
 				<Typography variant="h6">Rest Day!</Typography>
 			)}
 
-			{todaysWorkout?.exercises?.map(({ name, reps, sets }, idx) => {
+			{todaysPlan?.exercises?.map(({ name, reps, sets }, idx) => {
 				return (
 					<Card
 						key={idx}
@@ -152,7 +143,7 @@ const ExercisePlan = () => {
 							name={name}
 							sets={sets}
 							reps={reps}
-							onRemove={() => removeExercise(todaysWorkout.weekday, idx)}
+							onRemove={() => removeExercise(idx)}
 						/>
 						<Button
 							variant="outlined"
