@@ -88,7 +88,7 @@ const WeightInputs: React.FC<WeightInputsProps> = ({
 				id={`${input}-${index}`}
 				inputMode="decimal"
 				type="number"
-				step={0.5}
+				step={input === "weight" ? 0.5 : 1}
 				min={0}
 				value={
 					input === "rep"
