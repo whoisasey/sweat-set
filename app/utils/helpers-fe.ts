@@ -19,25 +19,24 @@ export const useWindowSize = (dimension: "width" | "height") => {
 	return size;
 };
 
-const generateDateRange = (startDate: Date): { [key: number]: string }[] => {
-	const dateArray: { [key: number]: string }[] = [];
+// const generateDateRange = (startDate: Date): { [key: number]: string }[] => {
+// 	const dateArray: { [key: number]: string }[] = [];
 
-	for (let i = 0; i < 14; i++) {
-		const newDate = new Date(startDate);
-		newDate.setDate(startDate.getDate() + i);
-		dateArray.push({ [i]: newDate.toDateString() });
-	}
+// 	for (let i = 0; i < 14; i++) {
+// 		const newDate = new Date(startDate);
+// 		newDate.setDate(startDate.getDate() + i);
+// 		dateArray.push({ [i]: newDate.toDateString() });
+// 	}
 
-	return dateArray;
-};
+// 	return dateArray;
+// };
 
 // Initial start date updated to March 30, 2025
 const currentStartDate = new Date(Date.UTC(2025, 2, 30, 5, 0, 0));
 
 // Function to regenerate the array every two weeks
 export const updateDateArray = () => {
-	const dateArray = generateDateRange(currentStartDate);
-	console.log(dateArray);
+	// const dateArray = generateDateRange(currentStartDate);
 	currentStartDate.setDate(currentStartDate.getDate() + 14); // Move to the next 2-week period
 };
 
