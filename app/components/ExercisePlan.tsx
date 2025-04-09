@@ -36,7 +36,7 @@ const ExercisePlan = () => {
 	useEffect(() => {
 		const today =
 			process.env.NODE_ENV === "development"
-				? new Date("2025-04-04T04:00:00.000Z")
+				? new Date("2025-04-11T04:00:00.000Z")
 				: new Date();
 
 		// Replace with `new Date()` in production
@@ -89,9 +89,9 @@ const ExercisePlan = () => {
 			<Typography variant="h5" fontWeight="bold">
 				{todaysPlan?.weekday} - {todaysPlan?.type}
 			</Typography>
-			{todaysPlan?.exercises === undefined && (
+			{/* {todaysPlan?.exercises === undefined && (
 				<Typography variant="h6">Rest Day!</Typography>
-			)}
+			)} */}
 
 			{todaysPlan?.exercises?.map(({ name, reps, sets }, idx) => {
 				return (

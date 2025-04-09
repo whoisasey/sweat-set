@@ -70,23 +70,11 @@ export const workoutPlan = [
 			{
 				weekday: "Sunday",
 				date: "Sunday, April 6, 2025",
-				type: "Full Body Strength Training",
-				exercises: [
-					{ name: "Romanian Deadlift", reps: [10, 10, 10], sets: 3 },
-					{ name: "Dumbbell Bench Press", reps: [10, 10, 10], sets: 3 },
-					{ name: "Single-Leg Step Downs", reps: [10, 10, 10], sets: 3 },
-					{ name: "Barbell Row", reps: [10, 10, 10], sets: 3 },
-					{ name: "Core: Hanging Knee Raises", reps: [10, 10, 10], sets: 3 },
-				],
+				type: "Hot Yoga (Mobility & Recovery)",
 			},
 			{
 				weekday: "Monday",
 				date: "Monday, April 7, 2025",
-				type: "Recovery Day",
-			},
-			{
-				weekday: "Tuesday",
-				date: "Tuesday, April 8, 2025",
 				type: "Short Strength (Unilateral Lower Body, 30-40 min)",
 				exercises: [
 					{ name: "Lateral Lunges", reps: [10, 10, 10], sets: 3 },
@@ -96,19 +84,19 @@ export const workoutPlan = [
 				],
 			},
 			{
-				weekday: "Wednesday",
-				date: "Wednesday, April 9, 2025",
+				weekday: "Tuesday",
+				date: "Tuesday, April 8, 2025",
 				type: "Running (Speed or Tempo Focus, 20-30 min)",
 				workout: "30-sec sprint + 90-sec walk (repseat 6-8x)",
 			},
 			{
-				weekday: "Thursday",
-				date: "Thursday, April 10, 2025",
+				weekday: "Wednesday",
+				date: "Wednesday, April 9, 2025",
 				type: "Recovery Day",
 			},
 			{
-				weekday: "Friday",
-				date: "Friday, April 11, 2025",
+				weekday: "Thursday",
+				date: "Thursday, April 10, 2025",
 				type: "Short Upper Body Strength (30-40 min)",
 				exercises: [
 					{
@@ -125,9 +113,14 @@ export const workoutPlan = [
 				],
 			},
 			{
+				weekday: "Friday",
+				date: "Friday, April 11, 2025",
+				type: "Jungle TO",
+			},
+			{
 				weekday: "Saturday",
 				date: "Saturday, April 12, 2025",
-				type: "Hot Yoga (Mobility & Recovery)",
+				type: "Recovery Day",
 			},
 		],
 	},
