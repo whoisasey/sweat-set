@@ -1,10 +1,14 @@
 "use client";
 
 import { Box, Link } from "@mui/material";
+import { signIn, signOut } from "next-auth/react";
 
 import React from "react";
+import { useSession } from "next-auth/react";
 
 const Nav = () => {
+	const { status } = useSession();
+
 	return (
 		<Box
 			sx={{
@@ -16,7 +20,13 @@ const Nav = () => {
 			}}>
 			<Link href="/">Home</Link>
 			<Link href="/progress">Progress</Link>
-			<Link href="/login">Login</Link>
+			<Link
+				component={"button"}
+				onClick={() => {
+					(() => (status === "authenticated" ? signOut() : signIn()))();
+				}}>
+				{status === "authenticated" ? "Log Out" : "Login"}
+			</Link>
 			<Link href="/dashboard">Dashboard</Link>
 		</Box>
 	);
