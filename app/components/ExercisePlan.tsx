@@ -113,9 +113,6 @@ const ExercisePlan = () => {
 							reps={reps}
 							onRemove={() => removeExercise(idx)}
 						/>
-						<Button variant="outlined" startIcon={<AddIcon />} sx={{ mt: 2 }}>
-							Add Exercise
-						</Button>
 					</Card>
 				);
 			})}
