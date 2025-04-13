@@ -2,6 +2,12 @@
 
 import { Box, Button, IconButton, InputLabel } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
+import {
+	addNewExercise,
+	checkExerciseExists,
+	fetchExercises,
+	submitExerciseSet,
+} from "@/app/utils/helpers";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Exercise } from "@/app/types/ExerciseTypes";
@@ -30,17 +36,15 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 
 	// Fetch all exercises
 	useEffect(() => {
-		const fetchExercises = async () => {
+		const getAllExercises = async () => {
 			try {
-				const res = await fetch("/api/exercise/get");
-				if (!res.ok) throw new Error("Failed to fetch exercises");
-				const data: Exercise[] = await res.json();
-				setAllExercises(data);
-			} catch (err) {
-				console.error(err instanceof Error ? err.message : "Unexpected error");
+				const exercises = await fetchExercises();
+				setAllExercises(exercises);
+			} catch (error) {
+				console.error("Error fetching exercises:", error);
 			}
 		};
-		fetchExercises();
+		getAllExercises();
 	}, []);
 
 	// Sync initial props
@@ -111,13 +115,16 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const formData = new FormData(e.currentTarget);
-		const data = Object.fromEntries(formData.entries()) as Record<
-			string,
-			unknown
-		>;
+		if (!selectedExercise && !newExercise) {
+			alert("Please select or enter an exercise.");
+			return;
+		}
 
-		Object.assign(data, {
+		const formData = new FormData(e.target as HTMLFormElement);
+		const data = Object.fromEntries(formData.entries());
+
+		const payload = {
+			...data,
 			sets: updatedSets,
 			reps: updatedReps,
 			exerciseId: selectedExercise,
@@ -126,43 +133,17 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 			userId,
 			date,
 			exercise: selectedExercise || newExercise,
-		});
-
-		const maybeAddNewExercise = async () => {
-			if (!newExercise) return;
-			try {
-				const checkRes = await fetch(`/api/exercise/check?name=${newExercise}`);
-				if (!checkRes.ok) throw new Error("Failed to check exercise");
-				const { exists } = await checkRes.json();
-				if (exists) return console.log("Exercise already exists");
-
-				const addRes = await fetch("/api/exercise/add", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ exerciseName: newExercise }),
-				});
-				if (!addRes.ok) throw new Error("Failed to add new exercise");
-			} catch (error) {
-				console.error("Add exercise error:", error);
-			}
 		};
 
-		const postExerciseSet = async () => {
-			try {
-				const res = await fetch("/api/exerciseSet/add", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(data),
-				});
-				if (!res.ok) throw new Error("Failed to submit exercise set");
-				setSuccessMsg("Added Exercise Set 💪🏻");
-			} catch (error) {
-				console.error("Submit set error:", error);
+		try {
+			if (newExercise && !(await checkExerciseExists(newExercise))) {
+				await addNewExercise(newExercise);
 			}
-		};
-
-		await maybeAddNewExercise();
-		await postExerciseSet();
+			await submitExerciseSet(payload);
+			setSuccessMsg("Added Exercise Set 💪🏻");
+		} catch (err) {
+			console.error("Submit error:", err);
+		}
 	};
 
 	return (
