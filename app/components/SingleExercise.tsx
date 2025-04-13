@@ -79,7 +79,6 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 	}, [reps]);
 
 	// TODO: add error handling if selectedExercise does not have a value
-	// TODO: based on day of the week of the 2-week split, show different exercises
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement> | string) => {
 		const newValue = typeof e === "string" ? e : e.target.value;
 
@@ -108,7 +107,6 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 				// Ensure sets is always at least 1
 				const newSets = Math.max(numValue, 1);
 				setUpdatedSets(newSets);
-				// console.log(updatedSets);
 
 				// Adjust the weights array length based on the new number of sets
 				setWeights(
@@ -154,84 +152,66 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const formData = new FormData(e.target as HTMLFormElement);
-		const data: Record<string, unknown> = {};
+		const formElement = e.target as HTMLFormElement;
+		const formData = new FormData(formElement);
 
-		formData.forEach((value, key) => {
-			data[key] = value;
+		const data = Object.fromEntries(formData.entries()) as Record<
+			string,
+			unknown
+		>;
+
+		// Add derived values
+		Object.assign(data, {
+			sets,
+			reps: updatedReps,
+			exerciseId: selectedExercise,
+			weights,
+			distance: selectedExercise === "running" ? Number(data.distance) || 0 : 0,
+			userId,
+			date,
+			exercise: selectedExercise || newExercise,
 		});
 
-		// Add form data
-		data.sets = sets;
-		data.reps = updatedReps;
-		data.exerciseId = selectedExercise;
-		data.weights = weights;
-		data.distance =
-			selectedExercise === "running" ? Number(data.distance) || 0 : 0;
-		data.userId = userId; // Replace with actual user ID logic
-		data.date = date;
-		data.exercise = selectedExercise ?? newExercise;
+		const addNewExerciseIfNeeded = async () => {
+			if (!newExercise) return;
 
-		// only run this if newExercise has a value
-		if (newExercise !== "") {
 			try {
-				const checkResponse = await fetch(
-					`/api/exercise/check?name=${newExercise}`,
-					{
-						method: "GET",
-						headers: {
-							"Content-Type": "application/json",
-						},
-					},
-				);
+				const checkRes = await fetch(`/api/exercise/check?name=${newExercise}`);
+				if (!checkRes.ok) throw new Error("Failed to check if exercise exists");
 
-				if (!checkResponse.ok) {
-					throw new Error("Failed to check if exercise exists");
-				}
+				const { exists } = await checkRes.json();
+				if (exists) return console.log("Exercise already exists!");
 
-				const checkResult = await checkResponse.json();
+				const addRes = await fetch("/api/exercise/add", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ exerciseName: newExercise }),
+				});
 
-				if (!checkResult.exists) {
-					const addResponse = await fetch("/api/exercise/add", {
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({ exerciseName: newExercise }),
-					});
-
-					if (!addResponse.ok) {
-						throw new Error("Failed to add new exercise");
-					}
-
-					// const addResult = await addResponse.json();
-				} else {
-					console.log("Exercise already exists!");
-				}
+				if (!addRes.ok) throw new Error("Failed to add new exercise");
 			} catch (error) {
-				console.error("Error submitting exercise:", error);
+				console.error("Error adding exercise:", error);
 			}
-		}
+		};
 
-		try {
-			const response = await fetch("/api/exerciseSet/add", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(data),
-			});
+		const submitExerciseSet = async () => {
+			try {
+				const res = await fetch("/api/exerciseSet/add", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(data),
+				});
 
-			if (!response.ok) {
-				throw new Error("Failed to submit exercise data.");
+				if (!res.ok) throw new Error("Failed to submit exercise data");
+				setSuccessMsg("Added Exercise Set 💪🏻");
+			} catch (error) {
+				console.error("Error submitting exercise set:", error);
 			}
-			setSuccessMsg("Added Exercise Set 💪🏻");
-			// const result = await response.json();
-			// console.log("Success :", result);
-			// TODO: Handle success
-		} catch (error) {
-			console.error("Error submitting exercise:", error);
-		}
+		};
+
+		await addNewExerciseIfNeeded();
+		await submitExerciseSet();
 	};
-	// console.log(updatedSets);
 
 	return (
 		<form onSubmit={handleSubmit}>
