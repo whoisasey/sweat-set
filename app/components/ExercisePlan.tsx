@@ -15,23 +15,20 @@ type Exercise = {
 
 type Day = {
 	weekday: string;
-	date: string | Date;
+	date: string;
 	type: string;
 	exercises?: Exercise[];
 };
 
-// type Plan = {
-// 	week: number;
-// 	focus: string;
-// 	days: Day[];
-// };
-
-// type WorkoutsType = {
-// 	plan: Plan[];
-// };
+const emptyDay: Day = {
+	weekday: "",
+	date: "",
+	type: "",
+	exercises: [],
+};
 
 const ExercisePlan = () => {
-	const [todaysPlan, setTodaysPlan] = useState<Day | null>(null);
+	const [todaysPlan, setTodaysPlan] = useState<Day | typeof emptyDay>(emptyDay);
 
 	useEffect(() => {
 		const today =
@@ -51,12 +48,18 @@ const ExercisePlan = () => {
 			.flatMap((week) => week.days)
 			.find((day) => day.date?.trim() === formattedToday);
 
-		setTodaysPlan(match ?? null);
+		if (match) {
+			setTodaysPlan(match);
+		} else {
+			// Ensure `emptyDay` has a string `date`, not a Date object
+			setTodaysPlan({
+				...emptyDay,
+				date: formattedToday,
+			});
+		}
 	}, []);
 
 	const addExercise = () => {
-		console.log("Adding exercise");
-
 		const newExercise = {
 			name: "New Exercise",
 			sets: 3,
@@ -91,9 +94,6 @@ const ExercisePlan = () => {
 			<Typography variant="h5" fontWeight="bold">
 				{todaysPlan?.weekday} - {todaysPlan?.type}
 			</Typography>
-			{/* {todaysPlan?.exercises === undefined && (
-				<Typography variant="h6">Rest Day!</Typography>
-			)} */}
 
 			{todaysPlan?.exercises?.map(({ name, reps, sets }, idx) => {
 				return (
