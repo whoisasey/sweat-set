@@ -55,6 +55,8 @@ const ExercisePlan = () => {
 	}, []);
 
 	const addExercise = () => {
+		console.log("Adding exercise");
+
 		const newExercise = {
 			name: "New Exercise",
 			sets: 3,
@@ -119,7 +121,7 @@ const ExercisePlan = () => {
 			<Button
 				variant="outlined"
 				startIcon={<AddIcon />}
-				onClick={addExercise}
+				onClick={() => addExercise()}
 				sx={{ mt: 2 }}>
 				Add Set
 			</Button>
