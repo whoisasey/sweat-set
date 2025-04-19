@@ -36,7 +36,7 @@ theme = createTheme(theme, {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: "10px",
+          borderRadius: "20px",
         },
       },
     },
