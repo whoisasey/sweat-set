@@ -277,7 +277,7 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
             {successMsg}
           </Alert>
         </Collapse>
-        <Button type="submit" variant="contained" color="primary" sx={{ borderRadius: "10px" }}>
+        <Button type="submit" variant="contained" color="primary">
           Submit
         </Button>
       </form>
