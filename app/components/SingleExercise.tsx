@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, IconButton, InputLabel } from "@mui/material";
+import { Alert, Box, Button, Collapse, IconButton, InputLabel } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
 import { addNewExercise, checkIfExerciseExists, submitExerciseData } from "@/app/utils/helpers-fe";
 
@@ -26,6 +26,9 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
   const [isNewExercise, setIsNewExercise] = useState(false);
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
   const [successMsg, setSuccessMsg] = useState<string>("");
+  const [showForm, setShowForm] = useState<boolean>(true);
+  const timeout = 3500;
+
   const session = useSession();
 
   useEffect(() => {
@@ -177,83 +180,107 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
 
       await submitExerciseData(data);
       setSuccessMsg("Added Exercise Set 💪🏻");
+
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        setShowForm(false);
+      }, timeout);
     } catch (error) {
       console.error("Error submitting exercise:", error);
     }
   };
 
+  const handleExited = () => {
+    if (onRemove) onRemove();
+  };
+
+  useEffect(() => {
+    if (successMsg) {
+      const timer = setTimeout(() => {
+        setSuccessMsg(""); // Clear message after 2 seconds
+      }, timeout);
+
+      return () => clearTimeout(timer); // Cleanup on unmount or re-render
+    }
+  }, [successMsg]);
   return (
-    <form onSubmit={handleSubmit}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <InputLabel htmlFor="exercise">Exercise</InputLabel>
-        <Box>
-          <select
-            name="exercise"
-            id="exercise"
-            value={selectedExercise}
-            style={{
-              width: "100%",
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-              fontSize: "16px",
-            }}
-            onChange={(e) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
-          >
-            {(!allExercises || allExercises.length === 0) && <option value=""></option>}
-            {allExercises
-              .sort((a, b) => a.exerciseName.localeCompare(b.exerciseName))
-              .map((exercise) => (
-                <option key={exercise._id} value={exercise.exerciseName}>
-                  {exercise.exerciseName}
-                </option>
-              ))}
-            {allExercises && allExercises.length >= 0 && <option value="Not Listed">Exercise Not Listed ➕</option>}
-          </select>
-        </Box>
-        {isNewExercise ? (
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <label htmlFor="newExercise">Input New Exercise</label>
-            <input
-              type="text"
-              name="newExercise"
-              id="newExercise"
-              value={newExercise}
-              onChange={(e) => handleInputChange(0, (e.target as HTMLInputElement).value, "newExercise")}
+    <Collapse in={showForm} timeout={1000} onExited={handleExited}>
+      <form onSubmit={handleSubmit}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <InputLabel htmlFor="exercise">Exercise</InputLabel>
+          <Box>
+            <select
+              name="exercise"
+              id="exercise"
+              value={selectedExercise}
               style={{
+                width: "100%",
                 padding: "8px",
                 borderRadius: "4px",
                 border: "1px solid #ccc",
                 fontSize: "16px",
               }}
-            />
+              onChange={(e) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
+            >
+              {(!allExercises || allExercises.length === 0) && <option value=""></option>}
+              {allExercises
+                .sort((a, b) => a.exerciseName.localeCompare(b.exerciseName))
+                .map((exercise) => (
+                  <option key={exercise._id} value={exercise.exerciseName}>
+                    {exercise.exerciseName}
+                  </option>
+                ))}
+              {allExercises && allExercises.length >= 0 && <option value="Not Listed">Exercise Not Listed ➕</option>}
+            </select>
           </Box>
-        ) : null}
+          {isNewExercise ? (
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <label htmlFor="newExercise">Input New Exercise</label>
+              <input
+                type="text"
+                name="newExercise"
+                id="newExercise"
+                value={newExercise}
+                onChange={(e) => handleInputChange(0, (e.target as HTMLInputElement).value, "newExercise")}
+                style={{
+                  padding: "8px",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                  fontSize: "16px",
+                }}
+              />
+            </Box>
+          ) : null}
 
-        <WeightInput
-          selectedExercise={selectedExercise}
-          sets={sets}
-          updatedSets={updatedSets}
-          updatedReps={updatedReps}
-          setUpdatedReps={setUpdatedReps}
-          weights={weights}
-          handleInputChange={handleInputChange}
-          setUpdatedSets={setUpdatedSets}
-          date={date}
-        />
-      </Box>
-      <IconButton color="error" onClick={onRemove}>
-        <DeleteIcon />
-      </IconButton>
-      <p>{successMsg}</p>
-      <Button type="submit" variant="contained" color="primary">
-        Submit
-      </Button>
-    </form>
+          <WeightInput
+            selectedExercise={selectedExercise}
+            sets={sets}
+            updatedSets={updatedSets}
+            updatedReps={updatedReps}
+            setUpdatedReps={setUpdatedReps}
+            weights={weights}
+            handleInputChange={handleInputChange}
+            setUpdatedSets={setUpdatedSets}
+            date={date}
+          />
+        </Box>
+        <IconButton color="error" onClick={onRemove}>
+          <DeleteIcon />
+        </IconButton>
+        <Collapse in={!!successMsg}>
+          <Alert severity="success" sx={{ mt: 2 }}>
+            {successMsg}
+          </Alert>
+        </Collapse>
+        <Button type="submit" variant="contained" color="primary">
+          Submit
+        </Button>
+      </form>
+    </Collapse>
   );
 };
