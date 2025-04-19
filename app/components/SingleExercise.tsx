@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, IconButton, InputLabel } from "@mui/material";
+import { Alert, Box, Button, Collapse, IconButton, InputLabel } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
 import { addNewExercise, checkIfExerciseExists, submitExerciseData } from "@/app/utils/helpers-fe";
 
@@ -182,6 +182,15 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
     }
   };
 
+  useEffect(() => {
+    if (successMsg) {
+      const timer = setTimeout(() => {
+        setSuccessMsg(""); // Clear message after 2 seconds
+      }, 5000);
+
+      return () => clearTimeout(timer); // Cleanup on unmount or re-render
+    }
+  }, [successMsg]);
   return (
     <form onSubmit={handleSubmit}>
       <Box
@@ -250,7 +259,11 @@ export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
       <IconButton color="error" onClick={onRemove}>
         <DeleteIcon />
       </IconButton>
-      <p>{successMsg}</p>
+      <Collapse in={!!successMsg}>
+        <Alert severity="success" sx={{ mt: 2 }}>
+          {successMsg}
+        </Alert>
+      </Collapse>
       <Button type="submit" variant="contained" color="primary">
         Submit
       </Button>
