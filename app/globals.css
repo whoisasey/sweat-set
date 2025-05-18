@@ -3,12 +3,12 @@
   --foreground: #2e2e2e;
 }
 
-/* @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
   :root {
     --background: #1e1e1e;
     --foreground: #ededed;
   }
-} */
+}
 
 body {
   color: var(--foreground);
@@ -31,11 +31,11 @@ a {
   text-decoration: none;
 }
 
-/* @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
-} */
+}
 
 @media (min-width: 680px) {
   .sets_input {
