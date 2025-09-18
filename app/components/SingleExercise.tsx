@@ -1,285 +1,150 @@
 "use client";
 
-import { Alert, Box, Button, Collapse, IconButton, InputLabel } from "@mui/material";
+import { Alert, Box, Button, Collapse, IconButton, Snackbar, TextField } from "@mui/material";
+import { Exercise, ExerciseProps } from "@/app/types/ExerciseTypes";
 import React, { FormEvent, useEffect, useState } from "react";
 import { addNewExercise, checkIfExerciseExists, submitExerciseData } from "@/app/utils/helpers-fe";
 
-// import { CSS } from "@dnd-kit/utilities";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Exercise } from "@/app/types/ExerciseTypes";
-import { ExerciseProps } from "@/app/types/ExerciseTypes";
-import WeightInput from "@/app/components/ui/Weights";
+import ExerciseSelector from "@/app/components/ui/ExerciseSelector";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import NewExerciseInput from "@/app/components/ui/NewExerciseInput";
+import SetInputs from "@/app/components/ui/SetInputs";
 import { capitalizeWords } from "@/app/utils/helpers";
 import { useSession } from "next-auth/react";
 
-// import { DragEndEvent } from "@dnd-kit/core";
-// import { useSortable } from "@dnd-kit/sortable";
-
-export const ExerciseForm = ({ onRemove, name, sets, reps }: ExerciseProps) => {
-  const [selectedExercise, setSelectedExercise] = useState<string>("");
-  const [updatedSets, setUpdatedSets] = useState<number>(0); // Initial sets value
-  const [updatedReps, setUpdatedReps] = useState<number[]>([]); //start with an empty array
+export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
+  const [selectedExercise, setSelectedExercise] = useState("");
+  const [updatedSets, setUpdatedSets] = useState(sets || 1);
+  const [updatedReps, setUpdatedReps] = useState<number[]>(reps || []);
   const [date, setDate] = useState<Date>(new Date());
-  const [weights, setWeights] = useState<number[]>([]); // Start with an empty array
-  const [newExercise, setNewExercise] = useState<string>("");
-  const [userId, setUserId] = useState<string | undefined>("");
+
+  const [weights, setWeights] = useState<number[]>([]);
+  const [newExercise, setNewExercise] = useState("");
   const [isNewExercise, setIsNewExercise] = useState(false);
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
-  const [successMsg, setSuccessMsg] = useState<string>("");
-  const [showForm, setShowForm] = useState<boolean>(true);
-  const timeout = 3500;
+  const [successMsg, setSuccessMsg] = useState("");
+  const [showForm, setShowForm] = useState(true);
 
   const session = useSession();
+  const userId = session?.data?.user?.id;
 
+  // Fetch exercises
   useEffect(() => {
     const fetchExercises = async () => {
-      try {
-        const response = await fetch("/api/exercise/get");
-        if (!response.ok) {
-          throw new Error("Failed to fetch exercises");
-        }
-
-        const data: Exercise[] = await response.json();
-        setAllExercises(data);
-      } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        } else {
-          throw new Error("An unexpected Error occurred");
-        }
+      const response = await fetch("/api/exercise/get");
+      if (response.ok) {
+        setAllExercises(await response.json());
       }
     };
-
     fetchExercises();
   }, []);
 
+  // Sync weights with sets
   useEffect(() => {
-    setUpdatedReps(reps as number[]);
-  }, [reps]);
-
-  useEffect(() => {
-    if (sets) setUpdatedSets(sets);
+    setWeights(Array.from({ length: updatedSets }, (_, i) => weights[i] ?? 0));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sets]);
-
-  // Update weights when sets change
-  useEffect(() => {
-    // If the number of sets changes, update the weights array to match the new number of sets
-    setWeights(Array.from({ length: updatedSets }, () => 0) as number[]);
   }, [updatedSets]);
 
-  useEffect(() => {
-    setUserId(session?.data?.user?.id);
-  }, [session]);
-
-  useEffect(() => {
-    if (name) handleChange(name);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name]);
-
-  useEffect(() => {
-    if (reps) handleInputChange(0, reps, "rep");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reps]);
-
-  // TODO: add error handling if selectedExercise does not have a value
-  // TODO: based on day of the week of the 2-week split, show different exercises
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement> | string) => {
-    const newValue = typeof e === "string" ? e : e.target.value;
-
-    // Only update if the value has changed
-    if (newValue !== selectedExercise) {
-      setSelectedExercise(newValue);
-    }
-
-    if (newValue === "Not Listed") {
-      setIsNewExercise(true);
-    }
+  const handleChange = (value: string) => {
+    setSelectedExercise(value);
+    setIsNewExercise(value === "Not Listed");
   };
 
-  // Handles  input changes
-  const handleInputChange = (index: number, value: string | number[], field?: string) => {
-    // Convert input value to a number, default to 1 if invalid (except for weights)
-    const numValue = Number(value) || 1;
-
-    const stringVal = typeof value === "string" ? value : "";
-    switch (field) {
-      case "sets": {
-        // Ensure sets is always at least 1
-        const newSets = Math.max(numValue, 1);
-        setUpdatedSets(newSets);
-        // console.log(updatedSets);
-
-        // Adjust the weights array length based on the new number of sets
-        setWeights(
-          (prevWeights) =>
-            newSets > prevWeights.length
-              ? [...prevWeights, ...Array(newSets - prevWeights.length).fill(0)] // Expand with zeros
-              : prevWeights.slice(0, newSets) // Trim excess weights
-        );
-        return;
-      }
-
-      case "date":
-        // Convert the input value to a Date object
-        setDate(new Date(stringVal));
-        return;
-
-      case "newExercise":
-        setNewExercise(capitalizeWords(stringVal));
-        setSelectedExercise(stringVal);
-        return;
-
-      default:
-        // Handle weight input fields dynamically
-        if (field?.startsWith("weight")) {
-          setWeights((prevWeights) => {
-            const newWeights = [...prevWeights];
-
-            newWeights[index] = Number(value) || 0; // Ensure weight defaults to 0 if invalid
-
-            return newWeights;
-          });
-        }
-        if (field?.startsWith("rep")) {
-          setUpdatedReps((prevReps) => {
-            const newReps = [...prevReps];
-            newReps[index] = Number(value) || newReps[index];
-            return newReps;
-          });
-        }
+  const handleInputChange = (index: number, value: string, field: string) => {
+    if (field.startsWith("rep")) {
+      const newReps = [...updatedReps];
+      newReps[index] = Number(value) || 0;
+      setUpdatedReps(newReps);
+    }
+    if (field.startsWith("weight")) {
+      const newWeights = [...weights];
+      newWeights[index] = Number(value) || 0;
+      setWeights(newWeights);
     }
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const formData = new FormData(e.target as HTMLFormElement);
-    const data: Record<string, unknown> = Object.fromEntries(formData.entries());
-
-    Object.assign(data, {
-      sets,
+    const data = {
+      sets: updatedSets,
       reps: updatedReps,
       exerciseId: selectedExercise,
       weights,
-      distance: selectedExercise === "running" ? Number(data.distance) || 0 : 0,
       userId,
-      date,
       exercise: selectedExercise || newExercise,
-    });
+      date: date ? new Date(date) : new Date(),
+    };
 
     try {
       if (newExercise) {
-        const exerciseExists = await checkIfExerciseExists(newExercise);
-        if (!exerciseExists) {
-          await addNewExercise(newExercise);
-        } else {
-          console.log("Exercise already exists!");
-        }
+        const exists = await checkIfExerciseExists(newExercise);
+        if (!exists) await addNewExercise(newExercise);
       }
 
       await submitExerciseData(data);
       setSuccessMsg("Added Exercise Set 💪🏻");
-
-      // Auto-remove after 5 seconds
-      setTimeout(() => {
-        setShowForm(false);
-      }, timeout);
+      setShowForm(false);
     } catch (error) {
-      console.error("Error submitting exercise:", error);
+      console.error(error);
     }
   };
 
-  const handleExited = () => {
-    if (onRemove) onRemove();
-  };
-
-  useEffect(() => {
-    if (successMsg) {
-      const timer = setTimeout(() => {
-        setSuccessMsg(""); // Clear message after 2 seconds
-      }, timeout);
-
-      return () => clearTimeout(timer); // Cleanup on unmount or re-render
-    }
-  }, [successMsg]);
   return (
-    <Collapse in={showForm} timeout={1000} onExited={handleExited}>
+    <Collapse in={showForm} timeout={500} onExited={onRemove}>
       <form onSubmit={handleSubmit}>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <InputLabel htmlFor="exercise">Exercise</InputLabel>
-          <Box>
-            <select
-              name="exercise"
-              id="exercise"
-              value={selectedExercise}
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                fontSize: "16px",
-              }}
-              onChange={(e) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
-            >
-              {(!allExercises || allExercises.length === 0) && <option value=""></option>}
-              {allExercises
-                .sort((a, b) => a.exerciseName.localeCompare(b.exerciseName))
-                .map((exercise) => (
-                  <option key={exercise._id} value={exercise.exerciseName}>
-                    {exercise.exerciseName}
-                  </option>
-                ))}
-              {allExercises && allExercises.length >= 0 && <option value="Not Listed">Exercise Not Listed ➕</option>}
-            </select>
-          </Box>
-          {isNewExercise ? (
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <label htmlFor="newExercise">Input New Exercise</label>
-              <input
-                type="text"
-                name="newExercise"
-                id="newExercise"
-                value={newExercise}
-                onChange={(e) => handleInputChange(0, (e.target as HTMLInputElement).value, "newExercise")}
-                style={{
-                  padding: "8px",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                  fontSize: "16px",
-                }}
-              />
-            </Box>
-          ) : null}
+        <Box display="flex" flexDirection="column">
+          <ExerciseSelector selectedExercise={selectedExercise} allExercises={allExercises} onChange={handleChange} />
 
-          <WeightInput
-            selectedExercise={selectedExercise}
-            sets={sets}
-            updatedSets={updatedSets}
-            updatedReps={updatedReps}
-            setUpdatedReps={setUpdatedReps}
-            weights={weights}
-            handleInputChange={handleInputChange}
-            setUpdatedSets={setUpdatedSets}
-            date={date}
+          {isNewExercise && (
+            <NewExerciseInput
+              value={newExercise}
+              onChange={(val) => {
+                setNewExercise(capitalizeWords(val));
+                setSelectedExercise(val);
+              }}
+            />
+          )}
+
+          <TextField
+            label="Sets"
+            type="number"
+            value={updatedSets}
+            onChange={(e) => setUpdatedSets(Math.max(1, Number(e.target.value)))}
+            fullWidth
+            size="small"
+            margin="normal"
           />
+
+          <SetInputs sets={updatedSets} reps={updatedReps} weights={weights} onChange={handleInputChange} />
+
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+              label="Date"
+              value={date}
+              onChange={() => setDate(new Date())}
+              slotProps={{
+                textField: { fullWidth: true, size: "small", margin: "normal" },
+              }}
+            />
+          </LocalizationProvider>
         </Box>
-        <IconButton color="error" onClick={onRemove}>
-          <DeleteIcon />
-        </IconButton>
-        <Collapse in={!!successMsg}>
-          <Alert severity="success" sx={{ mt: 2 }}>
-            {successMsg}
-          </Alert>
-        </Collapse>
-        <Button type="submit" variant="contained" color="primary">
-          Submit
-        </Button>
+
+        <Box display="flex" justifyContent="space-between" mt={2}>
+          <IconButton color="error" onClick={onRemove}>
+            <DeleteIcon />
+          </IconButton>
+          <Button type="submit" variant="contained">
+            Submit
+          </Button>
+        </Box>
+
+        <Snackbar open={!!successMsg} autoHideDuration={3000} onClose={() => setSuccessMsg("")}>
+          <Alert severity="success">{successMsg}</Alert>
+        </Snackbar>
       </form>
     </Collapse>
   );
