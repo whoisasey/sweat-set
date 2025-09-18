@@ -13,14 +13,13 @@ export type ProcessedWorkoutData = {
 };
 
 const ProgressPage = () => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
   const [exerciseHistory, setExerciseHistory] = useState<ProcessedWorkoutData[]>([]);
   const [viewState, setViewState] = useState(false); // false = Today, true = All Time
   const [loading, setLoading] = useState(false);
 
-  const userId = session?.user?.id;
-  console.log(userId);
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     if (status !== "authenticated" || !userId) return;
@@ -43,7 +42,6 @@ const ProgressPage = () => {
     };
 
     getHistory();
-    // console.log("use effect", userId);
   }, [userId, viewState, status]);
 
   const handleViewChange = (state: boolean) => setViewState(state);

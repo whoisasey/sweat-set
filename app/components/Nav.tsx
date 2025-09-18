@@ -6,18 +6,24 @@ import { signIn, signOut } from "next-auth/react";
 import HomeIcon from "@mui/icons-material/Home";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
-import React from "react";
 import TimelineIcon from "@mui/icons-material/Timeline";
 // import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 const Nav = () => {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // true for small screens
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.id) {
+      localStorage.setItem("userId", session.user.id);
+    }
+  }, [status, session]);
 
   if (status === "unauthenticated") {
     return (

@@ -13,7 +13,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import NewExerciseInput from "@/app/components/ui/NewExerciseInput";
 import SetInputs from "@/app/components/ui/SetInputs";
 import { capitalizeWords } from "@/app/utils/helpers";
-import { useSession } from "next-auth/react";
 
 export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
   const [selectedExercise, setSelectedExercise] = useState("");
@@ -28,8 +27,8 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
   const [successMsg, setSuccessMsg] = useState("");
   const [showForm, setShowForm] = useState(true);
 
-  const session = useSession();
-  const userId = session?.data?.user?.id;
+  // const session = useSession();
+  const userId = localStorage.getItem("userId");
 
   // Fetch exercises
   useEffect(() => {
@@ -74,7 +73,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
       reps: updatedReps,
       exerciseId: selectedExercise,
       weights,
-      userId,
+      userId: userId!,
       exercise: selectedExercise || newExercise,
       date: date ? new Date(date) : new Date(),
     };
