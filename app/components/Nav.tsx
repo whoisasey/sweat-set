@@ -1,6 +1,6 @@
 "use client";
 
-import { AppBar, Box, Link, Tab, Tabs, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { AppBar, Box, Link, Tab, Tabs, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 import { signIn, signOut } from "next-auth/react";
 
 import HomeIcon from "@mui/icons-material/Home";
@@ -10,12 +10,14 @@ import React from "react";
 import TimelineIcon from "@mui/icons-material/Timeline";
 // import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 const Nav = () => {
   const { status } = useSession();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // true for small screens
+  const pathname = usePathname();
 
   if (status === "unauthenticated") {
     return (
@@ -51,24 +53,21 @@ const Nav = () => {
   return (
     <AppBar position="static" color="default" elevation={1}>
       <Toolbar>
-        {isMobile ? (
-          <Link href="/" sx={{ textDecoration: "none" }}>
-            <WaterDropIcon color="primary" />
-          </Link>
-        ) : (
-          <Typography variant="h6" sx={{ flexGrow: 1, textAlign: "center" }}>
-            <Link href="/" sx={{ textDecoration: "none" }}>
-              Sweat Set
-            </Link>
-          </Typography>
-        )}
+        <Tabs value={pathname} textColor="inherit" sx={{ width: "100%", justifyContent: "space-between" }}>
+          <Tab
+            icon={isMobile ? <WaterDropIcon color="primary" /> : undefined}
+            label={isMobile ? undefined : "Sweat Set"}
+            component={Link}
+            href="/"
+            value={"/"}
+          />
 
-        <Tabs textColor="inherit" sx={{ width: "100%", justifyContent: "space-around" }}>
           <Tab
             icon={isMobile ? <TimelineIcon color="primary" /> : undefined}
             label={isMobile ? undefined : "Progress"}
             component={Link}
             href="/progress"
+            value={"/progress"}
           />
           {/* <Tab
             icon={isMobile ? <CalendarMonthIcon /> : undefined}
@@ -79,7 +78,6 @@ const Nav = () => {
           <Tab
             icon={isMobile ? <LogoutIcon color="primary" /> : undefined}
             label={isMobile ? undefined : "Log Out"}
-            component={Link}
             onClick={() => signOut()}
           />
         </Tabs>
