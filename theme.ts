@@ -63,20 +63,28 @@ const baseThemeOptions = (mode: "light" | "dark"): ThemeOptions => ({
   shape: {
     borderRadius: 12,
   },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: "20px",
-        },
-      },
-    },
-  },
 });
 
 export const getTheme = (mode: "light" | "dark") => {
   const baseTheme = createTheme(baseThemeOptions(mode));
 
   // Extend theme after creation to access palette
-  return createTheme(baseTheme);
+  return createTheme(baseTheme, {
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: "20px",
+          },
+        },
+      },
+      MuiBox: {
+        styleOverrides: {
+          root: {
+            fontFamily: montserrat.style.fontFamily,
+          },
+        },
+      },
+    },
+  });
 };

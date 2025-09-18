@@ -32,7 +32,9 @@ const Nav = () => {
     <AppBar position="static" color="default" elevation={1}>
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          <Link href="/">Sweat Set</Link>
+          <Link href="/" sx={{ textDecoration: "none" }}>
+            Sweat Set
+          </Link>
         </Typography>
 
         <Tabs value={0} textColor="inherit">
