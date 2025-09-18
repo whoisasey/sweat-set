@@ -3,6 +3,8 @@
 import { AppBar, Box, Link, Tab, Tabs, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { signIn, signOut } from "next-auth/react";
 
+import HomeIcon from "@mui/icons-material/Home";
+import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import React from "react";
 import TimelineIcon from "@mui/icons-material/Timeline";
@@ -26,10 +28,22 @@ const Nav = () => {
           py: 3,
         }}
       >
-        <Link href="/">Home</Link>
-        <Link component={"button"} onClick={() => signIn()}>
-          Login
-        </Link>
+        {isMobile ? (
+          <Link href="/">
+            <HomeIcon color="primary" />
+          </Link>
+        ) : (
+          <Link href="/">Home</Link>
+        )}
+        {isMobile ? (
+          <Link component={"button"} onClick={() => signIn()}>
+            <LoginIcon color="primary" />
+          </Link>
+        ) : (
+          <Link component={"button"} onClick={() => signIn()}>
+            Login
+          </Link>
+        )}
       </Box>
     );
   }
