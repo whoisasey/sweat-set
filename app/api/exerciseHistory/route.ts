@@ -4,92 +4,63 @@ import ExerciseSet from "@/app/models/ExerciseSet";
 import connect from "@/app/utils/db";
 import { formatDate } from "@/app/utils/helpers";
 
-type WorkoutLog = {
-	userId: string;
-	exercise: string;
-	weights: number[];
-	date: Date;
-};
-
 type ProcessedWorkoutData = {
-	exercise: string;
-	data: { date: Date | string; avgWeight: string }[];
+  exercise: string;
+  data: {
+    date: string; // formatted
+    sets: { setNumber: number; weight: number; reps: number }[];
+    avgWeight: string;
+  }[];
 };
 
 // gets all exercise history
 export const GET = async (req: NextRequest) => {
-	await connect();
+  await connect();
 
-	const { searchParams } = new URL(req.url);
-	const user = searchParams.get("user");
+  const { searchParams } = new URL(req.url);
+  const user = searchParams.get("user");
 
-	try {
-		// gets all exercises that matches the UserId
-		// filter by userId
-		const exerciseHistory: WorkoutLog[] = (await ExerciseSet.find({})).filter(
-			(item) => item.userId === user,
-		);
+  try {
+    const exerciseHistory = (await ExerciseSet.find({ userId: user })) || [];
 
-		// Process data
-		const grouped: Record<
-			string,
-			{
-				date: Date;
-				sets: { setNumber: number; weight: number }[];
-				avgWeight: string;
-			}[]
-		> = {};
+    const grouped: Record<string, typeof exerciseHistory> = {};
 
-		exerciseHistory.forEach((workout) => {
-			const avgWeight = (
-				workout.weights.reduce((sum, w) => sum + w, 0) / workout.weights.length
-			).toFixed();
+    exerciseHistory.forEach((workout) => {
+      if (!grouped[workout.exercise]) grouped[workout.exercise] = [];
+      grouped[workout.exercise].push(workout);
+    });
 
-			if (!grouped[workout.exercise]) grouped[workout.exercise] = [];
-			grouped[workout.exercise].push({
-				date: workout.date,
-				sets: [
-					{ setNumber: 1, weight: workout.weights[0] },
-					{ setNumber: 2, weight: workout.weights[1] },
-					{ setNumber: 3, weight: workout.weights[2] },
-				],
-				avgWeight,
-			});
-		});
+    const processedData: ProcessedWorkoutData[] = Object.entries(grouped).map(([exercise, workouts]) => ({
+      exercise,
+      data: workouts
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .map((workout) => {
+          const avgWeight = workout.weights.length
+            ? (workout.weights.reduce((sum, w) => sum + w, 0) / workout.weights.length).toFixed()
+            : "0";
 
-		// Convert to array format
-		const processedData: ProcessedWorkoutData[] = Object.entries(grouped)
-			.map(([exercise, data]) => ({
-				exercise,
-				data: data
-					.sort(
-						(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-					) // Sort by date (ascending)
-					.map((entry) => ({
-						...entry,
-						date: formatDate(entry.date),
-					})),
-			}))
-			.sort((a, b) => b.data.length - a.data.length); // sort by length of entries
+          const sets = workout.weights.map((weight, idx) => ({
+            setNumber: idx + 1,
+            weight,
+            reps: workout.reps[idx] ?? 0, // match reps to weight if available
+          }));
 
-		return NextResponse.json(processedData, { status: 201 });
-	} catch (err: unknown) {
-		if (err instanceof Error) {
-			console.error("Error adding message:", err);
-			const statusCode = err.name === "ValidationError" ? 400 : 500;
+          return {
+            date: formatDate(workout.date), // keep your existing formatDate
+            sets,
+            avgWeight,
+          };
+        }),
+    }));
 
-			return NextResponse.json(
-				{
-					error: err.message || "An unexpected error occurred",
-				},
-				{ status: statusCode },
-			);
-		}
-
-		console.error("unknown error occurred:", err);
-		return NextResponse.json(
-			{ error: "An unexpected error occurred" },
-			{ status: 500 },
-		);
-	}
+    return NextResponse.json(processedData, { status: 200 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Error fetching exercises:", err);
+      const statusCode = err.name === "ValidationError" ? 400 : 500;
+      return NextResponse.json({ error: err.message || "Unexpected error" }, { status: statusCode });
+    }
+    console.error("Unknown error:", err);
+    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+  }
 };
