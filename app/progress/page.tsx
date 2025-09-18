@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import Charts from "../components/ui/Charts";
@@ -13,44 +13,40 @@ export type ProcessedWorkoutData = {
 };
 
 const ProgressPage = () => {
-  const [userId, setUserId] = useState<string>("");
+  const { data: session, status } = useSession();
+
   const [exerciseHistory, setExerciseHistory] = useState<ProcessedWorkoutData[]>([]);
-  const [viewState, setViewState] = useState(false);
-  const session = useSession();
+  const [viewState, setViewState] = useState(false); // false = Today, true = All Time
+  const [loading, setLoading] = useState(false);
+
+  const userId = session?.user?.id;
+  console.log(userId);
 
   useEffect(() => {
-    setUserId(session?.data?.user.id ?? "");
-  }, [session]);
-
-  useEffect(() => {
-    // 1 - if user logged in, gets UserId from session
-    // passes userId into fetch request params to exerciseHistory
-    // get all history for user only
+    if (status !== "authenticated" || !userId) return;
 
     const getHistory = async () => {
       try {
-        const response = await fetch(`/api/exerciseHistory?user=${userId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+        setLoading(true);
+        const response = await fetch(`/api/exerciseHistory?user=${userId}&today=${!viewState}`, {
+          headers: { "Content-Type": "application/json" },
         });
-        if (!response.ok) {
-          throw new Error("Failed to fetch exercises");
-        }
+
+        if (!response.ok) throw new Error("Failed to fetch exercises");
         const data = await response.json();
         setExerciseHistory(data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
-    getHistory();
-  }, [userId]);
 
-  const handleViewChange = (state: boolean) => {
-    // when true, All Time progress will show
-    setViewState(state);
-  };
+    getHistory();
+    // console.log("use effect", userId);
+  }, [userId, viewState, status]);
+
+  const handleViewChange = (state: boolean) => setViewState(state);
 
   return (
     <Box
@@ -64,25 +60,42 @@ const ProgressPage = () => {
       <Typography variant="h2" sx={{ textAlign: "center" }} mb={4}>
         Workout Progress <InsightsIcon />
       </Typography>
+
+      {/* Toggle between Today / All Time */}
       <Box sx={{ display: "flex", justifyContent: "space-evenly" }} mb={6}>
         <Typography
           variant="h5"
           onClick={() => handleViewChange(false)}
           sx={{
-            fontWeight: `${!viewState ? "bold" : "normal"}`,
+            fontWeight: !viewState ? "bold" : "normal",
+            cursor: "pointer",
           }}
         >
-          Today{" "}
+          Today
         </Typography>
         <Typography
           variant="h5"
           onClick={() => handleViewChange(true)}
-          sx={{ fontWeight: `${viewState ? "bold" : "normal"}` }}
+          sx={{
+            fontWeight: viewState ? "bold" : "normal",
+            cursor: "pointer",
+          }}
         >
-          All Time{" "}
+          All Time
         </Typography>
       </Box>
-      <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
+
+      {/* Handle loading / empty / chart states */}
+      {loading ? (
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Skeleton variant="text" width="40%" sx={{ mx: "auto" }} />
+          <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 2 }} />
+        </Box>
+      ) : exerciseHistory.length === 0 ? (
+        <Typography textAlign="center">{viewState ? "No workouts yet." : "No workouts logged today."}</Typography>
+      ) : (
+        <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
+      )}
     </Box>
   );
 };
