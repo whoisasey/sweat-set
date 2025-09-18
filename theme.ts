@@ -85,6 +85,13 @@ export const getTheme = (mode: "light" | "dark") => {
           },
         },
       },
+      MuiTabs: {
+        styleOverrides: {
+          flexContainer: {
+            justifyContent: "space-between", // this applies to MuiTabs-flexContainer
+          },
+        },
+      },
     },
   });
 };

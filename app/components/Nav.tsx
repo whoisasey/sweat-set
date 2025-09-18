@@ -1,13 +1,19 @@
 "use client";
 
-import { AppBar, Box, Link, Tab, Tabs, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Link, Tab, Tabs, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { signIn, signOut } from "next-auth/react";
 
+import LogoutIcon from "@mui/icons-material/Logout";
 import React from "react";
+import TimelineIcon from "@mui/icons-material/Timeline";
+// import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import { useSession } from "next-auth/react";
 
 const Nav = () => {
   const { status } = useSession();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // true for small screens
 
   if (status === "unauthenticated") {
     return (
@@ -31,21 +37,36 @@ const Nav = () => {
   return (
     <AppBar position="static" color="default" elevation={1}>
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+        {isMobile ? (
           <Link href="/" sx={{ textDecoration: "none" }}>
-            Sweat Set
+            <WaterDropIcon color="primary" />
           </Link>
-        </Typography>
+        ) : (
+          <Typography variant="h6" sx={{ flexGrow: 1, textAlign: "center" }}>
+            <Link href="/" sx={{ textDecoration: "none" }}>
+              Sweat Set
+            </Link>
+          </Typography>
+        )}
 
-        <Tabs value={0} textColor="inherit">
-          <Tab label="Progress" component={Link} href="/progress" />
-          <Tab label="Dashboard" component={Link} href="/dashboard" />
+        <Tabs textColor="inherit" sx={{ width: "100%", justifyContent: "space-around" }}>
           <Tab
-            label="Log Out"
+            icon={isMobile ? <TimelineIcon color="primary" /> : undefined}
+            label={isMobile ? undefined : "Progress"}
             component={Link}
-            onClick={() => {
-              signOut();
-            }}
+            href="/progress"
+          />
+          {/* <Tab
+            icon={isMobile ? <CalendarMonthIcon /> : undefined}
+            label={isMobile ? undefined : "Plan"}
+            component={Link}
+            href="/dashboard"
+          /> */}
+          <Tab
+            icon={isMobile ? <LogoutIcon color="primary" /> : undefined}
+            label={isMobile ? undefined : "Log Out"}
+            component={Link}
+            onClick={() => signOut()}
           />
         </Tabs>
       </Toolbar>
