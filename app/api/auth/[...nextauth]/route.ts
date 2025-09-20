@@ -47,7 +47,7 @@ async function handler(req: any, res: any) {
       async jwt({ token, user }) {
         // Only add id and name when the user first logs in
         if (user) {
-          token.id = user._id?.toString(); // ✅ store Mongo _id as string
+          token.id = user.userId || "";
           token.name = user.firstName || user.name || "";
         }
         return token;
