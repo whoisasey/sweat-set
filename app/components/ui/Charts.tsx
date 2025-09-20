@@ -65,6 +65,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
   };
 
   // Chart renderer
+  // TODO: add carousel for mobile?
   const renderChart = (data: { exercise: string; data: any }[], value: number = 1, todayView: boolean = false) => {
     return data.map(({ data, exercise }) => (
       <Box
@@ -81,7 +82,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
           {exercise}
         </Typography>
         <AreaChart
-          width={width && width < 540 ? 300 : 600 / value}
+          width={width && width < 540 ? 175 : 600 / value}
           height={width && width < 540 ? 200 : 300}
           data={data}
         >
