@@ -46,15 +46,18 @@ export const GET = async (req: NextRequest) => {
       data: workouts
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
         .map((workout) => {
-          const avgWeight = workout.weights.length
-            ? (workout.weights.reduce((sum, w) => sum + w, 0) / workout.weights.length).toFixed()
-            : "0";
+          // Build sets with rule: if weight === 0, use reps * 1
+          const sets = workout.weights.map((weight, idx) => {
+            const reps = workout.reps[idx] ?? 0;
+            return {
+              setNumber: idx + 1,
+              weight,
+              reps,
+            };
+          });
 
-          const sets = workout.weights.map((weight, idx) => ({
-            setNumber: idx + 1,
-            weight,
-            reps: workout.reps[idx] ?? 0,
-          }));
+          // Average adjusted weights
+          const avgWeight = sets.length ? (sets.reduce((sum, s) => sum + s.weight, 0) / sets.length).toFixed() : "0";
 
           return {
             date: formatDate(workout.date),
