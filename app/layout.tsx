@@ -1,12 +1,8 @@
 import "./globals.css";
 
+import ClientLayout from "@/app/components/ClientLayout";
 import type { Metadata } from "next";
-import Nav from "@/app/components/Nav";
-import SessionProvider from "@/app/providers/SessionProvider";
-import { ThemeProvider } from "@mui/material/styles";
-// import { UserProvider } from "@/app/providers/UserProvider";
 import { getServerSession } from "next-auth";
-import theme from "@/theme";
 
 export const metadata: Metadata = {
   title: "Sweat Set App",
@@ -23,12 +19,7 @@ const RootLayout: React.FC<RootLayoutProps> = async ({ children }) => {
   return (
     <html lang="en">
       <body>
-        <ThemeProvider theme={theme}>
-          <SessionProvider session={session}>
-            <Nav />
-            {children}
-          </SessionProvider>
-        </ThemeProvider>
+        <ClientLayout session={session}>{children}</ClientLayout>
       </body>
     </html>
   );

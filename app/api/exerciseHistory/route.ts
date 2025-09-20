@@ -19,9 +19,20 @@ export const GET = async (req: NextRequest) => {
 
   const { searchParams } = new URL(req.url);
   const user = searchParams.get("user");
+  const today = searchParams.get("today") === "true";
 
   try {
-    const exerciseHistory = (await ExerciseSet.find({ userId: user })) || [];
+    const filter: Record<string, unknown> = { userId: user };
+
+    if (today) {
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+      const end = new Date();
+      end.setHours(23, 59, 59, 999);
+      filter["date"] = { $gte: start, $lte: end };
+    }
+
+    const exerciseHistory = await ExerciseSet.find(filter, "exercise date weights reps").lean();
 
     const grouped: Record<string, typeof exerciseHistory> = {};
 
@@ -35,18 +46,21 @@ export const GET = async (req: NextRequest) => {
       data: workouts
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
         .map((workout) => {
-          const avgWeight = workout.weights.length
-            ? (workout.weights.reduce((sum, w) => sum + w, 0) / workout.weights.length).toFixed()
-            : "0";
+          // Build sets with rule: if weight === 0, use reps * 1
+          const sets = workout.weights.map((weight, idx) => {
+            const reps = workout.reps[idx] ?? 0;
+            return {
+              setNumber: idx + 1,
+              weight,
+              reps,
+            };
+          });
 
-          const sets = workout.weights.map((weight, idx) => ({
-            setNumber: idx + 1,
-            weight,
-            reps: workout.reps[idx] ?? 0, // match reps to weight if available
-          }));
+          // Average adjusted weights
+          const avgWeight = sets.length ? (sets.reduce((sum, s) => sum + s.weight, 0) / sets.length).toFixed() : "0";
 
           return {
-            date: formatDate(workout.date), // keep your existing formatDate
+            date: formatDate(workout.date),
             sets,
             avgWeight,
           };
@@ -55,12 +69,8 @@ export const GET = async (req: NextRequest) => {
 
     return NextResponse.json(processedData, { status: 200 });
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      console.error("Error fetching exercises:", err);
-      const statusCode = err.name === "ValidationError" ? 400 : 500;
-      return NextResponse.json({ error: err.message || "Unexpected error" }, { status: statusCode });
-    }
-    console.error("Unknown error:", err);
-    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+    console.error("Error fetching exercises:", err);
+    const message = err instanceof Error ? err.message : "Unexpected error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 };
