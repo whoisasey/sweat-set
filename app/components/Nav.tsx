@@ -85,6 +85,7 @@ const Nav = () => {
             icon={isMobile ? <LogoutIcon color="primary" /> : undefined}
             label={isMobile ? undefined : "Log Out"}
             onClick={() => signOut()}
+            value={"/login"}
           />
         </Tabs>
       </Toolbar>

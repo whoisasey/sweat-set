@@ -51,16 +51,11 @@ const ProgressPage = () => {
     getHistory();
   }, [userId, viewState, status]);
 
-  // if (status !== "authenticated" || !userId) {
-  //   router.push("/login");
-  // }
+  if (status === "unauthenticated") {
+    router.push("/login");
+  }
 
   const handleViewChange = (state: boolean) => setViewState(state);
-  // console.log(exerciseHistory);
-
-  // TODO:
-  // add back sets to render in chart
-  //route to Login if user truly not logged in
 
   const RenderViewState: React.FC<{ exerciseHistory: ProcessedWorkoutData[]; viewState: boolean }> = ({
     exerciseHistory,
@@ -70,8 +65,8 @@ const ProgressPage = () => {
     if (!viewState) {
       return (
         <>
-          <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
           {/* --- Minimal Journal --- */}
+
           <Typography variant="h6" gutterBottom>
             Today’s Workout Log
           </Typography>
@@ -88,6 +83,7 @@ const ProgressPage = () => {
               );
             })}
           </List>
+          <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
         </>
       );
     }
@@ -99,14 +95,14 @@ const ProgressPage = () => {
   return (
     <Box
       sx={{
-        margin: "0 auto",
+        margin: "1rem auto",
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
       }}
     >
       <Typography variant="h2" sx={{ textAlign: "center" }} mb={4}>
-        Workout Progress <InsightsIcon />
+        Progress <InsightsIcon />
       </Typography>
 
       {/* Toggle between Today / All Time */}
