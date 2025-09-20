@@ -1,15 +1,21 @@
 "use client";
 
-import { Box, Skeleton, Typography } from "@mui/material";
+import { Box, Card, CardContent, Divider, List, ListItem, ListItemText, Skeleton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import Charts from "../components/ui/Charts";
+import Grid from "@mui/material/Grid2";
 import InsightsIcon from "@mui/icons-material/Insights";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 export type ProcessedWorkoutData = {
   exercise: string;
-  data: { date: Date; avgWeight: number }[];
+  data: {
+    [x: string]: any;
+    date: Date;
+    avgWeight: number;
+  }[];
 };
 
 const ProgressPage = () => {
@@ -18,12 +24,14 @@ const ProgressPage = () => {
   const [exerciseHistory, setExerciseHistory] = useState<ProcessedWorkoutData[]>([]);
   const [viewState, setViewState] = useState(false); // false = Today, true = All Time
   const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const router = useRouter();
 
-  const userId = localStorage.getItem("userId");
+  // const userId =
 
   useEffect(() => {
+    setUserId(localStorage.getItem("userId"));
     if (status !== "authenticated" || !userId) return;
-
     const getHistory = async () => {
       try {
         setLoading(true);
@@ -44,8 +52,52 @@ const ProgressPage = () => {
     getHistory();
   }, [userId, viewState, status]);
 
-  const handleViewChange = (state: boolean) => setViewState(state);
+  // if (status !== "authenticated" || !userId) {
+  //   router.push("/login");
+  // }
 
+  const handleViewChange = (state: boolean) => setViewState(state);
+  // console.log(exerciseHistory);
+
+  // TODO:
+  // add back sets to render in chart
+  //route to Login if user truly not logged in
+
+  const RenderViewState: React.FC<{ exerciseHistory: ProcessedWorkoutData[]; viewState: boolean }> = ({
+    exerciseHistory,
+    viewState,
+  }) => {
+    // false view state (today)
+    if (!viewState) {
+      return (
+        <>
+          {/* --- Minimal Journal --- */}
+          <Typography variant="h6" gutterBottom>
+            Today’s Workout Log
+          </Typography>
+          <List>
+            {exerciseHistory.map((exercise, idx) => {
+              // console.log(exercise.data[0].sets);
+
+              const sets = exercise.data[0].sets.map((s) => `${s.weight}×${s.reps}`).join(", ");
+              return (
+                <div key={idx}>
+                  <List>
+                    <ListItemText primary={exercise.exercise} secondary={sets} />
+                  </List>
+                  {idx < exerciseHistory.length - 1 && <Divider />}
+                </div>
+              );
+            })}
+          </List>
+        </>
+      );
+    }
+    // true view state (all)
+    if (viewState) {
+      return <Charts exerciseHistory={exerciseHistory} viewState={viewState} />;
+    }
+  };
   return (
     <Box
       sx={{
@@ -92,7 +144,8 @@ const ProgressPage = () => {
       ) : exerciseHistory.length === 0 ? (
         <Typography textAlign="center">{viewState ? "No workouts yet." : "No workouts logged today."}</Typography>
       ) : (
-        <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
+        // <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
+        <RenderViewState exerciseHistory={exerciseHistory} viewState={viewState} />
       )}
     </Box>
   );
