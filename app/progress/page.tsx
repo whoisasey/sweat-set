@@ -73,8 +73,8 @@ const ProgressPage = () => {
           </Typography>
           <List>
             {exerciseHistory.map((exercise, idx) => {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const sets = exercise.data[0].sets
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .map((s: { weight: any; reps: any }) => `${s.weight}×${s.reps}`)
                 .join(", ");
               return (
