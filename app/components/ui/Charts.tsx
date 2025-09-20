@@ -66,6 +66,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
 
   // Chart renderer
   // TODO: add carousel for mobile?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderChart = (data: { exercise: string; data: any }[], value: number = 1, todayView: boolean = false) => {
     return data.map(({ data, exercise }) => (
       <Box

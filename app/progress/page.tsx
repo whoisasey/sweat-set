@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 export type ProcessedWorkoutData = {
   exercise: string;
   data: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [x: string]: any;
     date: Date;
     avgWeight: number;
@@ -72,7 +73,10 @@ const ProgressPage = () => {
           </Typography>
           <List>
             {exerciseHistory.map((exercise, idx) => {
-              const sets = exercise.data[0].sets.map((s) => `${s.weight}×${s.reps}`).join(", ");
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const sets = exercise.data[0].sets
+                .map((s: { weight: any; reps: any }) => `${s.weight}×${s.reps}`)
+                .join(", ");
               return (
                 <div key={idx}>
                   <List>
