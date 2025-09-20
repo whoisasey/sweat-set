@@ -23,7 +23,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
 
         return {
           exercise: exercise.exercise,
-          data: todayEntry.sets.map((set) => ({
+          data: todayEntry.sets.map((set: { setNumber: number; weight: number; reps: number }) => ({
             setNumber: set.setNumber,
             weight: set.weight,
             reps: set.reps,
@@ -65,7 +65,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
   };
 
   // Chart renderer
-  const renderChart = (data: { exercise: string; data: any[] }[], value: number = 1, todayView: boolean = false) => {
+  const renderChart = (data: { exercise: string; data: any }[], value: number = 1, todayView: boolean = false) => {
     return data.map(({ data, exercise }) => (
       <Box
         key={exercise}
