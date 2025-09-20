@@ -1,10 +1,9 @@
 "use client";
 
-import { Box, Card, CardContent, Divider, List, ListItem, ListItemText, Skeleton, Typography } from "@mui/material";
+import { Box, Divider, List, ListItemText, Skeleton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import Charts from "../components/ui/Charts";
-import Grid from "@mui/material/Grid2";
 import InsightsIcon from "@mui/icons-material/Insights";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -71,14 +70,13 @@ const ProgressPage = () => {
     if (!viewState) {
       return (
         <>
+          <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
           {/* --- Minimal Journal --- */}
           <Typography variant="h6" gutterBottom>
             Today’s Workout Log
           </Typography>
           <List>
             {exerciseHistory.map((exercise, idx) => {
-              // console.log(exercise.data[0].sets);
-
               const sets = exercise.data[0].sets.map((s) => `${s.weight}×${s.reps}`).join(", ");
               return (
                 <div key={idx}>
@@ -144,7 +142,6 @@ const ProgressPage = () => {
       ) : exerciseHistory.length === 0 ? (
         <Typography textAlign="center">{viewState ? "No workouts yet." : "No workouts logged today."}</Typography>
       ) : (
-        // <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
         <RenderViewState exerciseHistory={exerciseHistory} viewState={viewState} />
       )}
     </Box>
