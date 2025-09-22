@@ -82,9 +82,10 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
         <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
           {exercise}
         </Typography>
+        {/* TODO: when viewState is true, width is wider; when viewState is false, width is smaller */}
         <AreaChart
-          width={width && width < 540 ? 175 : 600 / value}
-          height={width && width < 540 ? 200 : 300}
+          width={width && width < 540 ? (viewState ? 400 : 175) : 400}
+          height={width && width < 540 ? 300 : 300}
           data={data}
         >
           <CartesianGrid strokeDasharray="3 3" />
@@ -123,7 +124,11 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
     }
   }
 
-  return <Box sx={{ margin: `${width && width < 540 ? "0" : " 0 auto"}` }}>{renderChart(exerciseHistory)}</Box>;
+  return (
+    <Box sx={{ margin: `${width && width < 540 ? "0" : " 0 auto"}`, display: "flex", flexWrap: "wrap" }}>
+      {renderChart(exerciseHistory)}
+    </Box>
+  );
 };
 
 export default Charts;
