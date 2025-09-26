@@ -29,6 +29,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
 
   // const session = useSession();
   const userId = localStorage.getItem("userId");
+  // console.log("userId", userId);
 
   // Fetch exercises
   useEffect(() => {
@@ -93,7 +94,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
   };
 
   return (
-    <Collapse in={showForm} timeout={500} onExited={onRemove}>
+    <Collapse in={showForm} timeout={1500} onExited={onRemove}>
       <form onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column">
           <ExerciseSelector selectedExercise={selectedExercise} allExercises={allExercises} onChange={handleChange} />
@@ -141,7 +142,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
           </Button>
         </Box>
 
-        <Snackbar open={!!successMsg} autoHideDuration={3000} onClose={() => setSuccessMsg("")}>
+        <Snackbar open={!!successMsg} autoHideDuration={4000} onClose={() => setSuccessMsg("")}>
           <Alert severity="success">{successMsg}</Alert>
         </Snackbar>
       </form>
