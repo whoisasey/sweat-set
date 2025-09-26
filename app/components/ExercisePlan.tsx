@@ -4,7 +4,7 @@ import { Box, Button, Card, Typography } from "@mui/material";
 import React, { useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
-import { ExerciseForm } from "./SingleExercise";
+import { ExerciseForm } from "./ExerciseForm";
 import { workoutPlan } from "@/app/data/workoutPlan";
 
 type Exercise = {

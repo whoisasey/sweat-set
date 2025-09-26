@@ -7,22 +7,15 @@ export const POST = async (req: Request) => {
     await connect();
     const body = await req.json();
 
-    const transformToArray = (state: string) => {
-      return Object.keys(body)
-        .filter((key) => key.startsWith(`${state}-`))
-        .map((key) => Number(body[key]))
-        .filter((num) => !isNaN(num));
-    };
-
-    const weights = transformToArray("weight");
-    const reps = transformToArray("rep");
+    const reps = Array.isArray(body.reps) ? body.reps.map(Number) : [];
+    const weights = Array.isArray(body.weights) ? body.weights.map(Number) : [];
 
     const newExercise = new ExerciseSet({
       exercise: body.exercise,
       exerciseId: body.exerciseId,
       weights,
       reps,
-      sets: Math.max(weights.length, reps.length), // optional: sets = max of reps/weights length
+      sets: Math.max(weights.length, reps.length),
       distance: Number(body.distance) || 0,
       userId: body.userId,
       date: new Date(body.date),

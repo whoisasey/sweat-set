@@ -29,7 +29,6 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
 
   // const session = useSession();
   const userId = localStorage.getItem("userId");
-  // console.log("userId", userId);
 
   // Fetch exercises
   useEffect(() => {
