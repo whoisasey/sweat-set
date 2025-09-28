@@ -76,54 +76,72 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
   };
 
   // Chart renderer
+  // TODO:
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   const renderChart = (data: { exercise: string; data: any }[], value: number = 1, todayView: boolean = false) => {
-    return (
-      <Swiper
-        modules={[Navigation, Pagination, Scrollbar, A11y]}
-        spaceBetween={50}
-        slidesPerView={1}
-        navigation
-        pagination={{ clickable: true }}
-        scrollbar={{ draggable: true }}
-        onSwiper={(swiper) => swiper}
+    const isMobile = (width ?? 0) < 540;
+
+    // ✅ one reusable chart block
+    const renderSingleChart = (
+      exercise: string,
+      chartData: { setNumber: number; weight: number; reps?: number; date?: string; avgWeight?: number }[]
+    ) => (
+      <Box
+        key={exercise}
+        mb={4}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          flex: isMobile ? "1 1 100%" : "1 1 45%",
+        }}
       >
-        {data.map(({ data, exercise }) => (
-          <SwiperSlide key={exercise}>
-            <Box
-              mb={4}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
-                {exercise}
-              </Typography>
-              {/* TODO: when viewState is true, width is wider; when viewState is false, width is smaller */}
-              <AreaChart width={width && width < 540 ? 400 : 400} height={width && width < 540 ? 300 : 300} data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                {todayView ? (
-                  <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
-                ) : (
-                  <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
-                )}
-                <YAxis type="number" domain={[0, "dataMax + 20"]} />
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type={cardinal}
-                  dataKey={todayView ? "weight" : "avgWeight"}
-                  stroke="#82ca9d"
-                  fill="#82ca9d"
-                  fillOpacity={0.3}
-                />
-              </AreaChart>
-            </Box>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+        <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+          {exercise}
+        </Typography>
+        <AreaChart width={350} height={300} data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          {todayView ? (
+            <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
+          ) : (
+            <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
+          )}
+          <YAxis type="number" domain={[0, "dataMax + 20"]} />
+          <Tooltip content={<CustomTooltip />} />
+          <Area
+            type={cardinal}
+            dataKey={todayView ? "weight" : "avgWeight"}
+            stroke="#82ca9d"
+            fill="#82ca9d"
+            fillOpacity={0.3}
+          />
+        </AreaChart>
+      </Box>
+    );
+
+    if (isMobile) {
+      // ✅ Mobile view: wrap charts in Swiper
+      return (
+        <Swiper
+          modules={[Navigation, Pagination, Scrollbar, A11y]}
+          spaceBetween={16}
+          slidesPerView={1}
+          pagination={{ clickable: true }}
+          scrollbar={{ draggable: true }}
+        >
+          {data.map(({ exercise, data: chartData }) => (
+            <SwiperSlide key={exercise}>{renderSingleChart(exercise, chartData)}</SwiperSlide>
+          ))}
+        </Swiper>
+      );
+    }
+
+    // ✅ Non-mobile view: flex/grid layout
+    return (
+      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+        {data.map(({ exercise, data: chartData }) => renderSingleChart(exercise, chartData))}
+      </Box>
     );
   };
 
