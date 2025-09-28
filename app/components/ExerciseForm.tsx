@@ -26,9 +26,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
   const [successMsg, setSuccessMsg] = useState("");
   const [showForm, setShowForm] = useState(true);
-
-  // const session = useSession();
-  const userId = localStorage.getItem("userId");
+  const [userId, setUserId] = useState<string | null>(null);
 
   // Fetch exercises
   useEffect(() => {
@@ -39,6 +37,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
       }
     };
     fetchExercises();
+    setUserId(localStorage.getItem("userId"));
   }, []);
 
   // Sync weights with sets
