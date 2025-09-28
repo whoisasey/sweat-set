@@ -1,6 +1,5 @@
 "use client";
 
-// @ts-expect-error - no type declarations for css import
 import "swiper/css";
 
 import { A11y, Navigation, Pagination, Scrollbar } from "swiper/modules";
