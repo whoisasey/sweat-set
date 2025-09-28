@@ -1,8 +1,13 @@
 "use client";
 
+// @ts-expect-error - no type declarations for css import
+import "swiper/css";
+
+import { A11y, Navigation, Pagination, Scrollbar } from "swiper/modules";
 import { Area, AreaChart, CartesianGrid, Tooltip, TooltipProps, XAxis, YAxis } from "recharts";
 import { Box, Typography } from "@mui/material";
 import React, { JSX } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import { curveCardinal } from "d3-shape";
@@ -71,47 +76,55 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
   };
 
   // Chart renderer
-  // TODO: add carousel for mobile?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   const renderChart = (data: { exercise: string; data: any }[], value: number = 1, todayView: boolean = false) => {
-    return data.map(({ data, exercise }) => (
-      <Box
-        key={exercise}
-        mb={4}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+    return (
+      <Swiper
+        modules={[Navigation, Pagination, Scrollbar, A11y]}
+        spaceBetween={50}
+        slidesPerView={1}
+        navigation
+        pagination={{ clickable: true }}
+        scrollbar={{ draggable: true }}
+        onSwiper={(swiper) => swiper}
       >
-        <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
-          {exercise}
-        </Typography>
-        {/* TODO: when viewState is true, width is wider; when viewState is false, width is smaller */}
-        <AreaChart
-          width={width && width < 540 ? (viewState ? 400 : 175) : 400}
-          height={width && width < 540 ? 300 : 300}
-          data={data}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          {todayView ? (
-            <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
-          ) : (
-            <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
-          )}
-          <YAxis type="number" domain={[0, "dataMax + 20"]} />
-          <Tooltip content={<CustomTooltip />} />
-          <Area
-            type={cardinal}
-            dataKey={todayView ? "weight" : "avgWeight"}
-            stroke="#82ca9d"
-            fill="#82ca9d"
-            fillOpacity={0.3}
-          />
-        </AreaChart>
-      </Box>
-    ));
+        {data.map(({ data, exercise }) => (
+          <SwiperSlide key={exercise}>
+            <Box
+              mb={4}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+                {exercise}
+              </Typography>
+              {/* TODO: when viewState is true, width is wider; when viewState is false, width is smaller */}
+              <AreaChart width={width && width < 540 ? 400 : 400} height={width && width < 540 ? 300 : 300} data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                {todayView ? (
+                  <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
+                ) : (
+                  <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
+                )}
+                <YAxis type="number" domain={[0, "dataMax + 20"]} />
+                <Tooltip content={<CustomTooltip />} />
+                <Area
+                  type={cardinal}
+                  dataKey={todayView ? "weight" : "avgWeight"}
+                  stroke="#82ca9d"
+                  fill="#82ca9d"
+                  fillOpacity={0.3}
+                />
+              </AreaChart>
+            </Box>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    );
   };
 
   if (!viewState) {
