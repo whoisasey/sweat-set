@@ -1,6 +1,7 @@
 "use client";
 
 import { Box, Divider, List, ListItemText, Skeleton, Typography } from "@mui/material";
+// import { Box, Skeleton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import Charts from "../components/ui/Charts";
@@ -27,8 +28,6 @@ const ProgressPage = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
 
-  // const userId =
-
   useEffect(() => {
     setUserId(localStorage.getItem("userId"));
     if (status !== "authenticated" || !userId) return;
@@ -52,8 +51,6 @@ const ProgressPage = () => {
     getHistory();
   }, [userId, viewState, status]);
 
-  console.log("env", process.env.NODE_ENV);
-
   if (status === "unauthenticated") {
     router.push("/login");
   }
@@ -68,6 +65,7 @@ const ProgressPage = () => {
     if (!viewState) {
       return (
         <>
+          <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
           {/* --- Minimal Journal --- */}
 
           <Typography variant="h6" gutterBottom>
@@ -89,7 +87,6 @@ const ProgressPage = () => {
               );
             })}
           </List>
-          <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
         </>
       );
     }
