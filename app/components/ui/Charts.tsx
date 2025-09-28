@@ -14,7 +14,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
   const width = useWindowSize("width");
 
   // Filter today's exercises
-  function filterByToday(data: ProcessedWorkoutData[]) {
+  const filterByToday = (data: ProcessedWorkoutData[]) => {
     const today = formatDate();
     return data
       .map((exercise) => {
@@ -31,7 +31,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
         };
       })
       .filter(Boolean) as { exercise: string; data: { setNumber: number; weight: number; reps: number }[] }[];
-  }
+  };
 
   // Tooltip for both views
   const CustomTooltip = ({ active, payload }: TooltipProps<number, string>): JSX.Element | null => {
@@ -41,10 +41,16 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
       // Today view data (setNumber + weight + reps)
       if ("setNumber" in d) {
         return (
-          <Box sx={{ background: "#fff", border: "1px solid #ccc", p: 1 }}>
-            <Typography variant="body2">Set {d.setNumber}</Typography>
-            <Typography variant="body2">Weight: {d.weight} lbs</Typography>
-            <Typography variant="body2">Reps: {d.reps}</Typography>
+          <Box sx={{ background: "#ccc", border: "1px solid #ccc", p: 1 }}>
+            <Typography variant="body2" sx={{ color: "#2E2E2E" }}>
+              Set {d.setNumber}
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#2E2E2E" }}>
+              Weight: {d.weight} lbs
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#2E2E2E" }}>
+              Reps: {d.reps}
+            </Typography>
           </Box>
         );
       }
