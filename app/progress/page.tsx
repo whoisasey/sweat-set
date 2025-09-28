@@ -52,6 +52,8 @@ const ProgressPage = () => {
     getHistory();
   }, [userId, viewState, status]);
 
+  console.log("env", process.env.NODE_ENV);
+
   if (status === "unauthenticated") {
     router.push("/login");
   }
