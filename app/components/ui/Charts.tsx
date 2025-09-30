@@ -3,19 +3,25 @@
 import "swiper/css";
 
 import { A11y, Navigation, Pagination, Scrollbar } from "swiper/modules";
-import { Area, AreaChart, CartesianGrid, Tooltip, TooltipProps, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis } from "recharts";
 import { Box, Typography } from "@mui/material";
-import React, { JSX } from "react";
+import React, { JSX, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import { ProcessedWorkoutData } from "@/app/progress/page";
+// import { Swiper as SwiperCore } from "swiper/types"; // ✅ Core type
+import type { SwiperRef } from "swiper/react";
 import { curveCardinal } from "d3-shape";
 import { formatDate } from "@/app/utils/helpers";
 import { useWindowSize } from "@/app/utils/helpers-fe";
 
+// ✅ React ref type
+
 const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWorkoutData[]; viewState: boolean }) => {
   const cardinal = curveCardinal.tension(0.2);
   const width = useWindowSize("width");
+  const swiperRef = useRef<SwiperRef | null>(null);
+  const isMobile = (width ?? 0) < 540;
 
   // Filter today's exercises
   const filterByToday = (data: ProcessedWorkoutData[]) => {
@@ -34,7 +40,10 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
           })),
         };
       })
-      .filter(Boolean) as { exercise: string; data: { setNumber: number; weight: number; reps: number }[] }[];
+      .filter(Boolean) as {
+      exercise: string;
+      data: { setNumber: number; weight: number; reps: number }[];
+    }[];
   };
 
   // Tooltip for both views
@@ -42,7 +51,6 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
     if (active && payload && payload.length) {
       const d = payload[0].payload;
 
-      // Today view data (setNumber + weight + reps)
       if ("setNumber" in d) {
         return (
           <Box sx={{ background: "#ccc", border: "1px solid #ccc", p: 1 }}>
@@ -59,7 +67,6 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
         );
       }
 
-      // History view data
       return (
         <Box className="custom-tooltip">
           <p>{payload?.[0]?.payload?.date}</p>
@@ -74,32 +81,36 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
     return null;
   };
 
-  // Chart renderer
-  // TODO:
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  const renderChart = (data: { exercise: string; data: any }[], value: number = 1, todayView: boolean = false) => {
-    const isMobile = (width ?? 0) < 540;
-
-    // ✅ one reusable chart block
-    const renderSingleChart = (
-      exercise: string,
-      chartData: { setNumber: number; weight: number; reps?: number; date?: string; avgWeight?: number }[]
-    ) => (
-      <Box
-        key={exercise}
-        mb={4}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          flex: isMobile ? "1 1 100%" : "1 1 45%",
-        }}
-      >
-        <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
-          {exercise}
-        </Typography>
-        <AreaChart width={350} height={300} data={chartData}>
+  // Reusable chart block
+  const renderSingleChart = (
+    exercise: string,
+    chartData: {
+      setNumber: number;
+      weight: number;
+      reps?: number;
+      date?: string;
+      avgWeight?: number;
+    }[],
+    todayView: boolean
+  ) => (
+    <Box
+      key={exercise}
+      mb={4}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        flex: isMobile ? "1 1 100%" : "1 1 45%",
+        minWidth: 0, // ⚠️ Important for ResponsiveContainer
+        height: 320, // chart height (can tweak)
+      }}
+    >
+      <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+        {exercise}
+      </Typography>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           {todayView ? (
             <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
@@ -116,13 +127,31 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
             fillOpacity={0.3}
           />
         </AreaChart>
-      </Box>
-    );
+      </ResponsiveContainer>
+    </Box>
+  );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleTouchStart = (e: React.TouchEvent) => {
+    // disable swiper swipe while tooltip active
+    if (swiperRef.current?.swiper) {
+      swiperRef.current.swiper.allowTouchMove = false;
+    }
+  };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (swiperRef.current?.swiper) {
+      swiperRef.current.swiper.allowTouchMove = true;
+    }
+  };
+
+  // Main chart renderer
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const renderChart = (data: { exercise: string; data: any }[], todayView: boolean = false) => {
     if (isMobile) {
-      // ✅ Mobile view: wrap charts in Swiper
       return (
         <Swiper
+          ref={swiperRef}
           modules={[Navigation, Pagination, Scrollbar, A11y]}
           spaceBetween={16}
           slidesPerView={1}
@@ -130,16 +159,19 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
           scrollbar={{ draggable: true }}
         >
           {data.map(({ exercise, data: chartData }) => (
-            <SwiperSlide key={exercise}>{renderSingleChart(exercise, chartData)}</SwiperSlide>
+            <SwiperSlide key={exercise}>
+              <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+                {renderSingleChart(exercise, chartData, todayView)}
+              </div>
+            </SwiperSlide>
           ))}
         </Swiper>
       );
     }
 
-    // ✅ Non-mobile view: flex/grid layout
     return (
-      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-        {data.map(({ exercise, data: chartData }) => renderSingleChart(exercise, chartData))}
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+        {data.map(({ exercise, data: chartData }) => renderSingleChart(exercise, chartData, todayView))}
       </Box>
     );
   };
@@ -148,7 +180,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
     const filteredExercises = filterByToday(exerciseHistory);
 
     if (filteredExercises.length > 0) {
-      return <Box sx={{ display: "flex", flexWrap: "wrap" }}>{renderChart(filteredExercises, 2, true)}</Box>;
+      return <Box sx={{ display: "flex", flexWrap: "wrap" }}>{renderChart(filteredExercises, true)}</Box>;
     } else {
       return (
         <Box>
@@ -161,7 +193,13 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
   }
 
   return (
-    <Box sx={{ margin: `${width && width < 540 ? "0" : " 0 auto"}`, display: "flex", flexWrap: "wrap" }}>
+    <Box
+      sx={{
+        margin: `${width && width < 540 ? "0" : "0 auto"}`,
+        display: "flex",
+        flexWrap: "wrap",
+      }}
+    >
       {renderChart(exerciseHistory)}
     </Box>
   );
