@@ -5,22 +5,17 @@ import "swiper/css";
 import { A11y, Navigation, Pagination, Scrollbar } from "swiper/modules";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis } from "recharts";
 import { Box, Typography } from "@mui/material";
-import React, { JSX, useRef } from "react";
+import React, { JSX } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import { ProcessedWorkoutData } from "@/app/progress/page";
-// import { Swiper as SwiperCore } from "swiper/types"; // ✅ Core type
-import type { SwiperRef } from "swiper/react";
 import { curveCardinal } from "d3-shape";
 import { formatDate } from "@/app/utils/helpers";
 import { useWindowSize } from "@/app/utils/helpers-fe";
 
-// ✅ React ref type
-
 const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWorkoutData[]; viewState: boolean }) => {
   const cardinal = curveCardinal.tension(0.2);
   const width = useWindowSize("width");
-  const swiperRef = useRef<SwiperRef | null>(null);
   const isMobile = (width ?? 0) < 540;
 
   // Filter today's exercises
@@ -118,7 +113,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
             <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
           )}
           <YAxis type="number" domain={[0, "dataMax + 20"]} />
-          <Tooltip content={<CustomTooltip />} />
+          {todayView && isMobile ? null : <Tooltip content={<CustomTooltip />} />}
           <Area
             type={cardinal}
             dataKey={todayView ? "weight" : "avgWeight"}
@@ -131,27 +126,12 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
     </Box>
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleTouchStart = (e: React.TouchEvent) => {
-    // disable swiper swipe while tooltip active
-    if (swiperRef.current?.swiper) {
-      swiperRef.current.swiper.allowTouchMove = false;
-    }
-  };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (swiperRef.current?.swiper) {
-      swiperRef.current.swiper.allowTouchMove = true;
-    }
-  };
-
   // Main chart renderer
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderChart = (data: { exercise: string; data: any }[], todayView: boolean = false) => {
     if (isMobile) {
       return (
         <Swiper
-          ref={swiperRef}
           modules={[Navigation, Pagination, Scrollbar, A11y]}
           spaceBetween={16}
           slidesPerView={1}
@@ -159,18 +139,14 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
           scrollbar={{ draggable: true }}
         >
           {data.map(({ exercise, data: chartData }) => (
-            <SwiperSlide key={exercise}>
-              <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-                {renderSingleChart(exercise, chartData, todayView)}
-              </div>
-            </SwiperSlide>
+            <SwiperSlide key={exercise}>{renderSingleChart(exercise, chartData, todayView)}</SwiperSlide>
           ))}
         </Swiper>
       );
     }
 
     return (
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, width: "100%" }}>
         {data.map(({ exercise, data: chartData }) => renderSingleChart(exercise, chartData, todayView))}
       </Box>
     );
