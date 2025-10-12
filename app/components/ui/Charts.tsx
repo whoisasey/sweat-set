@@ -1,8 +1,12 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, Tooltip, TooltipProps, XAxis, YAxis } from "recharts";
+import "swiper/css";
+
+import { A11y, Navigation, Pagination, Scrollbar } from "swiper/modules";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis } from "recharts";
 import { Box, Typography } from "@mui/material";
 import React, { JSX } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import { curveCardinal } from "d3-shape";
@@ -12,9 +16,10 @@ import { useWindowSize } from "@/app/utils/helpers-fe";
 const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWorkoutData[]; viewState: boolean }) => {
   const cardinal = curveCardinal.tension(0.2);
   const width = useWindowSize("width");
+  const isMobile = (width ?? 0) < 540;
 
   // Filter today's exercises
-  function filterByToday(data: ProcessedWorkoutData[]) {
+  const filterByToday = (data: ProcessedWorkoutData[]) => {
     const today = formatDate();
     return data
       .map((exercise) => {
@@ -30,26 +35,33 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
           })),
         };
       })
-      .filter(Boolean) as { exercise: string; data: { setNumber: number; weight: number; reps: number }[] }[];
-  }
+      .filter(Boolean) as {
+      exercise: string;
+      data: { setNumber: number; weight: number; reps: number }[];
+    }[];
+  };
 
   // Tooltip for both views
   const CustomTooltip = ({ active, payload }: TooltipProps<number, string>): JSX.Element | null => {
     if (active && payload && payload.length) {
       const d = payload[0].payload;
 
-      // Today view data (setNumber + weight + reps)
       if ("setNumber" in d) {
         return (
-          <Box sx={{ background: "#fff", border: "1px solid #ccc", p: 1 }}>
-            <Typography variant="body2">Set {d.setNumber}</Typography>
-            <Typography variant="body2">Weight: {d.weight} lbs</Typography>
-            <Typography variant="body2">Reps: {d.reps}</Typography>
+          <Box sx={{ background: "#ccc", border: "1px solid #ccc", p: 1 }}>
+            <Typography variant="body2" sx={{ color: "#2E2E2E" }}>
+              Set {d.setNumber}
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#2E2E2E" }}>
+              Weight: {d.weight} lbs
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#2E2E2E" }}>
+              Reps: {d.reps}
+            </Typography>
           </Box>
         );
       }
 
-      // History view data
       return (
         <Box className="custom-tooltip">
           <p>{payload?.[0]?.payload?.date}</p>
@@ -64,58 +76,108 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
     return null;
   };
 
-  // Chart renderer
-  // TODO: add carousel for mobile?
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  const renderChart = (data: { exercise: string; data: any }[], value: number = 1, todayView: boolean = false) => {
-    return data.map(({ data, exercise }) => (
+  // Reusable chart block
+  const renderSingleChart = (
+    exercise: string,
+    chartData: {
+      setNumber: number;
+      weight: number;
+      reps?: number;
+      date?: string;
+      avgWeight?: number;
+    }[],
+    todayView: boolean
+  ) => (
+    <Box
+      key={exercise}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        height: isMobile ? "100%" : "350px",
+        width: "100%",
+        padding: isMobile ? 2 : 1,
+        boxSizing: "border-box",
+        mb: isMobile ? 0 : 2,
+      }}
+    >
+      <Typography variant="h6" gutterBottom sx={{ textAlign: "center", mb: 2 }}>
+        {exercise}
+      </Typography>
+      <Box sx={{ width: "100%", height: isMobile ? "300px" : "280px", minHeight: isMobile ? "300px" : "280px" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            {todayView ? (
+              <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
+            ) : (
+              <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
+            )}
+            <YAxis type="number" domain={[0, "dataMax + 20"]} />
+            {todayView && isMobile ? null : <Tooltip content={<CustomTooltip />} />}
+            <Area
+              type={cardinal}
+              dataKey={todayView ? "weight" : "avgWeight"}
+              stroke="#82ca9d"
+              fill="#82ca9d"
+              fillOpacity={0.3}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </Box>
+    </Box>
+  );
+
+  // Main chart renderer - swipeable on mobile, static grid on desktop
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const renderChart = (data: { exercise: string; data: any }[], todayView: boolean = false) => {
+    if (isMobile) {
+      return (
+        <Swiper
+          modules={[Navigation, Pagination, Scrollbar, A11y]}
+          spaceBetween={16}
+          slidesPerView={1}
+          pagination={{ clickable: true }}
+          scrollbar={{ draggable: true }}
+          grabCursor={true}
+          style={{ width: "100%", height: "400px" }}
+        >
+          {data.map(({ exercise, data: chartData }) => (
+            <SwiperSlide key={exercise} style={{ height: "100%" }}>
+              {renderSingleChart(exercise, chartData, todayView)}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      );
+    }
+
+    // Desktop static grid view
+    return (
       <Box
-        key={exercise}
-        mb={4}
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          gap: 3,
+          width: "100%",
         }}
       >
-        <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
-          {exercise}
-        </Typography>
-        {/* TODO: when viewState is true, width is wider; when viewState is false, width is smaller */}
-        <AreaChart
-          width={width && width < 540 ? (viewState ? 400 : 175) : 400}
-          height={width && width < 540 ? 300 : 300}
-          data={data}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          {todayView ? (
-            <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
-          ) : (
-            <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
-          )}
-          <YAxis type="number" domain={[0, "dataMax + 20"]} />
-          <Tooltip content={<CustomTooltip />} />
-          <Area
-            type={cardinal}
-            dataKey={todayView ? "weight" : "avgWeight"}
-            stroke="#82ca9d"
-            fill="#82ca9d"
-            fillOpacity={0.3}
-          />
-        </AreaChart>
+        {data.map(({ exercise, data: chartData }) => renderSingleChart(exercise, chartData, todayView))}
       </Box>
-    ));
+    );
   };
 
+  // Today's view (viewState = false)
   if (!viewState) {
     const filteredExercises = filterByToday(exerciseHistory);
 
     if (filteredExercises.length > 0) {
-      return <Box sx={{ display: "flex", flexWrap: "wrap" }}>{renderChart(filteredExercises, 2, true)}</Box>;
+      return (
+        <Box sx={{ width: "100%", height: isMobile ? "440px" : "auto" }}>{renderChart(filteredExercises, true)}</Box>
+      );
     } else {
       return (
-        <Box>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "200px" }}>
           <Typography variant="h5" sx={{ textAlign: "center" }}>
             {"Sorry, no exercises today :("}
           </Typography>
@@ -124,11 +186,8 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
     }
   }
 
-  return (
-    <Box sx={{ margin: `${width && width < 540 ? "0" : " 0 auto"}`, display: "flex", flexWrap: "wrap" }}>
-      {renderChart(exerciseHistory)}
-    </Box>
-  );
+  // Historical view (viewState = true)
+  return <Box sx={{ width: "100%", height: isMobile ? "440px" : "auto" }}>{renderChart(exerciseHistory, false)}</Box>;
 };
 
 export default Charts;

@@ -1,7 +1,7 @@
 "use client";
 
-import { Box, Divider, List, ListItemText, Skeleton, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Box, List, ListItem, ListItemText, Skeleton, Typography } from "@mui/material";
+import React, { Fragment, useEffect, useState } from "react";
 
 import Charts from "../components/ui/Charts";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -26,8 +26,6 @@ const ProgressPage = () => {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
-
-  // const userId =
 
   useEffect(() => {
     setUserId(localStorage.getItem("userId"));
@@ -66,28 +64,31 @@ const ProgressPage = () => {
     if (!viewState) {
       return (
         <>
+          <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
           {/* --- Minimal Journal --- */}
 
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h4" gutterBottom>
             Today’s Workout Log
           </Typography>
           <List>
             {exerciseHistory.map((exercise, idx) => {
-              const sets = exercise.data[0].sets
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .map((s: { weight: any; reps: any }) => `${s.weight}×${s.reps}`)
-                .join(", ");
+              const sets = exercise.data[0].sets;
+
               return (
-                <div key={idx}>
-                  <List>
-                    <ListItemText primary={exercise.exercise} secondary={sets} />
-                  </List>
-                  {idx < exerciseHistory.length - 1 && <Divider />}
-                </div>
+                <Fragment key={idx}>
+                  <Typography variant="h6">{exercise.exercise}</Typography>
+                  {sets.map((set: { setNumber: number; weight: number; reps: number }) => (
+                    <ListItem key={set.setNumber}>
+                      <ListItemText
+                        primary={`Set ${set.setNumber}`}
+                        secondary={`Weight: ${set.weight} lbs, Reps: ${set.reps}`}
+                      />
+                    </ListItem>
+                  ))}
+                </Fragment>
               );
             })}
           </List>
-          <Charts exerciseHistory={exerciseHistory} viewState={viewState} />
         </>
       );
     }
