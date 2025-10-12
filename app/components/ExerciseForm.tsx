@@ -42,7 +42,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
 
   // Sync weights with sets
   useEffect(() => {
-    setWeights(Array.from({ length: updatedSets }, (_, i) => weights[i] ?? 0));
+    setWeights(Array.from({ length: updatedSets }, (_, i) => weights[i] ?? ""));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updatedSets]);
 
