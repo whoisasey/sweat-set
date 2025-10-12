@@ -45,7 +45,7 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                   pattern: "[0-9]*",
                   style: { textAlign: "center" },
                 }}
-                sx={{ width: 70 }}
+                // sx={{ width: 80 }}
               />
               <IconButton size="small" onClick={() => handleAdjust(i, "rep", 1)} aria-label="increase reps">
                 <Add fontSize="small" />
@@ -72,7 +72,7 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                   pattern: "[0-9]*",
                   style: { textAlign: "center" },
                 }}
-                sx={{ width: 70 }}
+                // sx={{ width: 80 }}
               />
               <IconButton size="small" onClick={() => handleAdjust(i, "weight", 5)} aria-label="increase weight">
                 <Add fontSize="small" />
