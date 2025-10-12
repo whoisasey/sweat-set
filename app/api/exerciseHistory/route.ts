@@ -41,31 +41,32 @@ export const GET = async (req: NextRequest) => {
       grouped[workout.exercise].push(workout);
     });
 
-    const processedData: ProcessedWorkoutData[] = Object.entries(grouped).map(([exercise, workouts]) => ({
-      exercise,
-      data: workouts
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        .map((workout) => {
-          // Build sets with rule: if weight === 0, use reps * 1
-          const sets = workout.weights.map((weight, idx) => {
-            const reps = workout.reps[idx] ?? 0;
+    const processedData: ProcessedWorkoutData[] = Object.entries(grouped)
+      .map(([exercise, workouts]) => ({
+        exercise,
+        data: workouts
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) // sort entries for each exercise by date ascending
+          .map((workout) => {
+            const sets = workout.weights.map((weight, idx) => {
+              const reps = workout.reps[idx] ?? 0;
+              return {
+                setNumber: idx + 1,
+                weight,
+                reps,
+              };
+            });
+
+            const avgWeight = sets.length ? (sets.reduce((sum, s) => sum + s.weight, 0) / sets.length).toFixed() : "0";
+
             return {
-              setNumber: idx + 1,
-              weight,
-              reps,
+              date: formatDate(workout.date),
+              sets,
+              avgWeight,
             };
-          });
-
-          // Average adjusted weights
-          const avgWeight = sets.length ? (sets.reduce((sum, s) => sum + s.weight, 0) / sets.length).toFixed() : "0";
-
-          return {
-            date: formatDate(workout.date),
-            sets,
-            avgWeight,
-          };
-        }),
-    }));
+          }),
+      }))
+      // ✅ Sort by total number of entries (descending)
+      .sort((a, b) => b.data.length - a.data.length);
 
     return NextResponse.json(processedData, { status: 200 });
   } catch (err: unknown) {
