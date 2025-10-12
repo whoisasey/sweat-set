@@ -90,43 +90,46 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
   ) => (
     <Box
       key={exercise}
-      mb={4}
       sx={{
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
-        flex: isMobile ? "1 1 100%" : "1 1 45%",
-        minWidth: 0, // ⚠️ Important for ResponsiveContainer
-        height: 320, // chart height (can tweak)
+        height: isMobile ? "100%" : "350px",
+        width: "100%",
+        padding: isMobile ? 2 : 1,
+        boxSizing: "border-box",
+        mb: isMobile ? 0 : 2,
       }}
     >
-      <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+      <Typography variant="h6" gutterBottom sx={{ textAlign: "center", mb: 2 }}>
         {exercise}
       </Typography>
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          {todayView ? (
-            <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
-          ) : (
-            <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
-          )}
-          <YAxis type="number" domain={[0, "dataMax + 20"]} />
-          {todayView && isMobile ? null : <Tooltip content={<CustomTooltip />} />}
-          <Area
-            type={cardinal}
-            dataKey={todayView ? "weight" : "avgWeight"}
-            stroke="#82ca9d"
-            fill="#82ca9d"
-            fillOpacity={0.3}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+      <Box sx={{ width: "100%", height: isMobile ? "300px" : "280px", minHeight: isMobile ? "300px" : "280px" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            {todayView ? (
+              <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
+            ) : (
+              <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
+            )}
+            <YAxis type="number" domain={[0, "dataMax + 20"]} />
+            {todayView && isMobile ? null : <Tooltip content={<CustomTooltip />} />}
+            <Area
+              type={cardinal}
+              dataKey={todayView ? "weight" : "avgWeight"}
+              stroke="#82ca9d"
+              fill="#82ca9d"
+              fillOpacity={0.3}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </Box>
     </Box>
   );
 
-  // Main chart renderer
+  // Main chart renderer - swipeable on mobile, static grid on desktop
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderChart = (data: { exercise: string; data: any }[], todayView: boolean = false) => {
     if (isMobile) {
@@ -137,29 +140,44 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
           slidesPerView={1}
           pagination={{ clickable: true }}
           scrollbar={{ draggable: true }}
+          grabCursor={true}
+          style={{ width: "100%", height: "400px" }}
         >
           {data.map(({ exercise, data: chartData }) => (
-            <SwiperSlide key={exercise}>{renderSingleChart(exercise, chartData, todayView)}</SwiperSlide>
+            <SwiperSlide key={exercise} style={{ height: "100%" }}>
+              {renderSingleChart(exercise, chartData, todayView)}
+            </SwiperSlide>
           ))}
         </Swiper>
       );
     }
 
+    // Desktop static grid view
     return (
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, width: "100%" }}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          gap: 3,
+          width: "100%",
+        }}
+      >
         {data.map(({ exercise, data: chartData }) => renderSingleChart(exercise, chartData, todayView))}
       </Box>
     );
   };
 
+  // Today's view (viewState = false)
   if (!viewState) {
     const filteredExercises = filterByToday(exerciseHistory);
 
     if (filteredExercises.length > 0) {
-      return <Box sx={{ display: "flex", flexWrap: "wrap" }}>{renderChart(filteredExercises, true)}</Box>;
+      return (
+        <Box sx={{ width: "100%", height: isMobile ? "440px" : "auto" }}>{renderChart(filteredExercises, true)}</Box>
+      );
     } else {
       return (
-        <Box>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "200px" }}>
           <Typography variant="h5" sx={{ textAlign: "center" }}>
             {"Sorry, no exercises today :("}
           </Typography>
@@ -168,17 +186,8 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
     }
   }
 
-  return (
-    <Box
-      sx={{
-        margin: `${width && width < 540 ? "0" : "0 auto"}`,
-        display: "flex",
-        flexWrap: "wrap",
-      }}
-    >
-      {renderChart(exerciseHistory)}
-    </Box>
-  );
+  // Historical view (viewState = true)
+  return <Box sx={{ width: "100%", height: isMobile ? "440px" : "auto" }}>{renderChart(exerciseHistory, false)}</Box>;
 };
 
 export default Charts;
