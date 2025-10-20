@@ -10,7 +10,7 @@ type ProcessedWorkoutData = {
     date: string; // formatted
     sets: { setNumber: number; weight: number; reps: number }[];
     avgWeight: string;
-    avgReps: string;
+    totalReps: string;
   }[];
 };
 
@@ -59,13 +59,13 @@ export const GET = async (req: NextRequest) => {
 
             const avgWeight = sets.length ? (sets.reduce((sum, s) => sum + s.weight, 0) / sets.length).toFixed() : "0";
 
-            const avgReps = sets.length ? (sets.reduce((sum, s) => sum + s.reps, 0) / sets.length).toFixed() : "0";
+            const totalReps = sets.length ? sets.reduce((sum, s) => sum + s.reps, 0).toFixed() : "0";
 
             return {
               date: formatDate(workout.date),
               sets,
               avgWeight,
-              avgReps,
+              totalReps,
             };
           }),
       }))

@@ -103,7 +103,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
       reps?: number;
       date?: string;
       avgWeight?: number | string;
-      avgReps?: number | string;
+      totalReps?: number | string;
     }[],
     todayView: boolean
   ) => {
@@ -111,7 +111,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
     const processedData = chartData.map((data) => ({
       ...data,
       avgWeight: typeof data.avgWeight === "string" ? parseFloat(data.avgWeight) : data.avgWeight || 0,
-      avgReps: typeof data.avgReps === "string" ? parseFloat(data.avgReps) : data.avgReps || 0,
+      totalReps: typeof data.totalReps === "string" ? parseFloat(data.totalReps) : data.totalReps || 0,
     }));
 
     // Determine if we should show reps instead of weights
@@ -120,7 +120,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
       : processedData.every((data) => data.avgWeight === 0);
 
     const yAxisLabel = shouldShowReps ? "Reps" : "Weight (lbs)";
-    const dataKey = todayView ? (shouldShowReps ? "reps" : "weight") : shouldShowReps ? "avgReps" : "avgWeight";
+    const dataKey = todayView ? (shouldShowReps ? "reps" : "weight") : shouldShowReps ? "totalReps" : "avgWeight";
 
     return (
       <Box
