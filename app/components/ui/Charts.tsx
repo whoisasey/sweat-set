@@ -3,7 +3,18 @@
 import "swiper/css";
 
 import { A11y, Navigation, Pagination, Scrollbar } from "swiper/modules";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ComposedChart,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Box, Typography } from "@mui/material";
 import React, { JSX } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -47,36 +58,27 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
       const d = payload[0].payload;
 
       if ("setNumber" in d) {
-        // Determine if showing reps instead of weights for today view
-        const isShowingReps = d.weight === 0;
-
+        // Today view tooltip
         return (
           <Box sx={{ background: "#ccc", border: "1px solid #ccc", p: 1 }}>
             <Typography variant="body2" sx={{ color: "#2E2E2E" }}>
               Set {d.setNumber}
             </Typography>
-            {d.weight !== 0 ? (
-              <Typography variant="body2" sx={{ color: "#2E2E2E" }}>
-                Weight: {d.weight} lbs
-              </Typography>
-            ) : null}
             <Typography variant="body2" sx={{ color: "#2E2E2E" }}>
-              Reps: {d.reps}
+              {d.weight > 0 ? `${d.weight}lbs × ${d.reps} reps` : `${d.reps} reps (bodyweight)`}
             </Typography>
-            {isShowingReps && (
-              <Typography variant="body2" sx={{ color: "#666", fontStyle: "italic" }}>
-                (Showing reps - no weight data)
-              </Typography>
-            )}
           </Box>
         );
       }
 
       // Historical view tooltip
       const data = payload[0].payload;
-      const allWeightsZero =
-        data.sets?.every((set: { weight: number }) => set.weight === 0) ||
-        (typeof data.avgWeight === "string" ? parseFloat(data.avgWeight) : data.avgWeight) === 0;
+      const avgWeight = typeof data.avgWeight === "string" ? parseFloat(data.avgWeight) : data.avgWeight || 0;
+      const totalReps = typeof data.totalReps === "string" ? parseFloat(data.totalReps) : data.totalReps || 0;
+      const isMixedData = data.sets
+        ? data.sets.some((set: { weight: number }) => set.weight > 0) &&
+          data.sets.some((set: { weight: number }) => set.weight === 0)
+        : avgWeight > 0 && totalReps > 0;
 
       return (
         <Box sx={{ background: "#ccc", border: "1px solid #ccc", p: 1 }}>
@@ -85,9 +87,16 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
           </Typography>
           {data.sets?.map((set: { setNumber: number; weight: number; reps: number }, idx: number) => (
             <Typography key={idx} variant="body2" sx={{ color: "#2E2E2E" }}>
-              Set {set.setNumber}: {allWeightsZero ? `${set.reps} reps` : `${set.weight}lbs`}
+              Set {set.setNumber}:{" "}
+              {set.weight > 0 ? `${set.weight}lbs × ${set.reps} reps` : `${set.reps} reps (bodyweight)`}
             </Typography>
           ))}
+
+          {isMixedData && (
+            <Typography variant="body2" sx={{ color: "#666", fontStyle: "italic" }}>
+              🟢 Weight • 🟠 Reps
+            </Typography>
+          )}
         </Box>
       );
     }
@@ -114,13 +123,20 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
       totalReps: typeof data.totalReps === "string" ? parseFloat(data.totalReps) : data.totalReps || 0,
     }));
 
-    // Determine if we should show reps instead of weights
-    const shouldShowReps = todayView
-      ? processedData.every((data) => data.weight === 0)
-      : processedData.every((data) => data.avgWeight === 0);
+    // Determine chart type: all weights, all bodyweight, or mixed
+    const hasWeights = todayView
+      ? processedData.some((data) => data.weight > 0)
+      : processedData.some((data) => data.avgWeight > 0);
 
-    const yAxisLabel = shouldShowReps ? "Reps" : "Weight (lbs)";
-    const dataKey = todayView ? (shouldShowReps ? "reps" : "weight") : shouldShowReps ? "totalReps" : "avgWeight";
+    const hasBodyweight = todayView
+      ? processedData.some((data) => data.weight === 0)
+      : processedData.some((data) => data.avgWeight === 0);
+
+    const isMixed = hasWeights && hasBodyweight;
+    const isAllBodyweight = !hasWeights; // All weights are 0
+
+    const yAxisLabel = isAllBodyweight ? "Reps" : "Weight (lbs)";
+    const dataKey = todayView ? (isAllBodyweight ? "reps" : "weight") : isAllBodyweight ? "avgReps" : "avgWeight";
 
     return (
       <Box
@@ -142,21 +158,64 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
         </Typography>
         <Box sx={{ width: "100%", height: isMobile ? "300px" : "280px", minHeight: isMobile ? "300px" : "280px" }}>
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={processedData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              {todayView ? (
-                <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
-              ) : (
-                <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
-              )}
-              <YAxis
-                type="number"
-                domain={[0, "dataMax + 20"]}
-                label={{ value: yAxisLabel, angle: -90, position: "insideLeft" }}
-              />
-              {todayView && isMobile ? null : <Tooltip content={<CustomTooltip />} />}
-              <Area type={cardinal} dataKey={dataKey} stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.3} />
-            </AreaChart>
+            {isMixed ? (
+              <ComposedChart data={processedData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                {todayView ? (
+                  <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
+                ) : (
+                  <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
+                )}
+                <YAxis
+                  yAxisId="weight"
+                  type="number"
+                  domain={[0, "dataMax + 20"]}
+                  label={{ value: "Weight (lbs)", angle: -90, position: "insideLeft" }}
+                />
+                <YAxis
+                  yAxisId="reps"
+                  orientation="right"
+                  type="number"
+                  domain={[0, "dataMax + 5"]}
+                  label={{ value: "Reps", angle: 90, position: "insideRight" }}
+                />
+                {todayView && isMobile ? null : <Tooltip content={<CustomTooltip />} />}
+                <Area
+                  yAxisId="weight"
+                  type={cardinal}
+                  dataKey={todayView ? "weight" : "avgWeight"}
+                  stroke="#82ca9d"
+                  fill="#82ca9d"
+                  fillOpacity={0.3}
+                  connectNulls={false}
+                />
+                <Line
+                  yAxisId="reps"
+                  type={cardinal}
+                  dataKey={todayView ? "reps" : "totalReps"}
+                  stroke="#ff7300"
+                  strokeWidth={2}
+                  dot={{ fill: "#ff7300", strokeWidth: 2, r: 4 }}
+                  connectNulls={false}
+                />
+              </ComposedChart>
+            ) : (
+              <AreaChart data={processedData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                {todayView ? (
+                  <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
+                ) : (
+                  <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
+                )}
+                <YAxis
+                  type="number"
+                  domain={[0, "dataMax + 20"]}
+                  label={{ value: yAxisLabel, angle: -90, position: "insideLeft" }}
+                />
+                {todayView && isMobile ? null : <Tooltip content={<CustomTooltip />} />}
+                <Area type={cardinal} dataKey={dataKey} stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.3} />
+              </AreaChart>
+            )}
           </ResponsiveContainer>
         </Box>
       </Box>
