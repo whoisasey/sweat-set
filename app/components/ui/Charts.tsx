@@ -136,7 +136,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
     const isAllBodyweight = !hasWeights; // All weights are 0
 
     const yAxisLabel = isAllBodyweight ? "Reps" : "Weight (lbs)";
-    const dataKey = todayView ? (isAllBodyweight ? "reps" : "weight") : isAllBodyweight ? "avgReps" : "avgWeight";
+    const dataKey = todayView ? (isAllBodyweight ? "reps" : "weight") : isAllBodyweight ? "totalReps" : "avgWeight";
 
     return (
       <Box
