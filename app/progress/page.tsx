@@ -78,11 +78,8 @@ const ProgressPage = () => {
                 <Fragment key={idx}>
                   <Typography variant="h6">{exercise.exercise}</Typography>
                   {sets.map((set: { setNumber: number; weight: number; reps: number }) => (
-                    <ListItem key={set.setNumber}>
-                      <ListItemText
-                        primary={`Set ${set.setNumber}`}
-                        secondary={`Weight: ${set.weight} lbs, Reps: ${set.reps}`}
-                      />
+                    <ListItem key={set.setNumber} sx={{ padding: 0 }}>
+                      <ListItemText primary={`${set.weight !== 0 ? `${set.weight}lbs` : "Bodyweight"} x ${set.reps}`} />
                     </ListItem>
                   ))}
                 </Fragment>
