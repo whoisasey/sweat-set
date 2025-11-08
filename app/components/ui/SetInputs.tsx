@@ -76,7 +76,7 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                   inputMode: "decimal", // shows decimal keyboard
                   style: { textAlign: "center" },
                 }}
-                sx={{ minWidth: 50 }}
+                sx={{ minWidth: 65 }}
               />
               <IconButton size="small" onClick={() => handleAdjust(i, "weight", 5)} aria-label="increase weight">
                 <Add fontSize="small" />
