@@ -63,13 +63,18 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                 <Remove fontSize="small" />
               </IconButton>
               <TextField
-                type="number"
+                type="text" // use text to allow manual control over decimals
                 value={weights[i] ?? ""}
-                onChange={(e) => onChange(i, e.target.value, "weight")}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Allow empty string, numbers, or decimals
+                  if (/^\d*\.?\d*$/.test(value)) {
+                    onChange(i, value, "weight");
+                  }
+                }}
                 size="small"
                 inputProps={{
-                  inputMode: "numeric",
-                  pattern: "[0-9]*",
+                  inputMode: "decimal",
                   style: { textAlign: "center" },
                 }}
                 sx={{ minWidth: 50 }}
