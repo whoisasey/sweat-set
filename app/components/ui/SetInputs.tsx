@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid2";
 interface SetInputsProps {
   sets: number;
   reps: (number | "")[];
-  weights: (number | "")[];
+  weights: (number | string)[];
   onChange: (index: number, value: string, field: string) => void;
 }
 
@@ -63,18 +63,17 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                 <Remove fontSize="small" />
               </IconButton>
               <TextField
-                type="text" // use text to allow manual control over decimals
+                type="text"
                 value={weights[i] ?? ""}
                 onChange={(e) => {
                   const value = e.target.value;
-                  // Allow empty string, numbers, or decimals
                   if (/^\d*\.?\d*$/.test(value)) {
                     onChange(i, value, "weight");
                   }
                 }}
                 size="small"
                 inputProps={{
-                  inputMode: "decimal",
+                  inputMode: "decimal", // shows decimal keyboard
                   style: { textAlign: "center" },
                 }}
                 sx={{ minWidth: 50 }}

@@ -20,7 +20,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
   const [updatedReps, setUpdatedReps] = useState<number[]>(reps || []);
   const [date, setDate] = useState<Date>(new Date());
 
-  const [weights, setWeights] = useState<number[]>([]);
+  const [weights, setWeights] = useState<(number | string)[]>([]);
   const [newExercise, setNewExercise] = useState("");
   const [isNewExercise, setIsNewExercise] = useState(false);
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
@@ -59,7 +59,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
     }
     if (field.startsWith("weight")) {
       const newWeights = [...weights];
-      newWeights[index] = Number(value) || 0;
+      newWeights[index] = value === "" ? "" : value;
       setWeights(newWeights);
     }
   };
