@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid2";
 interface SetInputsProps {
   sets: number;
   reps: (number | "")[];
-  weights: (number | "")[];
+  weights: (number | string)[];
   onChange: (index: number, value: string, field: string) => void;
 }
 
@@ -63,16 +63,20 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                 <Remove fontSize="small" />
               </IconButton>
               <TextField
-                type="number"
+                type="text"
                 value={weights[i] ?? ""}
-                onChange={(e) => onChange(i, e.target.value, "weight")}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*\.?\d*$/.test(value)) {
+                    onChange(i, value, "weight");
+                  }
+                }}
                 size="small"
                 inputProps={{
-                  inputMode: "numeric",
-                  pattern: "[0-9]*",
+                  inputMode: "decimal", // shows decimal keyboard
                   style: { textAlign: "center" },
                 }}
-                sx={{ minWidth: 50 }}
+                sx={{ minWidth: 60 }}
               />
               <IconButton size="small" onClick={() => handleAdjust(i, "weight", 5)} aria-label="increase weight">
                 <Add fontSize="small" />
