@@ -76,7 +76,8 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                   const parent = e.target.closest(".MuiPaper-root");
                   if (parent) {
                     parent.scrollTo({
-                      top: e.target.offsetTop - 50, // small offset
+                      top: 0,
+                      left: 0,
                       behavior: "smooth",
                     });
                   }
