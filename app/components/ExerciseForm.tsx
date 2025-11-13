@@ -113,7 +113,9 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
             value={updatedSets}
             onChange={(e) => setUpdatedSets(Math.max(1, Number(e.target.value)))}
             onBlur={(e) => {
-              e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+              const rect = e.target.getBoundingClientRect();
+              const scrollY = window.scrollY + rect.top - 100; // adjust 100px as needed
+              window.scrollTo({ top: scrollY, behavior: "smooth" });
             }}
             fullWidth
             size="small"
