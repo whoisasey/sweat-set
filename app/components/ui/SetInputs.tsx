@@ -2,7 +2,6 @@ import { Add, Remove } from "@mui/icons-material";
 import { Box, Card, IconButton, TextField, Typography } from "@mui/material";
 
 import Grid from "@mui/material/Grid2";
-import { useRef } from "react";
 
 interface SetInputsProps {
   sets: number;
@@ -12,8 +11,6 @@ interface SetInputsProps {
 }
 
 export default function SetInputs({ sets, reps, weights, onChange }: SetInputsProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
   const handleAdjust = (index: number, field: string, delta: number) => {
     const currentValueStr = field === "rep" ? reps[index] : weights[index];
     const currentValue = Number(currentValueStr) || ""; // empty string treated as 0 for adjustment
@@ -75,9 +72,7 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                     onChange(i, value, "weight");
                   }
                 }}
-                onBlur={() => {
-                  containerRef.current?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-                }}
+                onBlur={() => window.scrollTo(0, 150)}
                 size="small"
                 inputProps={{
                   inputMode: "decimal", // shows decimal keyboard
