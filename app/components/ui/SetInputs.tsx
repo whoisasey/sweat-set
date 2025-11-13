@@ -73,7 +73,13 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                   }
                 }}
                 onBlur={(e) => {
-                  e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+                  const parent = e.target.closest(".MuiPaper-root");
+                  if (parent) {
+                    parent.scrollTo({
+                      top: e.target.offsetTop - 50, // small offset
+                      behavior: "smooth",
+                    });
+                  }
                 }}
                 size="small"
                 inputProps={{
