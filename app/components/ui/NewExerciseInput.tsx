@@ -14,6 +14,7 @@ export default function NewExerciseInput({ value, onChange }: NewExerciseInputPr
       fullWidth
       size="small"
       margin="normal"
+      onBlur={() => window.scrollTo(0, 0)}
     />
   );
 }
