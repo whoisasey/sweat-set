@@ -73,7 +73,7 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                 }}
                 size="small"
                 inputProps={{
-                  inputMode: "decimal", // shows decimal keyboard
+                  inputMode: "decimal",
                   style: { textAlign: "center" },
                 }}
                 sx={{ minWidth: 60 }}

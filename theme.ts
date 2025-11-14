@@ -53,7 +53,7 @@ const baseThemeOptions = (mode: "light" | "dark"): ThemeOptions => ({
   },
   typography: {
     fontFamily: montserrat.style.fontFamily,
-    body1: { fontSize: 12 },
+    body1: { fontSize: 16 },
     h1: { fontSize: 32, fontWeight: 500 },
     h2: { fontSize: 28 },
     h3: { fontSize: 24, fontWeight: 500 },
