@@ -73,24 +73,12 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                   }
                 }}
                 onBlur={() => {
-                  // Blur the input to ensure keyboard closes
-                  (document.activeElement as HTMLElement)?.blur();
-                  
-                  // Reset viewport scale by temporarily manipulating meta tag
-                  const viewport = document.querySelector('meta[name="viewport"]');
-                  if (viewport) {
-                    const originalContent = viewport.getAttribute('content');
-                    viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
-                    setTimeout(() => {
-                      viewport.setAttribute('content', originalContent || 'width=device-width, initial-scale=1');
-                      window.scrollTo({ top: 0, left: 0 });
-                    }, 100);
-                  }
+                  setTimeout(() => window.scrollTo(0, 0), 400);
                 }}
                 size="small"
                 inputProps={{
-                  inputMode: "decimal", // shows decimal keyboard
-                  style: { textAlign: "center" },
+                  inputMode: "decimal",
+                  style: { textAlign: "center", fontSize: "16px" },
                 }}
                 sx={{ minWidth: 60 }}
               />
