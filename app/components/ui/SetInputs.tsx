@@ -72,9 +72,6 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                     onChange(i, value, "weight");
                   }
                 }}
-                onBlur={() => {
-                  window.scrollTo(0, 0);
-                }}
                 size="small"
                 inputProps={{
                   inputMode: "decimal",
