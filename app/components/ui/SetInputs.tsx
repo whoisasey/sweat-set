@@ -72,7 +72,12 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                     onChange(i, value, "weight");
                   }
                 }}
-                onBlur={() => window.scrollTo(0, 150)}
+                onBlur={(e) => {
+                  e.target.blur();
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }, 100);
+                }}
                 size="small"
                 inputProps={{
                   inputMode: "decimal", // shows decimal keyboard
