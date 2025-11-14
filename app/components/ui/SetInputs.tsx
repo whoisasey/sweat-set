@@ -76,7 +76,6 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                   e.target.scrollIntoView({
                     behavior: "smooth",
                     block: "center",
-                    inline: "nearest",
                   });
                 }}
                 size="small"
