@@ -72,11 +72,20 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                     onChange(i, value, "weight");
                   }
                 }}
-                onBlur={(e) => {
-                  e.target.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center",
-                  });
+                onBlur={() => {
+                  // Blur the input to ensure keyboard closes
+                  (document.activeElement as HTMLElement)?.blur();
+                  
+                  // Reset viewport scale by temporarily manipulating meta tag
+                  const viewport = document.querySelector('meta[name="viewport"]');
+                  if (viewport) {
+                    const originalContent = viewport.getAttribute('content');
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
+                    setTimeout(() => {
+                      viewport.setAttribute('content', originalContent || 'width=device-width, initial-scale=1');
+                      window.scrollTo({ top: 0, left: 0 });
+                    }, 100);
+                  }
                 }}
                 size="small"
                 inputProps={{
