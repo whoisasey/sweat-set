@@ -73,12 +73,12 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                   }
                 }}
                 onBlur={() => {
-                  setTimeout(() => window.scrollTo(0, 0), 400);
+                  window.scrollTo(0, 0);
                 }}
                 size="small"
                 inputProps={{
                   inputMode: "decimal",
-                  style: { textAlign: "center", fontSize: "16px" },
+                  style: { textAlign: "center" },
                 }}
                 sx={{ minWidth: 60 }}
               />
