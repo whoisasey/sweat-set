@@ -3,6 +3,11 @@
   --foreground: #2e2e2e;
 }
 
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #1e1e1e;
@@ -16,8 +21,11 @@ body {
   /* font-family: Arial, Helvetica, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 90%;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 5%;
+  overflow-x: hidden;
 }
 
 * {
