@@ -52,7 +52,6 @@ const LoginPage = () => {
         autoComplete="email"
         name="email"
         id="email"
-        onBlur={() => window.scrollTo(0, 0)}
         fullWidth
         required
         sx={{ fontSize: "16px" }}
@@ -63,7 +62,6 @@ const LoginPage = () => {
         placeholder="Password"
         name="password"
         id="password"
-        onBlur={() => window.scrollTo(0, 0)}
         required
         fullWidth
         sx={{ fontSize: "16px" }}

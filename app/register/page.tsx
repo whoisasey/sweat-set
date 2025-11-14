@@ -75,7 +75,6 @@ const RegisterPage = () => {
             value={formData.firstName}
             onChange={handleChange}
             name="firstName"
-            onBlur={() => window.scrollTo(0, 0)}
           />
           <TextField
             type="email"
@@ -84,7 +83,6 @@ const RegisterPage = () => {
             value={formData.email}
             onChange={handleChange}
             name="email"
-            onBlur={() => window.scrollTo(0, 0)}
           />
           <TextField
             type="password"
@@ -93,7 +91,6 @@ const RegisterPage = () => {
             value={formData.password}
             onChange={handleChange}
             name="password"
-            onBlur={() => window.scrollTo(0, 0)}
           />
         </Box>
         <button type="submit">Register</button>

@@ -39,7 +39,6 @@ export default function SetInputs({ sets, reps, weights, onChange }: SetInputsPr
                 type="number"
                 value={reps[i] ?? ""}
                 onChange={(e) => onChange(i, e.target.value, "rep")}
-                onBlur={() => window.scrollTo(0, 0)}
                 size="small"
                 inputProps={{
                   inputMode: "numeric",
