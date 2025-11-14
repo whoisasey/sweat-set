@@ -113,8 +113,10 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
             value={updatedSets}
             onChange={(e) => setUpdatedSets(Math.max(1, Number(e.target.value)))}
             onBlur={() => {
-              // Zoom out by scrolling to top of form
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+              setTimeout(() => {
+                window.scrollTo({ top: 0, left: 0 });
+              }, 300);
             }}
             fullWidth
             size="small"
