@@ -112,13 +112,9 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
             type="number"
             value={updatedSets}
             onChange={(e) => setUpdatedSets(Math.max(1, Number(e.target.value)))}
-            onBlur={(e) => {
-              // ensures the field is fully back in view after keyboard closes
-              e.target.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-                inline: "nearest",
-              });
+            onBlur={() => {
+              // Zoom out by scrolling to top of form
+              window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             fullWidth
             size="small"
