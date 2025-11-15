@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, Box, Button, Container, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Container, TextField, Typography } from "@mui/material";
 import React, { FormEvent, useCallback, useState } from "react";
 
 import { signIn } from "next-auth/react";
@@ -92,6 +92,7 @@ const LoginPage = () => {
           fullWidth
           disabled={loading}
           sx={{ mt: 2, py: 1.5, fontSize: "1rem" }}
+          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
         >
           {loading ? "Logging In..." : "Log In"}
         </Button>
