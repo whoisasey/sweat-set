@@ -1,14 +1,17 @@
 "use client";
 
-import { AppBar, Box, Link, Tab, Tabs, Toolbar, useMediaQuery, useTheme } from "@mui/material";
-import { signIn, signOut } from "next-auth/react";
+import { AppBar, Tab, Tabs, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 
+// import DashboardIcon from "@mui/icons-material/Dashboard";
 import HomeIcon from "@mui/icons-material/Home";
+import Link from "next/link";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+// import PersonIcon from "@mui/icons-material/Person";
 import TimelineIcon from "@mui/icons-material/Timeline";
-// import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
+import { signOut } from "next-auth/react";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -26,66 +29,79 @@ const Nav = () => {
   }, [status, session]);
 
   if (status === "unauthenticated") {
+    const validTabValues = ["/", "/login", "/register"];
+    const tabValue = validTabValues.includes(pathname) ? pathname : false;
+
     return (
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          textAlign: "center",
-          justifyContent: "space-around",
-          py: 3,
-        }}
-      >
-        {isMobile ? (
-          <Link href="/">
-            <HomeIcon color="primary" />
-          </Link>
-        ) : (
-          <Link href="/">Home</Link>
-        )}
-        {isMobile ? (
-          <Link component={"button"} onClick={() => signIn()}>
-            <LoginIcon color="primary" />
-          </Link>
-        ) : (
-          <Link component={"button"} onClick={() => signIn()}>
-            Login
-          </Link>
-        )}
-      </Box>
+      <AppBar position="static" color="default" elevation={1}>
+        <Toolbar>
+          <Tabs value={tabValue} textColor="inherit" sx={{ width: "100%", justifyContent: "space-between" }}>
+            <Tab
+              icon={isMobile ? <HomeIcon color="primary" /> : undefined}
+              label={isMobile ? undefined : "Home"}
+              component={Link}
+              href="/"
+              value="/"
+            />
+            <Tab
+              icon={isMobile ? <LoginIcon color="primary" /> : undefined}
+              label={isMobile ? undefined : "Login"}
+              component={Link}
+              href="/login"
+              value="/login"
+            />
+            <Tab
+              icon={isMobile ? <PersonAddIcon color="primary" /> : undefined}
+              label={isMobile ? undefined : "Register"}
+              component={Link}
+              href="/register"
+              value="/register"
+            />
+          </Tabs>
+        </Toolbar>
+      </AppBar>
     );
   }
+
+  const validTabValues = ["/", "/progress", "/dashboard", "/profile"];
+  const tabValue = validTabValues.includes(pathname) ? pathname : false;
 
   return (
     <AppBar position="static" color="default" elevation={1}>
       <Toolbar>
-        <Tabs value={pathname} textColor="inherit" sx={{ width: "100%", justifyContent: "space-between" }}>
+        <Tabs value={tabValue} textColor="inherit" sx={{ width: "100%", justifyContent: "space-between" }}>
           <Tab
             icon={isMobile ? <WaterDropIcon color="primary" /> : undefined}
             label={isMobile ? undefined : "Sweat Set"}
             component={Link}
             href="/"
-            value={"/"}
+            value="/"
           />
-
           <Tab
             icon={isMobile ? <TimelineIcon color="primary" /> : undefined}
             label={isMobile ? undefined : "Progress"}
             component={Link}
             href="/progress"
-            value={"/progress"}
+            value="/progress"
           />
           {/* <Tab
-            icon={isMobile ? <CalendarMonthIcon /> : undefined}
-            label={isMobile ? undefined : "Plan"}
+            icon={isMobile ? <DashboardIcon color="primary" /> : undefined}
+            label={isMobile ? undefined : "Dashboard"}
             component={Link}
             href="/dashboard"
+            value="/dashboard"
+          /> */}
+          {/* <Tab
+            icon={isMobile ? <PersonIcon color="primary" /> : undefined}
+            label={isMobile ? undefined : "Profile"}
+            component={Link}
+            href="/profile"
+            value="/profile"
           /> */}
           <Tab
             icon={isMobile ? <LogoutIcon color="primary" /> : undefined}
             label={isMobile ? undefined : "Log Out"}
             onClick={() => signOut()}
-            value={"/login"}
           />
         </Tabs>
       </Toolbar>
