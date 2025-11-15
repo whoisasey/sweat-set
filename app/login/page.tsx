@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Container, TextField, Typography } from "@mui/material";
 import React, { FormEvent, useCallback, useState } from "react";
 
 import { signIn } from "next-auth/react";
@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const [error, setError] = useState<string>("");
-  // const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const handleSubmit = useCallback(
@@ -19,7 +19,7 @@ const LoginPage = () => {
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
 
-      // setLoading(true);
+      setLoading(true);
       setError("");
       try {
         const result = await signIn("credentials", {
@@ -31,48 +31,87 @@ const LoginPage = () => {
         if (result?.error) {
           setError("Email or Password is incorrect. Please try again.");
           console.log(result.error);
+        } else {
+          router.push("/");
         }
-        router.push("/");
       } catch (err) {
         setError("An unexpected error occurred.");
         console.log(err);
+      } finally {
+        setLoading(false);
       }
-      // finally {
-      // 	setLoading(false);
-      // }
     },
     [router]
   );
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column" }}>
-      <TextField
-        type="text"
-        placeholder="Email address"
-        autoComplete="email"
-        name="email"
-        id="email"
-        fullWidth
-        required
-        sx={{ fontSize: "16px" }}
-      />
-      <TextField
-        type="password"
-        autoComplete="password"
-        placeholder="Password"
-        name="password"
-        id="password"
-        required
-        fullWidth
-        sx={{ fontSize: "16px" }}
-      />
-      <Typography variant="body1" sx={{ color: "red", textAlign: "center" }}>
-        {error && error}
+    <Container
+      maxWidth="sm"
+      sx={{
+        position: "relative",
+        padding: 4,
+        mt: 4,
+      }}
+    >
+      <Typography variant="h4" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
+        Welcome Back
       </Typography>
-      <Button type="submit" variant="contained" color="secondary" fullWidth>
-        Log In
-      </Button>
-    </Box>
+
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField
+          type="email"
+          label="Email"
+          placeholder="Email address"
+          autoComplete="email"
+          name="email"
+          id="email"
+          fullWidth
+          required
+        />
+        <TextField
+          type="password"
+          label="Password"
+          placeholder="Password"
+          autoComplete="current-password"
+          name="password"
+          id="password"
+          required
+          fullWidth
+        />
+
+        {error && (
+          <Alert severity="error" sx={{ mt: 1 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Button
+          type="submit"
+          variant="contained"
+          color="secondary"
+          fullWidth
+          disabled={loading}
+          sx={{ mt: 2, py: 1.5, fontSize: "1rem" }}
+        >
+          {loading ? "Logging In..." : "Log In"}
+        </Button>
+
+        <Typography variant="body2" sx={{ textAlign: "center", mt: 2 }}>
+          Don&apos;t have an account?{" "}
+          <Typography
+            component="span"
+            sx={{
+              color: "secondary.main",
+              cursor: "pointer",
+              textDecoration: "underline",
+            }}
+            onClick={() => router.push("/register")}
+          >
+            Create Account
+          </Typography>
+        </Typography>
+      </Box>
+    </Container>
   );
 };
 
