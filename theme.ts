@@ -92,6 +92,18 @@ export const getTheme = (mode: "light" | "dark") => {
           },
         },
       },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          input: {
+            "&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus": {
+              WebkitBoxShadow: "0 0 0 1000px #333 inset",
+              WebkitTextFillColor: "#fff",
+              caretColor: "#fff",
+              transition: "background-color 9999s ease-in-out 0s",
+            },
+          },
+        },
+      },
     },
   });
 };
