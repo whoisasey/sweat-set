@@ -27,7 +27,7 @@ const emptyDay: Day = {
   exercises: [{ name: "", sets: 3, reps: [10, 10, 10] }], // start with one empty form
 };
 
-const ExercisePlan = () => {
+const ExercisePlan = ({ user }: { user?: string }) => {
   const [todaysPlan, setTodaysPlan] = useState<Day>(() => {
     if (workoutPlan?.length) {
       const today = new Date().toLocaleDateString("en-US", {
@@ -70,7 +70,7 @@ const ExercisePlan = () => {
   return (
     <Box sx={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
       <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
-        {todaysPlan?.weekday || "Today"} - {todaysPlan?.type || "Workout"}
+        Welcome back, {user}!
       </Typography>
 
       {todaysPlan.exercises?.map(({ name, reps, sets }, idx) => (

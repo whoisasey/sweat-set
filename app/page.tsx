@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 
 const Home = () => {
   const router = useRouter();
-  const { status } = useSession();
+  const { status, data } = useSession();
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -17,7 +17,7 @@ const Home = () => {
 
   if (status === "unauthenticated") return null; // Prevent premature render
 
-  return <ExercisePlan />;
+  return <ExercisePlan user={data?.user?.name} />;
 };
 
 export default Home;
