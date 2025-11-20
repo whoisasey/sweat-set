@@ -3,6 +3,9 @@
 import { Alert, Box, CircularProgress, List, ListItem, ListItemText, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+
 interface User {
   userId: string;
   firstName?: string;
@@ -18,6 +21,8 @@ const ProfilePage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     const getUser = async () => {
@@ -42,6 +47,10 @@ const ProfilePage = () => {
 
     getUser();
   }, []);
+
+  if (status === "unauthenticated") {
+    router.push("/login");
+  }
 
   // Calculate age from birthdate
   const calculateAge = (birthdate?: string) => {
