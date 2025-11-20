@@ -27,7 +27,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await fetch(`/api/profile`, {
+        const response = await fetch(`/api/user/get`, {
           headers: { "Content-Type": "application/json" },
         });
 
