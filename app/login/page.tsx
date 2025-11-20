@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, Box, Button, CircularProgress, Container, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Container, Link, TextField, Typography } from "@mui/material";
 import React, { FormEvent, useCallback, useState } from "react";
 
 import { signIn } from "next-auth/react";
@@ -99,17 +99,18 @@ const LoginPage = () => {
 
         <Typography variant="body2" sx={{ textAlign: "center", mt: 2 }}>
           Don&apos;t have an account?{" "}
-          <Typography
-            component="span"
-            sx={{
-              color: "secondary.main",
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-            onClick={() => router.push("/register")}
-          >
-            Create Account
-          </Typography>
+          <Link href="/register">
+            <Typography
+              component="span"
+              sx={{
+                color: "secondary.main",
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+            >
+              Create Account
+            </Typography>
+          </Link>
         </Typography>
       </Box>
     </Container>

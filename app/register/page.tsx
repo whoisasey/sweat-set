@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, Box, Button, Container, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Container, Link, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -181,17 +181,18 @@ const RegisterPage = () => {
 
         <Typography variant="body2" sx={{ textAlign: "center", mt: 2 }}>
           Already have an account?{" "}
-          <Typography
-            component="span"
-            sx={{
-              color: "secondary.main",
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-            onClick={() => router.push("/login")}
-          >
-            Log In
-          </Typography>
+          <Link href="/login">
+            <Typography
+              component="span"
+              sx={{
+                color: "secondary.main",
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+            >
+              Log In
+            </Typography>
+          </Link>
         </Typography>
       </Box>
     </Container>
