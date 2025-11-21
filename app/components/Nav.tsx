@@ -83,6 +83,7 @@ const Nav = () => {
             component={Link}
             href="/progress"
             value="/progress"
+            className="progress"
           />
           {/* <Tab
             icon={isMobile ? <DashboardIcon color="primary" /> : undefined}
@@ -97,6 +98,7 @@ const Nav = () => {
             component={Link}
             href="/profile"
             value="/profile"
+            className="profile"
           />
           <Tab
             icon={isMobile ? <LogoutIcon color="primary" /> : undefined}
