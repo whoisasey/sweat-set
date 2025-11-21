@@ -292,14 +292,14 @@ const ProfilePage = () => {
       )}
 
       {/* TODO: Goals section */}
-      <Box mt={4}>
+      {/* <Box mt={4}>
         <Typography variant="h5" gutterBottom>
           Goals
         </Typography>
         <Typography variant="body2" color="text.secondary">
           No goals set yet
         </Typography>
-      </Box>
+      </Box> */}
     </Box>
   );
 };
