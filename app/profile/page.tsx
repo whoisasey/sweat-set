@@ -50,6 +50,10 @@ const ProfilePage = () => {
   });
 
   useEffect(() => {
+    if (status !== "authenticated") {
+      return;
+    }
+
     const getUser = async () => {
       try {
         const response = await fetch(`/api/user/get`, {
@@ -79,11 +83,13 @@ const ProfilePage = () => {
     };
 
     getUser();
-  }, []);
+  }, [status]);
 
-  if (status === "unauthenticated") {
-    router.push("/login");
-  }
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
 
   // Calculate age from birthdate
   const calculateAge = (birthdate?: string) => {
@@ -98,7 +104,7 @@ const ProfilePage = () => {
     return age;
   };
 
-  if (loading) {
+  if (status === "loading" || loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
         <CircularProgress />
