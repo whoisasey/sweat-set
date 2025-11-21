@@ -5,9 +5,14 @@ import {
   Box,
   Button,
   CircularProgress,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   List,
   ListItem,
   ListItemText,
+  Radio,
+  RadioGroup,
   TextField,
   Typography,
 } from "@mui/material";
@@ -28,6 +33,7 @@ interface User {
   weight?: number;
   createdAt?: string;
   updatedAt?: string;
+  gender?: string;
 }
 
 const ProfilePage = () => {
@@ -47,6 +53,7 @@ const ProfilePage = () => {
     email: "",
     birthdate: null as Date | null,
     weight: undefined as number | undefined,
+    gender: "",
   });
 
   useEffect(() => {
@@ -73,6 +80,7 @@ const ProfilePage = () => {
           email: data.email || "",
           birthdate: data.birthdate ? new Date(data.birthdate) : null,
           weight: data.weight || undefined,
+          gender: data.gender || "",
         });
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -139,6 +147,7 @@ const ProfilePage = () => {
         email: user?.email || "",
         birthdate: user?.birthdate ? new Date(user.birthdate) : null,
         weight: user?.weight || undefined,
+        gender: user?.gender || "",
       });
     }
     setIsEditing(!isEditing);
@@ -253,6 +262,19 @@ const ProfilePage = () => {
             onChange={(e) => handleInputChange("weight", parseFloat(e.target.value) || 0)}
             margin="normal"
           />
+          <FormControl fullWidth>
+            <FormLabel>Gender identity</FormLabel>
+            <RadioGroup
+              name="gender"
+              value={formData.gender || ""}
+              onChange={(e) => handleInputChange("gender", e.target.value)}
+            >
+              <FormControlLabel value="male" control={<Radio />} label="Male" />
+              <FormControlLabel value="female" control={<Radio />} label="Female" />
+              <FormControlLabel value="non-binary" control={<Radio />} label="Non-binary / X" />
+              <FormControlLabel value="prefer-not-to-say" control={<Radio />} label="Prefer not to say" />
+            </RadioGroup>
+          </FormControl>
 
           <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
             <Button variant="contained" onClick={handleSave} disabled={saving}>

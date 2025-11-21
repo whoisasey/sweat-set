@@ -20,10 +20,10 @@ export const PUT = async (req: NextRequest) => {
 
     // 2) Parse request body
     const body = await req.json();
-    const { firstName, lastName, email, birthdate, weight } = body;
+    const { firstName, lastName, email, birthdate, weight, gender } = body;
 
     // 3) Validate that at least one field is being updated
-    if (!firstName && !lastName && !email && !birthdate && weight === undefined) {
+    if (!firstName && !lastName && !email && !birthdate && !gender && weight === undefined) {
       return NextResponse.json({ error: "No fields to update" }, { status: 400 });
     }
 
@@ -34,6 +34,7 @@ export const PUT = async (req: NextRequest) => {
     if (email !== undefined) updateFields.email = email;
     if (birthdate !== undefined) updateFields.birthdate = new Date(birthdate);
     if (weight !== undefined) updateFields.weight = weight;
+    if (gender !== undefined) updateFields.gender = gender;
 
     // 5) Update user in database
     const updatedUser = await User.findOneAndUpdate({ userId }, updateFields, {

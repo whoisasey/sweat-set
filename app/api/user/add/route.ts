@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import connect from "@/app/utils/db";
 
 export const POST = async (req: Request) => {
-  const { email, firstName, password, lastName, birthdate, weight, userId } = await req.json();
+  const { email, firstName, password, lastName, birthdate, weight, userId, gender } = await req.json();
 
   await connect();
 
@@ -22,6 +22,7 @@ export const POST = async (req: Request) => {
     birthdate,
     weight,
     email,
+    gender,
     password: hashedPassword,
   });
 
