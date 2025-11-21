@@ -1,8 +1,21 @@
 "use client";
 
-import { Alert, Box, CircularProgress, List, ListItem, ListItemText, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -21,8 +34,20 @@ const ProfilePage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const { status } = useSession();
   const router = useRouter();
+
+  // Form state
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    birthdate: null as Date | null,
+    weight: undefined as number | undefined,
+  });
 
   useEffect(() => {
     const getUser = async () => {
@@ -37,6 +62,14 @@ const ProfilePage = () => {
 
         const data = await response.json();
         setUser(data);
+        // Initialize form data with user data
+        setFormData({
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+          email: data.email || "",
+          birthdate: data.birthdate ? new Date(data.birthdate) : null,
+          weight: data.weight || undefined,
+        });
       } catch (error) {
         console.error("Error fetching user:", error);
         setError(error instanceof Error ? error.message : "Failed to load user data");
@@ -91,7 +124,63 @@ const ProfilePage = () => {
 
   const age = calculateAge(user.birthdate);
 
-  // TODO: add update User functionality
+  const handleEditToggle = () => {
+    if (isEditing) {
+      // Reset form data to current user data when canceling
+      setFormData({
+        firstName: user?.firstName || "",
+        lastName: user?.lastName || "",
+        email: user?.email || "",
+        birthdate: user?.birthdate ? new Date(user.birthdate) : null,
+        weight: user?.weight || undefined,
+      });
+    }
+    setIsEditing(!isEditing);
+    setSuccessMessage(null);
+    setError(null);
+  };
+
+  const handleInputChange = (field: keyof typeof formData, value: string | number | Date | null) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      // Convert Date to ISO string for API
+      const dataToSend = {
+        ...formData,
+        birthdate: formData.birthdate ? formData.birthdate.toISOString() : undefined,
+      };
+
+      const response = await fetch("/api/user/update", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update profile");
+      }
+
+      const updatedUser = await response.json();
+      setUser(updatedUser);
+      setIsEditing(false);
+      setSuccessMessage("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setError(error instanceof Error ? error.message : "Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <Box p={3}>
@@ -99,31 +188,108 @@ const ProfilePage = () => {
         User Profile
       </Typography>
 
-      <List>
-        {user.firstName && user.lastName && (
-          <ListItem>
-            <ListItemText primary="Name" secondary={`${user.firstName} ${user.lastName}`} />
-          </ListItem>
-        )}
+      {successMessage && (
+        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccessMessage(null)}>
+          {successMessage}
+        </Alert>
+      )}
 
-        {user.email && (
-          <ListItem>
-            <ListItemText primary="Email" secondary={user.email} />
-          </ListItem>
-        )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
-        {age !== null && (
-          <ListItem>
-            <ListItemText primary="Age" secondary={`${age} years old`} />
-          </ListItem>
-        )}
+      {isEditing ? (
+        <Box component="form" sx={{ mt: 2 }}>
+          <TextField
+            fullWidth
+            label="First Name"
+            value={formData.firstName}
+            onChange={(e) => handleInputChange("firstName", e.target.value)}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Last Name"
+            value={formData.lastName}
+            onChange={(e) => handleInputChange("lastName", e.target.value)}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => handleInputChange("email", e.target.value)}
+            margin="normal"
+          />
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+              label="Date of Birth"
+              value={formData.birthdate}
+              onChange={(newValue) => handleInputChange("birthdate", newValue)}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  margin: "normal",
+                  placeholder: "MM/DD/YYYY",
+                },
+              }}
+              maxDate={new Date()}
+            />
+          </LocalizationProvider>
+          <TextField
+            fullWidth
+            label="Weight (lb)"
+            type="number"
+            value={formData.weight || ""}
+            onChange={(e) => handleInputChange("weight", parseFloat(e.target.value) || 0)}
+            margin="normal"
+          />
 
-        {user.weight && (
-          <ListItem>
-            <ListItemText primary="Weight" secondary={`${user.weight} lb`} />
-          </ListItem>
-        )}
-      </List>
+          <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
+            <Button variant="contained" onClick={handleSave} disabled={saving}>
+              {saving ? "Saving..." : "Save Changes"}
+            </Button>
+            <Button variant="outlined" onClick={handleEditToggle} disabled={saving}>
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      ) : (
+        <>
+          <List>
+            {user.firstName && user.lastName && (
+              <ListItem>
+                <ListItemText primary="Name" secondary={`${user.firstName} ${user.lastName}`} />
+              </ListItem>
+            )}
+
+            {user.email && (
+              <ListItem>
+                <ListItemText primary="Email" secondary={user.email} />
+              </ListItem>
+            )}
+
+            {age !== null && (
+              <ListItem>
+                <ListItemText primary="Age" secondary={`${age} years old`} />
+              </ListItem>
+            )}
+
+            {user.weight && (
+              <ListItem>
+                <ListItemText primary="Weight" secondary={`${user.weight} lb`} />
+              </ListItem>
+            )}
+          </List>
+
+          <Button variant="outlined" sx={{ mt: 2 }} onClick={handleEditToggle}>
+            Update Profile
+          </Button>
+        </>
+      )}
 
       {/* TODO: Goals section */}
       <Box mt={4}>
