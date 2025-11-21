@@ -46,7 +46,7 @@ const RegisterPage = () => {
     updateState({ loading: true, error: "" });
 
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch("/api/user/add", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: { "Content-Type": "application/json" },
