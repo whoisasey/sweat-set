@@ -1,6 +1,20 @@
 "use client";
 
-import { Alert, Box, Button, Container, Link, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  FormLabel,
+  Link,
+  Radio,
+  RadioGroup,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useState } from "react";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -10,8 +24,6 @@ import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
 const RegisterPage = () => {
-  // const { setAuthData } = useUser();
-
   const [formState, setFormState] = useState({
     formData: {
       firstName: "",
@@ -21,6 +33,7 @@ const RegisterPage = () => {
       birthdate: null as Date | null,
       weight: "",
       userId: uuidv4(),
+      gender: "",
     },
     loading: false,
     error: "",
@@ -46,7 +59,7 @@ const RegisterPage = () => {
     updateState({ loading: true, error: "" });
 
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch("/api/user/add", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: { "Content-Type": "application/json" },
@@ -161,6 +174,18 @@ const RegisterPage = () => {
           fullWidth
           inputProps={{ min: 0, step: 0.1 }}
         />
+        <FormControl fullWidth>
+          <FormLabel>Gender Identity</FormLabel>
+          <FormHelperText>
+            This information helps improve the accuracy of your health metrics. This will not be shown on your profile.
+          </FormHelperText>
+          <RadioGroup name="gender" value={formData.gender} onChange={handleChange}>
+            <FormControlLabel value="male" control={<Radio />} label="Male" />
+            <FormControlLabel value="female" control={<Radio />} label="Female" />
+            <FormControlLabel value="non-binary" control={<Radio />} label="Non-binary / X" />
+            <FormControlLabel value="prefer-not-to-say" control={<Radio />} label="Prefer not to say" />
+          </RadioGroup>
+        </FormControl>
 
         {error && (
           <Alert severity="error" sx={{ mt: 1 }}>

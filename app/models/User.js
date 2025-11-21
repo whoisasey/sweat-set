@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     birthdate: { type: Date },
     weight: { type: Number },
+    gender: { type: String },
   },
   { timestamps: true }
 );

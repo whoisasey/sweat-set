@@ -8,7 +8,7 @@ import Link from "next/link";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-// import PersonIcon from "@mui/icons-material/Person";
+import PersonIcon from "@mui/icons-material/Person";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import { signOut } from "next-auth/react";
@@ -91,13 +91,13 @@ const Nav = () => {
             href="/dashboard"
             value="/dashboard"
           /> */}
-          {/* <Tab
+          <Tab
             icon={isMobile ? <PersonIcon color="primary" /> : undefined}
             label={isMobile ? undefined : "Profile"}
             component={Link}
             href="/profile"
             value="/profile"
-          /> */}
+          />
           <Tab
             icon={isMobile ? <LogoutIcon color="primary" /> : undefined}
             label={isMobile ? undefined : "Log Out"}
