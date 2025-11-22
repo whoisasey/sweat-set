@@ -11,7 +11,7 @@ export default function Home() {
   const { status, data } = useSession();
   const user = data?.user;
   const router = useRouter();
-  const { startTour } = useOnboardingTour(user);
+  const { startTour } = useOnboardingTour();
 
   const [domReady, setDomReady] = useState(false);
 
@@ -28,17 +28,15 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // 3️⃣ Start onboarding tour
+  // Start tour when DOM is ready
   useEffect(() => {
-    if (domReady && status === "authenticated" && user) {
-      startTour();
-    }
-  }, [domReady, status, user, startTour]);
+    if (domReady) startTour();
+  }, [domReady, startTour]);
 
   if (status === "unauthenticated") return null;
 
   return (
-    <div>
+    <div className="root">
       <ExercisePlan user={user?.name} />
     </div>
   );

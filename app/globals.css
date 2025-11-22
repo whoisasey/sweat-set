@@ -72,7 +72,8 @@ a {
   background-color: #ededed;
 }
 
-.introjs-tooltiptext {
+.introjs-tooltiptext,
+.introjs-tooltip-title {
   color: #2e2e2e;
 }
 

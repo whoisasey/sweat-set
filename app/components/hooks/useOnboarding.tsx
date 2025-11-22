@@ -2,11 +2,22 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export function useOnboardingTour(user: any) {
+import Cookies from "js-cookie";
+
+export function useOnboardingTour() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tourRef = useRef<any>(null);
   const [domReady, setDomReady] = useState(false);
 
+  // TODO:
+  // set model property to true1
+  // tour is being rendered twice
   const steps = [
+    {
+      element: ".root",
+      title: "Welcome!",
+      intro: "Here's a quick tour of Sweat Set!",
+    },
     {
       element: ".exercise-plan",
       title: "Your Exercise Plan",
@@ -15,7 +26,8 @@ export function useOnboardingTour(user: any) {
     {
       element: ".progress",
       title: "Your Progress",
-      intro: "This is where you'll see your progress over time.",
+      intro:
+        "This is where you'll see your progress over time. Toggle through Today's Workout stats or historical data.",
     },
     {
       element: ".profile",
@@ -30,25 +42,24 @@ export function useOnboardingTour(user: any) {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Auto-run onboarding once per user
+  // Run once per browser cookie
   useEffect(() => {
-    if (!domReady || !user) return;
+    if (!domReady) return;
 
-    if (!user.hasSeenOnboarding) {
+    const hasSeen = Cookies.get("hasSeenOnboarding");
+    if (!hasSeen) {
       startTour();
     }
-  }, [domReady, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [domReady]);
 
   const startTour = useCallback(async () => {
     if (!domReady) return;
 
-    // 1️⃣ Dynamically import Intro.js only in the browser
     const { default: introJs } = await import("intro.js");
-    await import("intro.js/introjs.css"); // optional CSS
+    await import("intro.js/introjs.css");
 
-    // 2️⃣ Create tour instance
     const intro = introJs();
-
     intro.setOptions({
       steps,
       showProgress: true,
@@ -62,22 +73,15 @@ export function useOnboardingTour(user: any) {
       doneLabel: "Finish",
     });
 
-    // 3️⃣ Event handlers
     intro.oncomplete(() => finish());
     intro.onexit(() => finish());
 
-    // 4️⃣ Start the tour
     intro.start();
     tourRef.current = intro;
   }, [domReady]);
 
-  // Mark onboarding as seen
-  const finish = async () => {
-    try {
-      await fetch("/api/user/onboarding", { method: "POST" });
-    } catch (err) {
-      console.error("Failed to update onboarding:", err);
-    }
+  const finish = () => {
+    Cookies.set("hasSeenOnboarding", "true", { expires: 365 }); // expires in 1 year
   };
 
   return { startTour };
