@@ -45,7 +45,6 @@ export const authOptions: AuthOptions = {
         token.id = user.userId || "";
         token.name = user.firstName || user.name || "";
       }
-
       return token;
     },
 
