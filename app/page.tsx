@@ -1,31 +1,45 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import ExercisePlan from "@/app/components/ExercisePlan";
-import { useEffect } from "react";
-import { useOnboardingIntro } from "@/app/components/hooks/useOnboarding";
+import { useOnboardingTour } from "@/app/components/hooks/useOnboarding";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-const Home = () => {
-  const router = useRouter();
+export default function Home() {
   const { status, data } = useSession();
   const user = data?.user;
-  const { Intro } = useOnboardingIntro(user);
+  const router = useRouter();
+  const { startTour } = useOnboardingTour(user);
 
+  const [domReady, setDomReady] = useState(false);
+
+  // 1️⃣ Redirect if unauthenticated
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
   }, [status, router]);
 
-  if (status === "unauthenticated") return null; // Prevent premature render
+  // 2️⃣ Wait until DOM is ready
+  useEffect(() => {
+    const timer = setTimeout(() => setDomReady(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 3️⃣ Start onboarding tour
+  useEffect(() => {
+    if (domReady && status === "authenticated" && user) {
+      startTour();
+    }
+  }, [domReady, status, user, startTour]);
+
+  if (status === "unauthenticated") return null;
 
   return (
-    <>
-      <Intro />
-      <ExercisePlan user={data?.user?.name} />;
-    </>
+    <div>
+      <ExercisePlan user={user?.name} />
+    </div>
   );
-};
-
-export default Home;
+}

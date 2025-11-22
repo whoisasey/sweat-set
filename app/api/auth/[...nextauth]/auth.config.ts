@@ -44,7 +44,9 @@ export const authOptions: AuthOptions = {
       if (user) {
         token.id = user.userId || "";
         token.name = user.firstName || user.name || "";
+        token.hasSeenOnboarding = user.hasSeenOnboarding || false;
       }
+      
       return token;
     },
 
@@ -56,6 +58,7 @@ export const authOptions: AuthOptions = {
           ...session.user,
           id: token.id as string,
           name: token.name as string,
+          hasSeenOnboarding: token.hasSeenOnboarding as boolean,
         },
       };
     },

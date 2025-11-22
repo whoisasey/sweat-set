@@ -1,71 +1,84 @@
-import "intro.js/introjs.css";
+"use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { Steps } from "intro.js-react";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const useOnboardingIntro = (user: any) => {
-  const [enabled, setEnabled] = useState(false);
-
-  // console.log("user", user);
+export function useOnboardingTour(user: any) {
+  const tourRef = useRef<any>(null);
+  const [domReady, setDomReady] = useState(false);
 
   const steps = [
     {
       element: ".exercise-plan",
-      intro: "Select an exercise from the dropdown and fill in the sets as you go. Submit when ready!",
+      title: "Your Exercise Plan",
+      intro: "Select an exercise from the dropdown and track your sets here.",
     },
     {
       element: ".progress",
-      intro: "Check your Progress here",
+      title: "Your Progress",
+      intro: "This is where you'll see your progress over time.",
     },
     {
       element: ".profile",
-      intro: "Update your Profile here",
+      title: "Your Profile",
+      intro: "Edit your profile and goals here.",
     },
   ];
 
-  // Runs automatically when user logs in
+  // Wait until DOM is ready
   useEffect(() => {
-    if (!user) return;
+    const timeout = setTimeout(() => setDomReady(true), 50);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Auto-run onboarding once per user
+  useEffect(() => {
+    if (!domReady || !user) return;
 
     if (!user.hasSeenOnboarding) {
-      setEnabled(true);
+      startTour();
     }
-  }, [user]);
+  }, [domReady, user]);
 
-  // When the tour ends, update the database
-  const finishOnboarding = async () => {
+  const startTour = useCallback(async () => {
+    if (!domReady) return;
+
+    // 1️⃣ Dynamically import Intro.js only in the browser
+    const { default: introJs } = await import("intro.js");
+    await import("intro.js/introjs.css"); // optional CSS
+
+    // 2️⃣ Create tour instance
+    const intro = introJs();
+
+    intro.setOptions({
+      steps,
+      showProgress: true,
+      showButtons: true,
+      showBullets: true,
+      exitOnEsc: true,
+      exitOnOverlayClick: true,
+      hidePrev: true,
+      nextLabel: "Next",
+      prevLabel: "Back",
+      doneLabel: "Finish",
+    });
+
+    // 3️⃣ Event handlers
+    intro.oncomplete(() => finish());
+    intro.onexit(() => finish());
+
+    // 4️⃣ Start the tour
+    intro.start();
+    tourRef.current = intro;
+  }, [domReady]);
+
+  // Mark onboarding as seen
+  const finish = async () => {
     try {
-      await fetch("/api/user/onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hasSeenOnboarding: true }),
-      });
+      await fetch("/api/user/onboarding", { method: "POST" });
     } catch (err) {
-      console.error("Failed to update onboarding flag", err);
+      console.error("Failed to update onboarding:", err);
     }
   };
 
-  // Allow manual triggering (optional)
-  const start = () => setEnabled(true);
-
-  // Component you render somewhere in your app layout
-  const Intro = () => (
-    <Steps
-      enabled={enabled}
-      steps={steps}
-      initialStep={0}
-      onExit={() => {
-        finishOnboarding();
-        setEnabled(false);
-      }}
-      onComplete={() => {
-        finishOnboarding();
-        setEnabled(false);
-      }}
-    />
-  );
-
-  return { Intro, start, enabled };
-};
+  return { startTour };
+}
