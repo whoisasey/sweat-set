@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import ExercisePlan from "@/app/components/ExercisePlan";
 import { useOnboardingTour } from "@/app/components/hooks/useOnboarding";
@@ -11,9 +11,7 @@ export default function Home() {
   const { status, data } = useSession();
   const user = data?.user;
   const router = useRouter();
-  const { startTour } = useOnboardingTour();
-
-  const [domReady, setDomReady] = useState(false);
+  useOnboardingTour(); // Hook handles tour automatically
 
   // 1️⃣ Redirect if unauthenticated
   useEffect(() => {
@@ -21,17 +19,6 @@ export default function Home() {
       router.push("/login");
     }
   }, [status, router]);
-
-  // 2️⃣ Wait until DOM is ready
-  useEffect(() => {
-    const timer = setTimeout(() => setDomReady(true), 0);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Start tour when DOM is ready
-  useEffect(() => {
-    if (domReady) startTour();
-  }, [domReady, startTour]);
 
   if (status === "unauthenticated") return null;
 

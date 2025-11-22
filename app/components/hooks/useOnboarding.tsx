@@ -9,9 +9,6 @@ export function useOnboardingTour() {
   const tourRef = useRef<any>(null);
   const [domReady, setDomReady] = useState(false);
 
-  // TODO:
-  // set model property to true1
-  // tour is being rendered twice
   const steps = [
     {
       element: ".root",
@@ -72,12 +69,12 @@ export function useOnboardingTour() {
       prevLabel: "Back",
       doneLabel: "Finish",
     });
-
     intro.oncomplete(() => finish());
     intro.onexit(() => finish());
 
     intro.start();
     tourRef.current = intro;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [domReady]);
 
   const finish = () => {
