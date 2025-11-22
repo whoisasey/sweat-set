@@ -7,8 +7,10 @@ declare module "next-auth" {
       userId: string;
       firstName?: string;
       lastName?: string;
-      id: string;
+      id?: string;
       email: string;
+      _id?: string;
+      hasSeenOnboarding?: boolean;
     } & DefaultSession["user"];
   }
 
@@ -20,6 +22,7 @@ declare module "next-auth" {
     lastName?: string;
     email?: string;
     id?: string;
+    hasSeenOnboarding?: boolean;
   }
 }
 
