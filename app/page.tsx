@@ -5,19 +5,23 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-const Home = () => {
-  const router = useRouter();
+export default function Home() {
   const { status, data } = useSession();
+  const user = data?.user;
+  const router = useRouter();
 
+  // 1️⃣ Redirect if unauthenticated
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
   }, [status, router]);
 
-  if (status === "unauthenticated") return null; // Prevent premature render
+  if (status === "unauthenticated") return null;
 
-  return <ExercisePlan user={data?.user?.name} />;
-};
-
-export default Home;
+  return (
+    <div className="root">
+      <ExercisePlan user={user?.name} />
+    </div>
+  );
+}

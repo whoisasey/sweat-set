@@ -5,6 +5,7 @@ import React, { useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
 import { ExerciseForm } from "./ExerciseForm";
+import { useOnboardingTour } from "@/app/components/hooks/useOnboarding";
 import { workoutPlan } from "@/app/data/workoutPlan";
 
 type Exercise = {
@@ -28,6 +29,8 @@ const emptyDay: Day = {
 };
 
 const ExercisePlan = ({ user }: { user?: string }) => {
+  useOnboardingTour(); // Hook handles tour automatically
+
   const [todaysPlan, setTodaysPlan] = useState<Day>(() => {
     if (workoutPlan?.length) {
       const today = new Date().toLocaleDateString("en-US", {

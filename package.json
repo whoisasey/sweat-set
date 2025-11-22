@@ -1,57 +1,60 @@
 {
-	"name": "workout-app",
-	"version": "0.1.0",
-	"private": true,
-	"scripts": {
-		"dev": "next dev",
-		"build": "next build",
-		"start": "next start",
-		"lint": "next lint",
-		"lint:fix": "next lint --fix",
-		"prepare": "husky",
-		"prettier:fix": "prettier --write \"./**/*.{js,jsx,ts,tsx,json}\"",
-		"prettier:staged": "prettier --write $(git diff --cached --name-only --diff-filter=d | sed 's|^www/||' | grep -E '\\.(ts|tsx|js|jsx|json)$' | xargs)"
-	},
-	"dependencies": {
-		"@dnd-kit/core": "^6.3.1",
-		"@dnd-kit/sortable": "^10.0.0",
-		"@emotion/react": "^11.14.0",
-		"@emotion/styled": "^11.14.0",
-		"@mui/icons-material": "^6.4.6",
-		"@mui/material": "^6.1.10",
-		"@mui/x-date-pickers": "^8.11.3",
-		"bcryptjs": "^3.0.2",
-		"d3-shape": "^3.2.0",
-		"date-fns": "^4.1.0",
-		"mongodb": "^6.12.0",
-		"mongoose": "^8.3.3",
-		"next": "^15.5.6",
-		"next-auth": "^4.24.11",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
-		"recharts": "^2.15.1",
-		"swiper": "^12.0.2",
-		"uuid": "^11.1.0"
-	},
-	"devDependencies": {
-		"@eslint/eslintrc": "^3",
-		"@types/node": "^20",
-		"@types/react": "^19",
-		"@types/react-dom": "^19",
-		"eslint": "^9",
-		"eslint-config-next": "15.1.0",
-		"husky": "^9.1.7",
-		"lint-staged": "^15.2.7",
-		"stylelint": "^16.6.1",
-		"stylelint-scss": "^6.3.1",
-		"typescript": "^5"
-	},
-	"lint-staged": {
-		"*.{js,jsx,ts,tsx}": [
-			"eslint"
-		],
-		"*.scss": [
-			"stylelint"
-		]
-	}
+  "name": "workout-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "prepare": "husky",
+    "prettier:fix": "prettier --write \"./**/*.{js,jsx,ts,tsx,json}\"",
+    "prettier:staged": "prettier --write $(git diff --cached --name-only --diff-filter=d | sed 's|^www/||' | grep -E '\\.(ts|tsx|js|jsx|json)$' | xargs)"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.6",
+    "@mui/material": "^6.1.10",
+    "@mui/x-date-pickers": "^8.11.3",
+    "bcryptjs": "^3.0.2",
+    "d3-shape": "^3.2.0",
+    "date-fns": "^4.1.0",
+    "intro.js": "^8.3.2",
+    "js-cookie": "^3.0.5",
+    "mongodb": "^6.12.0",
+    "mongoose": "^8.3.3",
+    "next": "^15.5.6",
+    "next-auth": "^4.24.11",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.15.1",
+    "swiper": "^12.0.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.7",
+    "stylelint": "^16.6.1",
+    "stylelint-scss": "^6.3.1",
+    "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint"
+    ],
+    "*.scss": [
+      "stylelint"
+    ]
+  }
 }
