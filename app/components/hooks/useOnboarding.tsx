@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import Cookies from "js-cookie";
+import { useSession } from "next-auth/react";
 
 export function useOnboardingTour() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tourRef = useRef<any>(null);
   const [domReady, setDomReady] = useState(false);
+  const { status } = useSession();
 
   const steps = [
     {
@@ -44,7 +46,7 @@ export function useOnboardingTour() {
     if (!domReady) return;
 
     const hasSeen = Cookies.get("hasSeenOnboarding");
-    if (!hasSeen) {
+    if (!hasSeen && status === "authenticated") {
       startTour();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
