@@ -14,24 +14,23 @@ export function useOnboardingTour() {
   const steps = [
     {
       element: ".root",
-      title: "Welcome!",
-      intro: "Here's a quick tour of Sweat Set!",
+      title: "Welcome to Sweat Set 👋",
+      intro: "Here’s a quick walkthrough to help you get comfy before you start moving.",
     },
     {
       element: ".exercise-plan",
-      title: "Your Exercise Plan",
-      intro: "Select an exercise from the dropdown and track your sets here.",
+      title: "Plan Your Movement 🏋️‍♀️",
+      intro: "Choose your exercises and log your sets as you go. Simple, smooth, and stress-free.",
     },
     {
       element: ".progress",
-      title: "Your Progress",
-      intro:
-        "This is where you'll see your progress over time. Toggle through Today's Workout stats or historical data.",
+      title: "Reflect & Grow 📈",
+      intro: "Peek at today’s stats or explore your past workouts. Your progress story lives here.",
     },
     {
       element: ".profile",
-      title: "Your Profile",
-      intro: "Edit your profile and goals here.",
+      title: "Make It Yours ✨",
+      intro: "Update your profile and goals anytime. Set things up the way *you* like.",
     },
   ];
 
