@@ -22,6 +22,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
+import { VALID_INVITE_CODES } from "@/app/config/inviteCodes";
 
 const RegisterPage = () => {
   const [formState, setFormState] = useState({
@@ -34,12 +35,14 @@ const RegisterPage = () => {
       weight: "",
       userId: uuidv4(),
       gender: "",
+      inviteCode: "",
     },
     loading: false,
     error: "",
+    inviteCodeValid: false,
   });
 
-  const { formData, loading, error } = formState;
+  const { formData, loading, error, inviteCodeValid } = formState;
   const router = useRouter();
 
   const updateState = (newState: Partial<typeof formState>) => {
@@ -48,14 +51,29 @@ const RegisterPage = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // onChange(name, value);
-    updateState({
-      formData: { ...formData, [name]: value },
-    });
+    
+    if (name === "inviteCode") {
+      const isValid = VALID_INVITE_CODES.includes(value.trim().toUpperCase());
+      updateState({
+        formData: { ...formData, [name]: value },
+        inviteCodeValid: isValid,
+        error: isValid ? "" : error,
+      });
+    } else {
+      updateState({
+        formData: { ...formData, [name]: value },
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!inviteCodeValid) {
+      updateState({ error: "Please enter a valid invite code to register." });
+      return;
+    }
+    
     updateState({ loading: true, error: "" });
 
     try {
@@ -97,6 +115,26 @@ const RegisterPage = () => {
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField
+          type="text"
+          label="Invite Code"
+          placeholder="Enter your invite code"
+          value={formData.inviteCode}
+          onChange={handleChange}
+          name="inviteCode"
+          fullWidth
+          required
+          error={formData.inviteCode !== "" && !inviteCodeValid}
+          helperText={
+            formData.inviteCode !== "" && !inviteCodeValid
+              ? "Invalid invite code"
+              : inviteCodeValid
+              ? "Valid code ✓"
+              : ""
+          }
+          color={inviteCodeValid ? "success" : undefined}
+        />
+
         <Box sx={{ display: "flex", gap: 2 }}>
           <TextField
             type="text"
