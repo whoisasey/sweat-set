@@ -22,6 +22,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
+import { VALID_INVITE_CODES } from "@/app/config/inviteCodes";
 
 const RegisterPage = () => {
   const [formState, setFormState] = useState({
@@ -34,12 +35,15 @@ const RegisterPage = () => {
       weight: "",
       userId: uuidv4(),
       gender: "",
+      inviteCode: "",
     },
     loading: false,
     error: "",
+    inviteCodeValid: false,
+    showRegistrationForm: false,
   });
 
-  const { formData, loading, error } = formState;
+  const { formData, loading, error, inviteCodeValid, showRegistrationForm } = formState;
   const router = useRouter();
 
   const updateState = (newState: Partial<typeof formState>) => {
@@ -48,10 +52,29 @@ const RegisterPage = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // onChange(name, value);
-    updateState({
-      formData: { ...formData, [name]: value },
-    });
+    
+    if (name === "inviteCode") {
+      const isValid = VALID_INVITE_CODES.includes(value.trim().toUpperCase());
+      updateState({
+        formData: { ...formData, [name]: value },
+        inviteCodeValid: isValid,
+        error: isValid ? "" : error,
+      });
+    } else {
+      updateState({
+        formData: { ...formData, [name]: value },
+      });
+    }
+  };
+
+  const handleInviteCodeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (inviteCodeValid) {
+      updateState({ showRegistrationForm: true, error: "" });
+    } else {
+      updateState({ error: "Please enter a valid invite code to continue." });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -93,11 +116,72 @@ const RegisterPage = () => {
       }}
     >
       <Typography variant="h4" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
-        Create Account
+        {showRegistrationForm ? "Create Account" : "Enter Invite Code"}
       </Typography>
 
-      <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <Box sx={{ display: "flex", gap: 2 }}>
+      {!showRegistrationForm ? (
+        <Box component="form" onSubmit={handleInviteCodeSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            This registration is invite-only. Please enter your invite code to continue.
+          </Typography>
+          
+          <TextField
+            type="text"
+            label="Invite Code"
+            placeholder="Enter your invite code"
+            value={formData.inviteCode}
+            onChange={handleChange}
+            name="inviteCode"
+            fullWidth
+            required
+            autoFocus
+            error={formData.inviteCode !== "" && !inviteCodeValid}
+            helperText={
+              formData.inviteCode !== "" && !inviteCodeValid
+                ? "Invalid invite code"
+                : inviteCodeValid
+                ? "Valid code ✓"
+                : ""
+            }
+            color={inviteCodeValid ? "success" : undefined}
+          />
+
+          {error && (
+            <Alert severity="error" sx={{ mt: 1 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="secondary"
+            fullWidth
+            disabled={!inviteCodeValid}
+            sx={{ mt: 2, py: 1.5, fontSize: "1rem" }}
+          >
+            Continue
+          </Button>
+
+          <Typography variant="body2" sx={{ textAlign: "center", mt: 2 }}>
+            Already have an account?{" "}
+            <Link href="/login">
+              <Typography
+                component="span"
+                sx={{
+                  color: "secondary.main",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
+              >
+                Log In
+              </Typography>
+            </Link>
+          </Typography>
+        </Box>
+      ) : (
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Box sx={{ display: "flex", gap: 2 }}>
           <TextField
             type="text"
             label="First Name"
@@ -219,7 +303,8 @@ const RegisterPage = () => {
             </Typography>
           </Link>
         </Typography>
-      </Box>
+        </Box>
+      )}
     </Container>
   );
 };
