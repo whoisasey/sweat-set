@@ -87,7 +87,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
       await submitExerciseData(data);
       setSuccessMsg("Added Exercise Set 💪🏻");
       setShouldRemove(true);
-      setShowForm(false);
+      setTimeout(() => setShowForm(false), 1000);
     } catch (error) {
       console.error(error);
     }
@@ -99,7 +99,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
   };
 
   return (
-    <Collapse in={showForm} timeout={1500} onExited={shouldRemove ? undefined : onRemove}>
+    <Collapse in={showForm} timeout={1500} onExited={shouldRemove ? onRemove : onRemove}>
       <form onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column">
           <ExerciseSelector selectedExercise={selectedExercise} allExercises={allExercises} onChange={handleChange} />
