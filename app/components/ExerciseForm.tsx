@@ -26,6 +26,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
   const [successMsg, setSuccessMsg] = useState("");
   const [showForm, setShowForm] = useState(true);
+  const [shouldRemove, setShouldRemove] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
   // Fetch exercises
@@ -85,14 +86,20 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
 
       await submitExerciseData(data);
       setSuccessMsg("Added Exercise Set 💪🏻");
-      setShowForm(false);
+      setShouldRemove(true);
+      setTimeout(() => setShowForm(false), 1000);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const handleDelete = () => {
+    setShouldRemove(false);
+    setShowForm(false);
+  };
+
   return (
-    <Collapse in={showForm} timeout={1500} onExited={onRemove}>
+    <Collapse in={showForm} timeout={1500} onExited={shouldRemove ? onRemove : onRemove}>
       <form onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column">
           <ExerciseSelector selectedExercise={selectedExercise} allExercises={allExercises} onChange={handleChange} />
@@ -132,7 +139,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
         </Box>
 
         <Box display="flex" justifyContent="space-between" mt={2}>
-          <IconButton color="error" onClick={onRemove}>
+          <IconButton color="error" onClick={handleDelete}>
             <DeleteIcon />
           </IconButton>
           <Button type="submit" variant="contained">
