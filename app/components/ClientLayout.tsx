@@ -1,6 +1,6 @@
 "use client";
 
-import { BottomNavigation, Link, Typography } from "@mui/material";
+import { Box, Link, Typography } from "@mui/material";
 import { ThemeProvider, useMediaQuery } from "@mui/material";
 
 import Nav from "@/app/components/Nav";
@@ -24,7 +24,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children, session }) => {
       <SessionProvider session={session}>
         <Nav />
         {children}
-        <BottomNavigation sx={{ textAlign: "center", backgroundColor: "transparent" }}>
+        <Box sx={{ textAlign: "center", backgroundColor: "transparent", py: 2 }}>
           <Link
             href="https://forms.gle/yScWUEBagTvhHfmv6"
             target="_blank"
@@ -41,7 +41,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children, session }) => {
               Give us Feedback 💛
             </Typography>
           </Link>
-        </BottomNavigation>
+        </Box>
       </SessionProvider>
     </ThemeProvider>
   );
