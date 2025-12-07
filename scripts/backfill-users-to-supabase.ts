@@ -41,7 +41,7 @@ interface MongoUser {
 }
 
 async function backfillUsers() {
-  const mongoClient = new MongoClient(MONGODB_URI);
+  const mongoClient = new MongoClient(MONGODB_URI!);
 
   try {
     console.log("🔄 Connecting to MongoDB...");
@@ -72,7 +72,7 @@ async function backfillUsers() {
 
       try {
         // Create user in Supabase
-        const { data, error } = await supabaseAdmin.auth.admin.createUser({
+        const { error } = await supabaseAdmin.auth.admin.createUser({
           email: user.email,
           email_confirm: true, // Auto-confirm email
           user_metadata: {
