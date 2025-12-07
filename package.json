@@ -20,6 +20,8 @@
     "@mui/icons-material": "^6.4.6",
     "@mui/material": "^6.1.10",
     "@mui/x-date-pickers": "^8.11.3",
+    "@supabase/auth-helpers-nextjs": "^0.15.0",
+    "@supabase/supabase-js": "^2.86.2",
     "bcryptjs": "^3.0.2",
     "d3-shape": "^3.2.0",
     "date-fns": "^4.1.0",
