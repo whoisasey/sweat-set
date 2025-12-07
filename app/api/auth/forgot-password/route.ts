@@ -18,11 +18,12 @@ export async function POST(req: NextRequest) {
 
     // Connect to MongoDB to verify user exists
     await connect();
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }); // comes from Mngo DB
 
     if (!user) {
       // For security, don't reveal if user exists or not
       // TODO: magic link not sending email
+      // TODO: add User changelog instead of md docs
       return NextResponse.json(
         { message: "If an account with that email exists, a password reset link has been sent." },
         { status: 200 }

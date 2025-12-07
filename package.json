@@ -10,7 +10,8 @@
     "lint:fix": "next lint --fix",
     "prepare": "husky",
     "prettier:fix": "prettier --write \"./**/*.{js,jsx,ts,tsx,json}\"",
-    "prettier:staged": "prettier --write $(git diff --cached --name-only --diff-filter=d | sed 's|^www/||' | grep -E '\\.(ts|tsx|js|jsx|json)$' | xargs)"
+    "prettier:staged": "prettier --write $(git diff --cached --name-only --diff-filter=d | sed 's|^www/||' | grep -E '\\.(ts|tsx|js|jsx|json)$' | xargs)",
+    "backfill:supabase": "npx tsx scripts/backfill-users-to-supabase.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -25,6 +26,7 @@
     "bcryptjs": "^3.0.2",
     "d3-shape": "^3.2.0",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
     "intro.js": "^8.3.2",
     "js-cookie": "^3.0.5",
     "mongodb": "^6.12.0",
