@@ -10,11 +10,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Email service not configured" }, { status: 503 });
     }
 
-    const { email } = await req.json();
+    const { email: rawEmail } = await req.json();
 
-    if (!email) {
+    if (!rawEmail) {
       return NextResponse.json({ message: "Email is required" }, { status: 400 });
     }
+
+    // Normalize email to lowercase for case-insensitive lookup
+    const email = rawEmail.toLowerCase().trim();
 
     // Connect to MongoDB to verify user exists
     await connect();

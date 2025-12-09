@@ -18,7 +18,9 @@ export const authOptions: AuthOptions = {
         await connect();
         if (!credentials) throw new Error("No credentials provided");
 
-        const { email, password } = credentials;
+        const { email: rawEmail, password } = credentials;
+        // Normalize email to lowercase for case-insensitive lookup
+        const email = rawEmail.toLowerCase().trim();
         const user = await User.findOne({ email });
 
         if (user) {

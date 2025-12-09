@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import connect from "@/app/utils/db";
 import { supabase } from "@/app/utils/supabase";
 
+// TODO: token expires quickly
 export async function POST(req: NextRequest) {
   try {
     if (!supabase) {
@@ -39,11 +40,10 @@ export async function POST(req: NextRequest) {
     await connect();
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.findOneAndUpdate(
-      { email: supabaseUser.email },
-      { password: hashedPassword },
-      { new: true }
-    );
+    // Normalize email to lowercase for case-insensitive lookup
+    const email = supabaseUser.email?.toLowerCase().trim();
+
+    const user = await User.findOneAndUpdate({ email }, { password: hashedPassword }, { new: true });
 
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });

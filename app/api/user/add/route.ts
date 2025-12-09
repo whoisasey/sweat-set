@@ -5,7 +5,10 @@ import connect from "@/app/utils/db";
 import { supabaseAdmin } from "@/app/utils/supabase";
 
 export const POST = async (req: Request) => {
-  const { email, firstName, password, lastName, birthdate, weight, userId, gender } = await req.json();
+  const { email: rawEmail, firstName, password, lastName, birthdate, weight, userId, gender } = await req.json();
+
+  // Normalize email to lowercase for consistency
+  const email = rawEmail.toLowerCase().trim();
 
   await connect();
 
