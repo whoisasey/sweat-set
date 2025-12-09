@@ -48,7 +48,6 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
-    console.log("reset password route...");
 
     return NextResponse.json({ message: "Password reset successfully" }, { status: 200 });
   } catch (error) {

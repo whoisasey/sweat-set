@@ -25,7 +25,6 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       // For security, don't reveal if user exists or not
-      // TODO: magic link not sending email
       // TODO: add User changelog instead of md docs
       return NextResponse.json(
         { message: "If an account with that email exists, a password reset link has been sent." },
@@ -42,8 +41,6 @@ export async function POST(req: NextRequest) {
       console.error("Error sending password reset email:", error);
       return NextResponse.json({ message: "Failed to send password reset email" }, { status: 500 });
     }
-
-    console.log("forgot password route...");
 
     return NextResponse.json(
       { message: "If an account with that email exists, a password reset link has been sent." },
