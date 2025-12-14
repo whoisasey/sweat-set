@@ -375,18 +375,18 @@ const ProfilePage = () => {
           variant="text"
           color="primary"
           startIcon={
-            <NewReleasesIcon
-              sx={{
-                color: hasNewUpdates ? "primary.main" : "text.primary",
-                transition: "color 0.3s ease",
-              }}
-            />
+            hasNewUpdates ? <NewReleasesIcon sx={{ color: "primary.main", transition: "color 0.3s ease" }} /> : null
           }
           href="/changelog"
           sx={{ textTransform: "none" }}
         >
+          {hasNewUpdates ? (
+            <Typography variant="body1" color="primary.main">
+              What&apos;s New -
+            </Typography>
+          ) : null}
           <Typography variant="body1" sx={{ color: hasNewUpdates ? "primary.main" : "text.primary" }}>
-            What&apos;s New - View Changelog
+            View Changelog
           </Typography>
           {hasNewUpdates && (
             <Box
