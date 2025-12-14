@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/app/utils/supabase";
+
 import User from "@/app/models/User";
 import connect from "@/app/utils/db";
+import { supabase } from "@/app/utils/supabase";
 
 // POST: Send magic link email
 export async function POST(req: NextRequest) {
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.auth.signInWithOtp({
       email: email,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/login`,
+        emailRedirectTo: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`,
       },
     });
 
