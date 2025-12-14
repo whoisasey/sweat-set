@@ -12,24 +12,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Email service not configured" }, { status: 503 });
     }
 
-    const { token, password } = await req.json();
+    const { accessToken, password } = await req.json();
 
-    if (!token || !password) {
-      return NextResponse.json({ message: "Token and password are required" }, { status: 400 });
+    if (!accessToken || !password) {
+      return NextResponse.json({ message: "Access token and password are required" }, { status: 400 });
     }
 
     if (password.length < 6) {
       return NextResponse.json({ message: "Password must be at least 6 characters" }, { status: 400 });
     }
 
-    // Verify the token with Supabase
+    // Get the user from the session using the access token
     const {
       data: { user: supabaseUser },
       error,
-    } = await supabase.auth.verifyOtp({
-      token_hash: token,
-      type: "recovery",
-    });
+    } = await supabase.auth.getUser(accessToken);
 
     if (error || !supabaseUser) {
       console.error("Error verifying token:", error);
