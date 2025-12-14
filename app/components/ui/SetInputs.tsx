@@ -1,7 +1,7 @@
 import { Add, Remove } from "@mui/icons-material";
 import { Box, Card, IconButton, TextField, Typography } from "@mui/material";
 
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 
 interface SetInputsProps {
   sets: number;
