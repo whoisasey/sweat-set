@@ -23,7 +23,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children, session }) => {
     <ThemeProvider theme={theme}>
       <SessionProvider session={session}>
         <Nav />
-        {children}
+        <Box sx={{ minHeight: "80vh" }}>{children}</Box>
         <Box sx={{ textAlign: "center", backgroundColor: "transparent", py: 2 }}>
           <Link
             href="https://forms.gle/yScWUEBagTvhHfmv6"
