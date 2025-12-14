@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/app/utils/supabase";
 
+// This route handles password reset callback with token_hash in query params
 export async function GET(req: NextRequest) {
   if (!supabase) {
     return NextResponse.redirect(new URL("/login?error=service_unavailable", req.url));
@@ -10,26 +11,13 @@ export async function GET(req: NextRequest) {
   const token_hash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type");
 
-  if (token_hash && type) {
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.verifyOtp({
-      token_hash,
-      type: type as "magiclink",
-    });
+  console.log("Password reset callback - token_hash:", token_hash, "type:", type);
 
-    if (error) {
-      console.error("Error verifying magic link:", error);
-      return NextResponse.redirect(new URL("/login?error=invalid_magic_link", req.url));
-    }
-
-    if (session) {
-      // Redirect to home page with success
-      return NextResponse.redirect(new URL("/?magic_link_success=true", req.url));
-    }
+  if (token_hash && type === "recovery") {
+    // This is a password reset, redirect to reset password page
+    return NextResponse.redirect(new URL(`/reset-password?token_hash=${token_hash}&type=${type}`, req.url));
   }
 
-  // If no token or error, redirect to login
+  // If no token or wrong type, redirect to login
   return NextResponse.redirect(new URL("/login", req.url));
 }

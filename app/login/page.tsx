@@ -1,7 +1,7 @@
 "use client";
 
 import { Alert, Box, Button, CircularProgress, Container, Divider, Link, TextField, Typography } from "@mui/material";
-import React, { FormEvent, useCallback, useState } from "react";
+import React, { FormEvent, useCallback, useState, useEffect } from "react";
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,55 @@ const LoginPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [useMagicLink, setUseMagicLink] = useState<boolean>(false);
   const [magicLinkSent, setMagicLinkSent] = useState<boolean>(false);
+  const [processingMagicLink, setProcessingMagicLink] = useState<boolean>(false);
   const router = useRouter();
+
+  // Handle magic link callback on page load
+  useEffect(() => {
+    const handleMagicLinkCallback = async () => {
+      // Check if there's a hash in the URL (magic link tokens)
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const access_token = hashParams.get("access_token");
+
+      if (access_token) {
+        setProcessingMagicLink(true);
+        try {
+          // Verify the magic link token with our API
+          const response = await fetch("/api/auth/magic-link", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ access_token }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success && data.email) {
+            // Sign in with NextAuth using the magic-link provider
+            const result = await signIn("magic-link", {
+              email: data.email,
+              redirect: false,
+            });
+
+            if (result?.error) {
+              setError("Failed to create session");
+              setProcessingMagicLink(false);
+            } else {
+              router.push("/");
+            }
+          } else {
+            setError(data.message || "Invalid magic link");
+            setProcessingMagicLink(false);
+          }
+        } catch (err) {
+          console.error("Error processing magic link:", err);
+          setError("An error occurred while processing your login");
+          setProcessingMagicLink(false);
+        }
+      }
+    };
+
+    handleMagicLinkCallback();
+  }, [router]);
 
   const handleSubmit = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
@@ -65,6 +113,21 @@ const LoginPage = () => {
     },
     [router, useMagicLink]
   );
+
+  // Show loading state while processing magic link
+  if (processingMagicLink) {
+    return (
+      <Container maxWidth="sm" sx={{ mt: 8, textAlign: "center" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+          <CircularProgress size={60} />
+          <Typography variant="h6">Verifying your magic link...</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Please wait while we sign you in
+          </Typography>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
     <Container

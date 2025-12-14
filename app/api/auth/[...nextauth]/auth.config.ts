@@ -32,6 +32,25 @@ export const authOptions: AuthOptions = {
         return null;
       },
     }),
+    CredentialsProvider({
+      id: "magic-link",
+      name: "Magic Link",
+      credentials: {
+        email: { label: "Email", type: "text" },
+      },
+      async authorize(credentials: Record<"email", string> | undefined) {
+        await connect();
+        if (!credentials?.email) throw new Error("No email provided");
+
+        const email = credentials.email.toLowerCase().trim();
+        const user = await User.findOne({ email });
+
+        if (user) {
+          return user as AuthUser;
+        }
+        return null;
+      },
+    }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
@@ -63,7 +82,7 @@ export const authOptions: AuthOptions = {
     },
 
     async signIn({ account }: { user: AuthUser; account: Account | null }): Promise<boolean> {
-      if (account?.provider === "credentials") return true;
+      if (account?.provider === "credentials" || account?.provider === "magic-link") return true;
       return false;
     },
   },
