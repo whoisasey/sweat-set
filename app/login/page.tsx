@@ -1,7 +1,7 @@
 "use client";
 
 import { Alert, Box, Button, CircularProgress, Container, Divider, Link, TextField, Typography } from "@mui/material";
-import React, { FormEvent, useCallback, useState, useEffect } from "react";
+import React, { FormEvent, useCallback, useEffect, useState } from "react";
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -17,20 +17,13 @@ const LoginPage = () => {
   // Handle magic link callback on page load
   useEffect(() => {
     const handleMagicLinkCallback = async () => {
-      console.log("Full URL:", window.location.href);
-      console.log("Hash:", window.location.hash);
-      console.log("Search:", window.location.search);
-
       // Check for tokens in URL hash (format: #access_token=...)
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const access_token = hashParams.get("access_token");
 
-      console.log("Access token found:", access_token ? "YES" : "NO");
-
       if (access_token) {
         setProcessingMagicLink(true);
         try {
-          console.log("Verifying magic link token...");
           // Verify the magic link token with our API
           const response = await fetch("/api/auth/magic-link", {
             method: "PUT",
@@ -39,17 +32,13 @@ const LoginPage = () => {
           });
 
           const data = await response.json();
-          console.log("Magic link verification response:", { status: response.status, data });
 
           if (response.ok && data.success && data.email) {
-            console.log("Signing in with NextAuth...");
             // Sign in with NextAuth using the magic-link provider
             const result = await signIn("magic-link", {
               email: data.email,
               redirect: false,
             });
-
-            console.log("NextAuth sign in result:", result);
 
             if (result?.error) {
               console.error("NextAuth sign in error:", result.error);
