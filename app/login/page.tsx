@@ -17,15 +17,15 @@ const LoginPage = () => {
   // Handle magic link callback on page load
   useEffect(() => {
     const handleMagicLinkCallback = async () => {
-      // Check if there's a hash in the URL (magic link tokens)
+      console.log("Full URL:", window.location.href);
+      console.log("Hash:", window.location.hash);
+      console.log("Search:", window.location.search);
+
+      // Check for tokens in URL hash (format: #access_token=...)
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const access_token = hashParams.get("access_token");
 
-      console.log("Magic link check:", {
-        hasHash: !!window.location.hash,
-        hash: window.location.hash,
-        access_token: access_token ? "present" : "missing",
-      });
+      console.log("Access token found:", access_token ? "YES" : "NO");
 
       if (access_token) {
         setProcessingMagicLink(true);
