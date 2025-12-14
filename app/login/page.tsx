@@ -21,9 +21,16 @@ const LoginPage = () => {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const access_token = hashParams.get("access_token");
 
+      console.log("Magic link check:", {
+        hasHash: !!window.location.hash,
+        hash: window.location.hash,
+        access_token: access_token ? "present" : "missing",
+      });
+
       if (access_token) {
         setProcessingMagicLink(true);
         try {
+          console.log("Verifying magic link token...");
           // Verify the magic link token with our API
           const response = await fetch("/api/auth/magic-link", {
             method: "PUT",
@@ -32,21 +39,28 @@ const LoginPage = () => {
           });
 
           const data = await response.json();
+          console.log("Magic link verification response:", { status: response.status, data });
 
           if (response.ok && data.success && data.email) {
+            console.log("Signing in with NextAuth...");
             // Sign in with NextAuth using the magic-link provider
             const result = await signIn("magic-link", {
               email: data.email,
               redirect: false,
             });
 
+            console.log("NextAuth sign in result:", result);
+
             if (result?.error) {
+              console.error("NextAuth sign in error:", result.error);
               setError("Failed to create session");
               setProcessingMagicLink(false);
             } else {
+              console.log("Sign in successful, redirecting...");
               router.push("/");
             }
           } else {
+            console.error("Magic link verification failed:", data);
             setError(data.message || "Invalid magic link");
             setProcessingMagicLink(false);
           }
