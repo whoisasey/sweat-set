@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -16,7 +17,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import NewReleasesIcon from "@mui/icons-material/NewReleases";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -328,6 +331,21 @@ const ProfilePage = () => {
           No goals set yet
         </Typography>
       </Box> */}
+
+      <Divider sx={{ my: 4 }} />
+
+      <Box>
+        <Button
+          component={Link}
+          variant="text"
+          color="primary"
+          startIcon={<NewReleasesIcon />}
+          href="/changelog"
+          sx={{ textTransform: "none" }}
+        >
+          What&apos;s New - View Changelog
+        </Button>
+      </Box>
     </Box>
   );
 };
