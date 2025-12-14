@@ -46,6 +46,14 @@ const ChangelogPage = () => {
     }
   }, [status, router]);
 
+  // Mark changelog as viewed when user visits this page
+  useEffect(() => {
+    const latestVersion = changelog[0]?.version;
+    if (latestVersion) {
+      localStorage.setItem("changelog_last_viewed_version", latestVersion);
+    }
+  }, []);
+
   const getChipColor = (type: "new" | "improved" | "fixed") => {
     switch (type) {
       case "new":
