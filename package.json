@@ -1,6 +1,6 @@
 {
   "name": "workout-app",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,7 +10,8 @@
     "lint:fix": "next lint --fix",
     "prepare": "husky",
     "prettier:fix": "prettier --write \"./**/*.{js,jsx,ts,tsx,json}\"",
-    "prettier:staged": "prettier --write $(git diff --cached --name-only --diff-filter=d | sed 's|^www/||' | grep -E '\\.(ts|tsx|js|jsx|json)$' | xargs)"
+    "prettier:staged": "prettier --write $(git diff --cached --name-only --diff-filter=d | sed 's|^www/||' | grep -E '\\.(ts|tsx|js|jsx|json)$' | xargs)",
+    "backfill:supabase": "npx tsx scripts/backfill-users-to-supabase.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -20,15 +21,19 @@
     "@mui/icons-material": "^6.4.6",
     "@mui/material": "^6.1.10",
     "@mui/x-date-pickers": "^8.11.3",
+    "@supabase/auth-helpers-nextjs": "^0.15.0",
+    "@supabase/supabase-js": "^2.86.2",
     "bcryptjs": "^3.0.2",
     "d3-shape": "^3.2.0",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
     "intro.js": "^8.3.2",
+    "jose": "^6.1.3",
     "js-cookie": "^3.0.5",
-    "mongodb": "^7.0.0",
-    "mongoose": "^9.0.1",
+    "mongodb": "^6.12.0",
+    "mongoose": "^8.3.3",
     "next": "^15.5.7",
-    "next-auth": "^4.24.11",
+    "next-auth": "^4.24.12",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.1",

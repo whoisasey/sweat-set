@@ -18,7 +18,9 @@ export const authOptions: AuthOptions = {
         await connect();
         if (!credentials) throw new Error("No credentials provided");
 
-        const { email, password } = credentials;
+        const { email: rawEmail, password } = credentials;
+        // Normalize email to lowercase for case-insensitive lookup
+        const email = rawEmail.toLowerCase().trim();
         const user = await User.findOne({ email });
 
         if (user) {
@@ -26,6 +28,25 @@ export const authOptions: AuthOptions = {
           if (isPasswordCorrect) {
             return user as AuthUser;
           }
+        }
+        return null;
+      },
+    }),
+    CredentialsProvider({
+      id: "magic-link",
+      name: "Magic Link",
+      credentials: {
+        email: { label: "Email", type: "text" },
+      },
+      async authorize(credentials: Record<"email", string> | undefined) {
+        await connect();
+        if (!credentials?.email) throw new Error("No email provided");
+
+        const email = credentials.email.toLowerCase().trim();
+        const user = await User.findOne({ email });
+
+        if (user) {
+          return user as AuthUser;
         }
         return null;
       },
@@ -61,7 +82,7 @@ export const authOptions: AuthOptions = {
     },
 
     async signIn({ account }: { user: AuthUser; account: Account | null }): Promise<boolean> {
-      if (account?.provider === "credentials") return true;
+      if (account?.provider === "credentials" || account?.provider === "magic-link") return true;
       return false;
     },
   },

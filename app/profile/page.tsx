@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -20,7 +21,9 @@ import { useEffect, useState } from "react";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import Link from "next/link";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import NewReleasesIcon from "@mui/icons-material/NewReleases";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -43,6 +46,7 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [hasNewUpdates, setHasNewUpdates] = useState(false);
   const { status } = useSession();
   const router = useRouter();
 
@@ -98,6 +102,40 @@ const ProfilePage = () => {
       router.push("/login");
     }
   }, [status, router]);
+
+  // Check if there are new changelog updates
+  useEffect(() => {
+    const checkForUpdates = () => {
+      const lastViewedVersion = localStorage.getItem("changelog_last_viewed_version");
+      const latestVersion = "1.1.0"; // Should match the first version in changelog
+
+      // If user hasn't viewed changelog, or viewed an older version, show indicator
+      setHasNewUpdates(!lastViewedVersion || lastViewedVersion !== latestVersion);
+    };
+
+    // Check on mount
+    checkForUpdates();
+
+    // Check when page becomes visible again (e.g., returning from changelog)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        checkForUpdates();
+      }
+    };
+
+    // Check when window gains focus
+    const handleFocus = () => {
+      checkForUpdates();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
 
   // Calculate age from birthdate
   const calculateAge = (birthdate?: string) => {
@@ -328,6 +366,47 @@ const ProfilePage = () => {
           No goals set yet
         </Typography>
       </Box> */}
+
+      <Divider sx={{ my: 4 }} />
+
+      <Box>
+        <Button
+          component={Link}
+          variant="text"
+          color="primary"
+          startIcon={
+            hasNewUpdates ? <NewReleasesIcon sx={{ color: "primary.main", transition: "color 0.3s ease" }} /> : null
+          }
+          href="/changelog"
+          sx={{ textTransform: "none" }}
+        >
+          {hasNewUpdates ? (
+            <Typography variant="body1" color="primary.main">
+              What&apos;s New -
+            </Typography>
+          ) : null}
+          <Typography variant="body1" sx={{ color: hasNewUpdates ? "primary.main" : "text.primary" }}>
+            View Changelog
+          </Typography>
+          {hasNewUpdates && (
+            <Box
+              component="span"
+              sx={{
+                ml: 1,
+                px: 1,
+                py: 0.25,
+                bgcolor: "error.main",
+                color: "white",
+                borderRadius: 1,
+                fontSize: "0.75rem",
+                fontWeight: 600,
+              }}
+            >
+              NEW
+            </Box>
+          )}
+        </Button>
+      </Box>
     </Box>
   );
 };
