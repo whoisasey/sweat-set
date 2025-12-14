@@ -19,7 +19,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.3.6",
-    "@mui/material": "^6.1.10",
+    "@mui/material": "^7.3.6",
     "@mui/x-date-pickers": "^8.11.3",
     "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/supabase-js": "^2.86.2",
