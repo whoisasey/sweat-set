@@ -17,7 +17,7 @@ const exerciseSetSchema = new mongoose.Schema(
 const dbName = process.env.NODE_ENV === "production" ? "app" : "app_dev";
 
 const db = mongoose.connection.useDb(dbName);
-// const db = mongoose.connection.useDb("app");
+// const db = mongoose.connection.useDb("app_dev");
 
 const ExerciseSet = db.model("ExerciseSet", exerciseSetSchema);
 export default ExerciseSet;
