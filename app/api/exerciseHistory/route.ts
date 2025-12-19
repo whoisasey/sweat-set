@@ -21,14 +21,15 @@ export const GET = async (req: NextRequest) => {
 
   const { searchParams } = new URL(req.url);
   const user = searchParams.get("user");
-  const today = searchParams.get("today") === "true";
-
-  try {
+  console.log("[exerciseHistory] Received userId:", use  try {
     // Handle both UUID strings and MongoDB ObjectId formats
     // Production may have old data with ObjectIds, new data with UUIDs
     let filter: Record<string, unknown>;
     
-    if (user && mongoose.Types.ObjectId.isValid(user) && user.length === 24) {
+    const isValidObjectId = user && mongoose.Types.ObjectId.isValid(user) && user.length === 24;
+    console.log("[exerciseHistory] Is valid ObjectId:", isValidObjectId);
+    
+    if (isValidObjectId) {
       // If it looks like a valid 24-char ObjectId, try both formats
       filter = {
         $or: [
@@ -36,10 +37,13 @@ export const GET = async (req: NextRequest) => {
           { userId: new mongoose.Types.ObjectId(user) },
         ],
       };
+      console.log("[exerciseHistory] Using $or filter for ObjectId");
     } else {
       // Otherwise just use the string (UUID)
       filter = { userId: user };
+      console.log("[exerciseHistory] Using simple string filter for UUID");
     }
+    console.log("[exerciseHistory] Filter:", JSON.stringify(filter, null, 2));
 
     if (today) {
       const start = new Date();
@@ -49,8 +53,18 @@ export const GET = async (req: NextRequest) => {
       filter["date"] = { $gte: start, $lte: end };
     }
 
+    // Debug: Check sample data in database
+    const sampleRecords = await ExerciseSet.find({}).limit(3).lean();
+    console.log("[exerciseHistory] Sample DB records:", JSON.stringify(sampleRecords.map(r => ({
+      _id: r._id,
+      userId: r.userId,
+      userIdType: typeof r.userId,
+      exercise: r.exercise
+    })), null, 2));
+    
     const exerciseHistory = await ExerciseSet.find(filter, "exercise date weights reps").lean();
-
+    console.log("[exerciseHistory] Found records:", exerciseHistory.length);
+    console.log("[exerciseHistory] First record:", exerciseHistory[0] ? JSON.stringify(exerciseHistory[0]) : "none");
     const grouped: Record<string, typeof exerciseHistory> = {};
 
     exerciseHistory.forEach((workout) => {
