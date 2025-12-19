@@ -63,14 +63,17 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user }) {
       // Only add id and name when the user first logs in
       if (user) {
-        token.id = user.userId || "";
+        // Use userId if available, otherwise fallback to MongoDB _id
+        token.id = user.userId || user._id?.toString() || "";
         token.name = user.firstName || user.name || "";
+        console.log("[jwt] Setting token.id:", token.id, "from user.userId:", user.userId, "or user._id:", user._id?.toString());
       }
       return token;
     },
 
     async session({ session, token }) {
       // session.user will now always have id and name immediately
+      console.log("[session] Creating session with id:", token.id);
       return {
         ...session,
         user: {

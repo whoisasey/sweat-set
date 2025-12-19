@@ -17,7 +17,11 @@ const exerciseSetSchema = new mongoose.Schema(
 const dbName = process.env.NODE_ENV === "production" ? "app" : "app_dev";
 
 const db = mongoose.connection.useDb(dbName);
-// const db = mongoose.connection.useDb("app_dev");
+
+// Delete cached model to prevent schema conflicts
+if (db.models.ExerciseSet) {
+  delete db.models.ExerciseSet;
+}
 
 const ExerciseSet = db.model("ExerciseSet", exerciseSetSchema);
 export default ExerciseSet;
