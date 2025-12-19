@@ -1,0 +1,145 @@
+name: CI Pipeline - Lint, Test, Build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  # Job 1: Linting
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  # Job 2: Format Check (runs in parallel with lint)
+  format-check:
+    name: Check Code Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Prettier formatting
+        run: npx prettier --check "./**/*.{js,jsx,ts,tsx,json}"
+
+  # Job 3: TypeScript Type Check (runs in parallel with lint)
+  type-check:
+    name: TypeScript Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript compiler
+        run: npx tsc --noEmit
+
+  # Job 4: Tests (placeholder for future implementation)
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: |
+          echo "Tests not yet implemented - placeholder job"
+          echo "TODO: Add npm run test command once test suite is ready"
+        # Uncomment when tests are ready:
+        # run: npm run test:coverage
+
+      # Uncomment when tests are ready:
+      # - name: Upload coverage to GitHub
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: coverage-report
+      #     path: coverage/
+
+      # - name: Comment coverage on PR
+      #   uses: romeovs/lcov-reporter-action@v0.3.1
+      #   if: github.event_name == 'pull_request'
+      #   with:
+      #     lcov-file: ./coverage/lcov.info
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Job 5: Build (only runs after all checks pass)
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+    needs: [lint, format-check, type-check, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js application
+        run: npm run build
+        env:
+          # Use secrets if available, otherwise use mock values for CI
+          MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/workout-app-ci' }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'ci-build-secret-min-32-chars-long' }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL || 'http://localhost:3000' }}
+
+      - name: Check build output
+        run: |
+          if [ ! -d ".next" ]; then
+            echo "❌ Build failed - .next directory not found"
+            exit 1
+          fi
+          echo "✅ Build completed successfully"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-build
+          path: .next/
