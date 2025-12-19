@@ -9,8 +9,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "eslint app/**/*.tsx && stylelint app/*.scss",
+    "lint:fix": "eslint app/**/*.tsx && stylelint app/*.scss --fix",
     "type-check": "tsc --noEmit",
     "test": "echo \"Error: tests not yet implemented\" && exit 0",
     "test:coverage": "echo \"Error: tests not yet implemented\" && exit 0",
@@ -40,9 +40,11 @@
     "mongoose": "^8.3.3",
     "next": "^16.1.0",
     "next-auth": "^4.24.12",
+    "prettier": "^3.6.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^3.6.0",
+    "sass": "^1.97.0",
     "swiper": "^12.0.3",
     "uuid": "^13.0.0"
   },
@@ -58,14 +60,16 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "stylelint": "^16.6.1",
+    "stylelint-order": "^7.0.0",
     "stylelint-scss": "^6.3.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "typescript-eslint": "^8.50.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint"
     ],
-    "*.scss": [
+    "*.css": [
       "stylelint"
     ]
   }
