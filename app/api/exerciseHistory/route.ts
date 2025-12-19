@@ -49,8 +49,6 @@ export const GET = async (req: NextRequest) => {
     }
 
     const exerciseHistory = await ExerciseSet.find(filter, "exercise date weights reps").lean();
-    console.log("[exerciseHistory] Found records:", exerciseHistory.length);
-    console.log("[exerciseHistory] First record:", exerciseHistory[0] ? JSON.stringify(exerciseHistory[0]) : "none");
     const grouped: Record<string, typeof exerciseHistory> = {};
 
     exerciseHistory.forEach((workout) => {
