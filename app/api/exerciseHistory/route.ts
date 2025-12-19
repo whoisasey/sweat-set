@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import mongoose from "mongoose";
 
 import ExerciseSet from "@/app/models/ExerciseSet";
 import connect from "@/app/utils/db";
 import { formatDate } from "@/app/utils/helpers";
+import mongoose from "mongoose";
 
 type ProcessedWorkoutData = {
   exercise: string;
@@ -21,21 +21,22 @@ export const GET = async (req: NextRequest) => {
 
   const { searchParams } = new URL(req.url);
   const user = searchParams.get("user");
-  console.log("[exerciseHistory] Received userId:", use  try {
+  console.log("[exerciseHistory] Received userId:", user, "Type:", typeof user, "Length:", user?.length);
+
+  const today = searchParams.get("today") === "true";
+
+  try {
     // Handle both UUID strings and MongoDB ObjectId formats
     // Production may have old data with ObjectIds, new data with UUIDs
     let filter: Record<string, unknown>;
-    
+
     const isValidObjectId = user && mongoose.Types.ObjectId.isValid(user) && user.length === 24;
     console.log("[exerciseHistory] Is valid ObjectId:", isValidObjectId);
-    
+
     if (isValidObjectId) {
       // If it looks like a valid 24-char ObjectId, try both formats
       filter = {
-        $or: [
-          { userId: user },
-          { userId: new mongoose.Types.ObjectId(user) },
-        ],
+        $or: [{ userId: user }, { userId: new mongoose.Types.ObjectId(user) }],
       };
       console.log("[exerciseHistory] Using $or filter for ObjectId");
     } else {
@@ -55,13 +56,20 @@ export const GET = async (req: NextRequest) => {
 
     // Debug: Check sample data in database
     const sampleRecords = await ExerciseSet.find({}).limit(3).lean();
-    console.log("[exerciseHistory] Sample DB records:", JSON.stringify(sampleRecords.map(r => ({
-      _id: r._id,
-      userId: r.userId,
-      userIdType: typeof r.userId,
-      exercise: r.exercise
-    })), null, 2));
-    
+    console.log(
+      "[exerciseHistory] Sample DB records:",
+      JSON.stringify(
+        sampleRecords.map((r) => ({
+          _id: r._id,
+          userId: r.userId,
+          userIdType: typeof r.userId,
+          exercise: r.exercise,
+        })),
+        null,
+        2
+      )
+    );
+
     const exerciseHistory = await ExerciseSet.find(filter, "exercise date weights reps").lean();
     console.log("[exerciseHistory] Found records:", exerciseHistory.length);
     console.log("[exerciseHistory] First record:", exerciseHistory[0] ? JSON.stringify(exerciseHistory[0]) : "none");
