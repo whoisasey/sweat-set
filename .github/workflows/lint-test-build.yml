@@ -1,13 +1,11 @@
 name: CI Pipeline - Lint, Test, Build
 
 on:
-  # Run on pushes to main/develop (direct commits)
-  push:
+  pull_request:
     branches:
       - main
       - develop
-  # Run on PRs to main/develop (prevents duplicate runs with push)
-  pull_request:
+  push:
     branches:
       - main
       - develop
@@ -17,6 +15,8 @@ jobs:
   lint:
     name: Lint Code
     runs-on: ubuntu-latest
+    # Prevent duplicate runs: skip push events if it's a PR branch
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
 
@@ -36,6 +36,7 @@ jobs:
   format-check:
     name: Check Code Formatting
     runs-on: ubuntu-latest
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
 
@@ -57,6 +58,7 @@ jobs:
   type-check:
     name: TypeScript Type Check
     runs-on: ubuntu-latest
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
 
@@ -76,6 +78,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
 
@@ -113,6 +116,7 @@ jobs:
   build:
     name: Build Project
     runs-on: ubuntu-latest
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     needs: [lint, format-check, type-check, test]
     steps:
       - uses: actions/checkout@v4
