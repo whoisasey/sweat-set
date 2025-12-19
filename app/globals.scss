@@ -1,5 +1,5 @@
-@import "intro.js/introjs.css";
-@import "intro.js/themes/introjs-modern.css";
+@use "intro.js/introjs.css";
+@use "intro.js/themes/introjs-modern.css";
 
 :root {
   --background: #f9f9f9;
@@ -7,8 +7,8 @@
 }
 
 html {
-  width: 100%;
   overflow-x: hidden;
+  width: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,22 +19,22 @@ html {
 }
 
 body {
-  color: var(--foreground);
   background: var(--background);
+  color: var(--foreground);
   /* font-family: Arial, Helvetica, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 100%;
-  max-width: 100%;
   margin: 0;
-  padding: 0 5%;
+  max-width: 100%;
   overflow-x: hidden;
+  padding: 0 5%;
+  width: 100%;
 }
 
 * {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 a {
