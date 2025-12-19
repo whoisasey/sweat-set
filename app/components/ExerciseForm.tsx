@@ -3,7 +3,7 @@
 import { Alert, Box, Button, Collapse, IconButton, Snackbar, TextField } from "@mui/material";
 import { Exercise, ExerciseProps } from "@/app/types/ExerciseTypes";
 import React, { FormEvent, useEffect, useState } from "react";
-import { addNewExercise, checkIfExerciseExists, submitExerciseData } from "@/app/utils/helpers-fe";
+import { addNewExercise, checkIfExerciseExists, convertToEasternTime, submitExerciseData } from "@/app/utils/helpers-fe";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -68,6 +68,9 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Convert the date to UTC-5 (Eastern Time) before submission
+    const easternDate = convertToEasternTime(date ? new Date(date) : new Date());
+
     const data = {
       sets: updatedSets,
       reps: updatedReps,
@@ -75,7 +78,7 @@ export const ExerciseForm = ({ onRemove, sets, reps }: ExerciseProps) => {
       weights,
       userId: userId!,
       exercise: selectedExercise || newExercise,
-      date: date ? new Date(date) : new Date(),
+      date: easternDate,
     };
 
     try {
