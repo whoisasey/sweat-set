@@ -11,7 +11,6 @@ import {
   Line,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
@@ -20,6 +19,7 @@ import React, { JSX } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import { ProcessedWorkoutData } from "@/app/progress/page";
+import type { TooltipContentProps } from "recharts/types/component/Tooltip";
 import { curveCardinal } from "d3-shape";
 import { formatDate } from "@/app/utils/helpers";
 import { useWindowSize } from "@/app/utils/helpers-fe";
@@ -53,7 +53,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
   };
 
   // Tooltip for both views
-  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>): JSX.Element | null => {
+  const CustomTooltip = ({ active, payload }: TooltipContentProps<number, string>): JSX.Element | null => {
     if (active && payload && payload.length) {
       const d = payload[0].payload;
 
@@ -179,7 +179,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
                   domain={[0, "dataMax + 5"]}
                   label={{ value: "Reps", angle: 90, position: "insideRight" }}
                 />
-                {todayView && isMobile ? null : <Tooltip content={<CustomTooltip />} />}
+                {todayView && isMobile ? null : <Tooltip content={CustomTooltip} />}
                 <Area
                   yAxisId="weight"
                   type={cardinal}
@@ -212,7 +212,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
                   domain={[0, "dataMax + 20"]}
                   label={{ value: yAxisLabel, angle: -90, position: "insideLeft" }}
                 />
-                {todayView && isMobile ? null : <Tooltip content={<CustomTooltip />} />}
+                {todayView && isMobile ? null : <Tooltip content={CustomTooltip} />}
                 <Area type={cardinal} dataKey={dataKey} stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.3} />
               </AreaChart>
             )}
