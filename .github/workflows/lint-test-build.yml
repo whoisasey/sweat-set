@@ -1,10 +1,12 @@
 name: CI Pipeline - Lint, Test, Build
 
 on:
+  # Run on pushes to main/develop (direct commits)
   push:
     branches:
       - main
       - develop
+  # Run on PRs to main/develop (prevents duplicate runs with push)
   pull_request:
     branches:
       - main
