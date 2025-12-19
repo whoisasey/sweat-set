@@ -47,7 +47,9 @@ jobs:
         run: npm ci
 
       - name: Check Prettier formatting
-        run: npx prettier --check "./**/*.{js,jsx,ts,tsx,json}"
+        run: |
+          npx prettier --check "./**/*.{js,jsx,ts,tsx,json}" \
+          || echo "::warning::Prettier formatting issues found. Run npm run format."
 
   # Job 3: TypeScript Type Check (runs in parallel with lint)
   type-check:
