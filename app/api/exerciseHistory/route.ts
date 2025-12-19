@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import ExerciseSet from "@/app/models/ExerciseSet";
 import connect from "@/app/utils/db";
 import { formatDate } from "@/app/utils/helpers";
+import mongoose from "mongoose";
 
 type ProcessedWorkoutData = {
   exercise: string;
@@ -23,7 +24,21 @@ export const GET = async (req: NextRequest) => {
   const today = searchParams.get("today") === "true";
 
   try {
-    const filter: Record<string, unknown> = { userId: user };
+    // Handle both UUID strings and MongoDB ObjectId formats
+    // Production may have old data with ObjectIds, new data with UUIDs
+    let filter: Record<string, unknown>;
+
+    const isValidObjectId = user && mongoose.Types.ObjectId.isValid(user) && user.length === 24;
+
+    if (isValidObjectId) {
+      // If it looks like a valid 24-char ObjectId, try both formats
+      filter = {
+        $or: [{ userId: user }, { userId: new mongoose.Types.ObjectId(user) }],
+      };
+    } else {
+      // Otherwise just use the string (UUID)
+      filter = { userId: user };
+    }
 
     if (today) {
       const start = new Date();
@@ -34,7 +49,6 @@ export const GET = async (req: NextRequest) => {
     }
 
     const exerciseHistory = await ExerciseSet.find(filter, "exercise date weights reps").lean();
-
     const grouped: Record<string, typeof exerciseHistory> = {};
 
     exerciseHistory.forEach((workout) => {
