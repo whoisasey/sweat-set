@@ -40,6 +40,7 @@ const ProgressPage = () => {
         if (!response.ok) throw new Error("Failed to fetch exercises");
         const data = await response.json();
         setExerciseHistory(data);
+        console.log(data);
       } catch (error) {
         console.error(error);
       } finally {
