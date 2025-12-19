@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 import ExerciseSet from "@/app/models/ExerciseSet";
 import connect from "@/app/utils/db";
@@ -23,7 +24,22 @@ export const GET = async (req: NextRequest) => {
   const today = searchParams.get("today") === "true";
 
   try {
-    const filter: Record<string, unknown> = { userId: user };
+    // Handle both UUID strings and MongoDB ObjectId formats
+    // Production may have old data with ObjectIds, new data with UUIDs
+    let filter: Record<string, unknown>;
+    
+    if (user && mongoose.Types.ObjectId.isValid(user) && user.length === 24) {
+      // If it looks like a valid 24-char ObjectId, try both formats
+      filter = {
+        $or: [
+          { userId: user },
+          { userId: new mongoose.Types.ObjectId(user) },
+        ],
+      };
+    } else {
+      // Otherwise just use the string (UUID)
+      filter = { userId: user };
+    }
 
     if (today) {
       const start = new Date();
