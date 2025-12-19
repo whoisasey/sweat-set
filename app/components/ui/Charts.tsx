@@ -21,7 +21,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { ProcessedWorkoutData } from "@/app/progress/page";
 import type { TooltipContentProps } from "recharts/types/component/Tooltip";
 import { curveCardinal } from "d3-shape";
-import { formatDate } from "@/app/utils/helpers";
+import { formatDate, formatDateInEasternTime } from "@/app/utils/helpers";
 import { useWindowSize } from "@/app/utils/helpers-fe";
 
 const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWorkoutData[]; viewState: boolean }) => {
@@ -164,7 +164,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
                 {todayView ? (
                   <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
                 ) : (
-                  <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
+                  <XAxis dataKey="date" tickFormatter={(date) => formatDateInEasternTime(date)} />
                 )}
                 <YAxis
                   yAxisId="weight"
@@ -205,7 +205,7 @@ const Charts = ({ exerciseHistory, viewState }: { exerciseHistory: ProcessedWork
                 {todayView ? (
                   <XAxis dataKey="setNumber" tickFormatter={(n) => `Set ${n}`} />
                 ) : (
-                  <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
+                  <XAxis dataKey="date" tickFormatter={(date) => formatDateInEasternTime(date)} />
                 )}
                 <YAxis
                   type="number"

@@ -76,6 +76,24 @@ export const addNewExercise = async (exerciseName: string): Promise<void> => {
   if (!res.ok) throw new Error("Failed to add new exercise");
 };
 
+/**
+ * Converts a date to UTC-5 (Eastern Time)
+ * @param date - The date to convert
+ * @returns Date object adjusted to UTC-5
+ */
+export const convertToEasternTime = (date: Date): Date => {
+  // Create a new date object to avoid mutating the original
+  const easternDate = new Date(date);
+  
+  // Get the UTC time
+  const utcTime = easternDate.getTime();
+  
+  // Subtract 5 hours (in milliseconds) to get UTC-5
+  const easternTime = utcTime - (5 * 60 * 60 * 1000);
+  
+  return new Date(easternTime);
+};
+
 export const submitExerciseData = async (data: Record<string, unknown>): Promise<void> => {
   const res = await fetch("/api/exerciseSet/add", {
     method: "POST",

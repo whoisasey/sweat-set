@@ -2,6 +2,7 @@
 
 import { Box, Button, Card, Typography } from "@mui/material";
 import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import AddIcon from "@mui/icons-material/Add";
 import { ExerciseForm } from "./ExerciseForm";
@@ -9,6 +10,7 @@ import { useOnboardingTour } from "@/app/components/hooks/useOnboarding";
 import { workoutPlan } from "@/app/data/workoutPlan";
 
 type Exercise = {
+  id: string;
   name: string;
   sets: number;
   reps: number[];
@@ -25,7 +27,7 @@ const emptyDay: Day = {
   weekday: "",
   date: "",
   type: "",
-  exercises: [{ name: "", sets: 3, reps: [10, 10, 10] }], // start with one empty form
+  exercises: [{ id: uuidv4(), name: "", sets: 3, reps: [10, 10, 10] }], // start with one empty form
 };
 
 const ExercisePlan = ({ user }: { user?: string }) => {
@@ -42,7 +44,14 @@ const ExercisePlan = ({ user }: { user?: string }) => {
 
       const match = workoutPlan.flatMap((week) => week.days).find((day) => day.date?.trim() === today);
 
-      if (match) return match;
+      if (match) {
+        // Ensure all exercises have unique IDs
+        const exercisesWithIds = match.exercises?.map((exercise) => ({
+          ...exercise,
+          id: uuidv4(),
+        }));
+        return { ...match, exercises: exercisesWithIds };
+      }
     }
 
     return { ...emptyDay, date: new Date().toLocaleDateString("en-US") };
@@ -50,6 +59,7 @@ const ExercisePlan = ({ user }: { user?: string }) => {
 
   const addExercise = () => {
     const newExercise: Exercise = {
+      id: uuidv4(),
       name: "New Exercise",
       sets: 3,
       reps: [10, 10, 10],
@@ -61,11 +71,11 @@ const ExercisePlan = ({ user }: { user?: string }) => {
     }));
   };
 
-  const removeExercise = (idx: number) => {
+  const removeExercise = (id: string) => {
     setTodaysPlan((prev) => {
       if (!prev.exercises) return prev;
 
-      const updatedExercises = prev.exercises.filter((_, i) => i !== idx);
+      const updatedExercises = prev.exercises.filter((exercise) => exercise.id !== id);
       return { ...prev, exercises: updatedExercises };
     });
   };
@@ -76,14 +86,14 @@ const ExercisePlan = ({ user }: { user?: string }) => {
         Welcome back, {user}!
       </Typography>
 
-      {todaysPlan.exercises?.map(({ name, reps, sets }, idx) => (
-        <Card key={idx} sx={{ mb: 2, p: 2, border: "1px solid #ccc", boxShadow: 0, borderRadius: "8px" }}>
+      {todaysPlan.exercises?.map(({ id, name, reps, sets }) => (
+        <Card key={id} sx={{ mb: 2, p: 2, border: "1px solid #ccc", boxShadow: 0, borderRadius: "8px" }}>
           <ExerciseForm
-            id={name || `exercise-${idx}`}
+            id={id}
             name={name}
             sets={sets}
             reps={reps}
-            onRemove={() => removeExercise(idx)}
+            onRemove={() => removeExercise(id)}
           />
         </Card>
       ))}
