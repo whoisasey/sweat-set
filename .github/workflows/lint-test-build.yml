@@ -28,7 +28,7 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: npm run lint
+        run: npm run lint -- --dir .
 
   # Job 2: Format Check (runs in parallel with lint)
   format-check:
