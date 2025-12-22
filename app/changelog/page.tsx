@@ -17,6 +17,28 @@ interface ChangelogEntry {
 
 const changelog: ChangelogEntry[] = [
   {
+    version: "1.2.0",
+    date: "December 21, 2024",
+    changes: [
+      {
+        type: "fixed",
+        description: "Fixed multiple exercises submit issue",
+      },
+      {
+        type: "fixed",
+        description: "Fixed user ID handling",
+      },
+      {
+        type: "fixed",
+        description: "Fixed exercise submit functionality",
+      },
+      {
+        type: "fixed",
+        description: "Patched Next.js security vulnerability",
+      },
+    ],
+  },
+  {
     version: "1.1.0",
     date: "December 14, 2024",
     changes: [
