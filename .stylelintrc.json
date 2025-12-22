@@ -1,0 +1,14 @@
+{
+  "plugins": ["stylelint-order", "stylelint-scss"],
+  "ignoreFiles": ["**/node_modules/**"],
+  "rules": {
+    "order/properties-alphabetical-order": true,
+    "color-named": "never",
+    "scss/load-partial-extension": null,
+    "declaration-no-important": null,
+    "font-family-no-missing-generic-family-keyword": null,
+    "font-family-name-quotes": "always-unless-keyword",
+    "no-invalid-position-declaration": null,
+    "media-feature-range-notation": null
+  }
+}
