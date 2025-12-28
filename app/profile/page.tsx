@@ -382,7 +382,7 @@ const ProfilePage = () => {
         >
           {hasNewUpdates ? (
             <Typography variant="body1" color="primary.main">
-              What&apos;s New -
+              What&apos;s New :
             </Typography>
           ) : null}
           <Typography variant="body1" sx={{ color: hasNewUpdates ? "primary.main" : "text.primary" }}>
